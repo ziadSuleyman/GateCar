@@ -84,7 +84,7 @@ app_include_js = "/assets/gatecar/js/gatecar.js"
 # ------------
 
 # before_install = "gatecar.install.before_install"
-# after_install = "gatecar.install.after_install"
+after_install = "gatecar.setup_data.after_install"
 
 # Uninstallation
 # ------------
