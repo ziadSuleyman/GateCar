@@ -1,0 +1,112 @@
+{
+ "actions": [],
+ "allow_bulk_edit": 1,
+ "allow_rename": 1,
+ "autoname": "REV-.####",
+ "creation": "2026-06-25 21:47:00.936051",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "date",
+  "booking_reference",
+  "receiver",
+  "notes",
+  "column_break_gwxh",
+  "car",
+  "customer_name",
+  "payment_method",
+  "amount",
+  "shift"
+ ],
+ "fields": [
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "\u062a\u0627\u0631\u064a\u062e \u0627\u0644\u062f\u0641\u0639",
+   "reqd": 1
+  },
+  {
+   "fieldname": "booking_reference",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "\u0631\u0642\u0645 \u0627\u0644\u062d\u062c\u0632",
+   "options": "Car Booking",
+   "reqd": 1
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "label": "\u0627\u0644\u0645\u0628\u0644\u063a"
+  },
+  {
+   "default": "\u064a\u062f\u0648\u064a\u0627",
+   "fieldname": "payment_method",
+   "fieldtype": "Data",
+   "label": "\u0637\u0631\u064a\u0642\u0629 \u0627\u0644\u062f\u0641\u0639"
+  },
+  {
+   "fieldname": "receiver",
+   "fieldtype": "Link",
+   "label": "\u0627\u0644\u0645\u0648\u0638\u0641 \u0627\u0644\u0645\u0633\u062a\u0644\u0645",
+   "options": "Employee",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_gwxh",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "booking_reference.car",
+   "fieldname": "car",
+   "fieldtype": "Data",
+   "label": "\u0627\u0644\u0633\u064a\u0627\u0631\u0629"
+  },
+  {
+   "fetch_from": "booking_reference.customer_name_fetched",
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "label": "\u0627\u0633\u0645 \u0627\u0644\u0632\u0628\u0648\u0646"
+  },
+  {
+   "fieldname": "shift",
+   "fieldtype": "Link",
+   "label": "\u0627\u0644\u0648\u0631\u062f\u064a\u0629",
+   "mandatory_depends_on": "!frappe.user.has_role('Administrator')",
+   "options": "Shift Type"
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Data",
+   "label": "\u0645\u0644\u0627\u062d\u0638\u0627\u062a"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-06-28 08:25:32.778998",
+ "modified_by": "Administrator",
+ "module": "Gate Cars",
+ "name": "Revenue",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

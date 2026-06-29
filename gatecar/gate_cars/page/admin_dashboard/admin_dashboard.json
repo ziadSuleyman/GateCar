@@ -1,0 +1,20 @@
+{
+ "content": null,
+ "creation": "2026-06-24 12:00:00.000000",
+ "doctype": "Page",
+ "icon": "dashboard",
+ "modified": "2026-06-24 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Gate Cars",
+ "name": "admin-dashboard",
+ "owner": "Administrator",
+ "page_name": "admin-dashboard",
+ "roles": [
+  {
+   "role": "System Manager"
+  }
+ ],
+ "standard": "Yes",
+ "system_page": 0,
+ "title": "لوحة المراقبة"
+}

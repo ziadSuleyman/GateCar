@@ -1,0 +1,97 @@
+{
+ "actions": [],
+ "allow_bulk_edit": 1,
+ "allow_rename": 1,
+ "autoname": "field:customer_name",
+ "creation": "2026-06-19 16:40:49.126055",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "customer_name",
+  "phone",
+  "international_phone",
+  "emergency_number",
+  "nationality",
+  "صورة_الهوية_او_جواز_السفر"
+ ],
+ "fields": [
+  {
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "الاسم الثلاثي للزبون",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "phone",
+   "fieldtype": "Phone",
+   "label": "رقم الهاتف"
+  },
+  {
+   "fieldname": "international_phone",
+   "fieldtype": "Phone",
+   "label": "رقم الهاتف الدولي"
+  },
+  {
+   "fieldname": "emergency_number",
+   "fieldtype": "Phone",
+   "label": "رقم الطوارئ"
+  },
+  {
+   "fieldname": "nationality",
+   "fieldtype": "Data",
+   "label": "الجنسية "
+  },
+  {
+   "fieldname": "صورة_الهوية_او_جواز_السفر",
+   "fieldtype": "Attach",
+   "label": "صورة الهوية او جواز السفر"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-06-22 14:18:37.187281",
+ "modified_by": "Administrator",
+ "module": "Gate Cars",
+ "name": "Customer Car",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "role": "مدير فرع",
+   "read": 1,
+   "report": 1
+  },
+  {
+   "role": "مشرف أسطول",
+   "read": 1,
+   "report": 1
+  },
+  {
+   "role": "موظف مبيعات",
+   "read": 1,
+   "report": 1,
+   "write": 1,
+   "create": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

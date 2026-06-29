@@ -1,0 +1,160 @@
+<style type="text/css">
+    body, html {
+        margin-top: 10px;
+        padding: 0;
+        width: 100%;
+        font-family: Inter, sans-serif;
+        font-size: 14px;
+        direction: rtl;
+        color: #171717;
+    }
+
+    .report-header {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .report-header h2 {
+        font-size: 20px;
+        font-weight: 700;
+        margin: 0 0 5px;
+        color: #2e7d32;
+    }
+
+    .report-header .sub {
+        font-size: 13px;
+        color: #7c7c7c;
+    }
+
+    .report-meta {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+        padding: 8px 12px;
+        background: #f8f8f8;
+        border-radius: 6px;
+        font-size: 13px;
+    }
+
+    .report-meta strong {
+        color: #7c7c7c;
+    }
+
+    .report-table table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .report-table thead th {
+        background: #2e7d32;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 600;
+        padding: 8px 10px;
+        text-align: center;
+        border: 1px solid #2e7d32;
+    }
+
+    .report-table tbody td {
+        padding: 7px 10px;
+        border: 1px solid #e0e0e0;
+        text-align: center;
+        font-size: 13px;
+    }
+
+    .report-table tbody tr:nth-child(even) {
+        background: #f9f9f9;
+    }
+
+    .report-table tbody tr:last-child {
+        background: #e8f5e9;
+        font-weight: 700;
+    }
+
+    .text-right { text-align: right; font-variant-numeric: tabular-nums; }
+
+    .report-footer {
+        margin-top: 20px;
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        color: #7c7c7c;
+        border-top: 1px solid #e0e0e0;
+        padding-top: 10px;
+    }
+
+    @media print {
+        @page {
+            size: A4 landscape;
+            margin: 10mm;
+        }
+        thead { display: table-header-group; }
+        tr { page-break-inside: avoid; }
+    }
+</style>
+
+<div>
+    <div class="report-header">
+        <img src="/files/gatecar_logo.png" alt="Gate Cars" style="height: 55px; margin-bottom: 8px;">
+        <h2>Gate Cars - تقرير أرباح المالك</h2>
+        <div class="sub">تقرير تفصيلي لإيرادات وتكاليف السيارات</div>
+    </div>
+
+    <div class="report-meta">
+        <div>
+            <strong>من:</strong> {%= frappe.datetime.str_to_user(filters.from_date) %}
+            &nbsp;&nbsp;
+            <strong>إلى:</strong> {%= frappe.datetime.str_to_user(filters.to_date) %}
+        </div>
+        <div>
+            <strong>نسبة Gate Car:</strong> {%= filters.gate_car_percent %}%
+            {% if(filters.owner) { %}
+                &nbsp;&nbsp;<strong>المالك:</strong> {%= filters.owner %}
+            {% } %}
+            {% if(filters.car) { %}
+                &nbsp;&nbsp;<strong>السيارة:</strong> {%= filters.car %}
+            {% } %}
+        </div>
+    </div>
+
+    <div class="report-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>السيارة</th>
+                    <th>الماركة</th>
+                    <th>رقم اللوحة</th>
+                    <th>المالك</th>
+                    <th>الإيرادات</th>
+                    <th>حصة Gate Car</th>
+                    <th>حصة المالك</th>
+                    <th>التكاليف</th>
+                    <th>صافي المالك</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for(var i=0; i<data.length; i++) { %}
+                    {% var row = data[i]; %}
+                    <tr>
+                        <td>{%= row.car %}</td>
+                        <td>{%= row.brand %}</td>
+                        <td>{%= row.plate_no %}</td>
+                        <td>{%= row.owner_name || "-" %}</td>
+                        <td class="text-right">{%= format_currency(row.total_revenue) %}</td>
+                        <td class="text-right">{%= format_currency(row.gate_car_share) %}</td>
+                        <td class="text-right">{%= format_currency(row.owner_gross_share) %}</td>
+                        <td class="text-right" style="color: #c62828;">{%= format_currency(row.total_costs) %}</td>
+                        <td class="text-right" style="font-weight: 700; color: {% if(row.owner_net >= 0) { %}#2e7d32{% } else { %}#c62828{% } %};">
+                            {%= format_currency(row.owner_net) %}
+                        </td>
+                    </tr>
+                {% } %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="report-footer">
+        <div>Gate Cars &copy; {%= new Date().getFullYear() %}</div>
+        <div>{%= __("طُبع بتاريخ {0}", [frappe.datetime.str_to_user(frappe.datetime.get_datetime_as_string())]) %}</div>
+    </div>
+</div>

@@ -1,0 +1,32 @@
+[
+ {
+  "appraisal_template": null,
+  "description": null,
+  "designation_name": "مدير فرع",
+  "docstatus": 0,
+  "doctype": "Designation",
+  "modified": "2026-06-24 16:44:49.699141",
+  "name": "مدير فرع",
+  "skills": []
+ },
+ {
+  "appraisal_template": null,
+  "description": null,
+  "designation_name": "مشرف أسطول",
+  "docstatus": 0,
+  "doctype": "Designation",
+  "modified": "2026-06-24 16:44:49.794837",
+  "name": "مشرف أسطول",
+  "skills": []
+ },
+ {
+  "appraisal_template": null,
+  "description": null,
+  "designation_name": "موظف مبيعات",
+  "docstatus": 0,
+  "doctype": "Designation",
+  "modified": "2026-06-24 16:44:49.797116",
+  "name": "موظف مبيعات",
+  "skills": []
+ }
+]

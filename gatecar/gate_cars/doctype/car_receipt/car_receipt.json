@@ -1,0 +1,295 @@
+{
+ "actions": [],
+ "allow_bulk_edit": 1,
+ "allow_rename": 1,
+ "autoname": "INV-.#####",
+ "creation": "2026-06-23 11:02:31.352458",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "receiving_info_section",
+  "car",
+  "booking",
+  "pickup_date",
+  "real_days",
+  "info_col_break",
+  "customer_name",
+  "duration_days",
+  "receiving_date",
+  "mainly_cost",
+  "odometer_section",
+  "previous_odometer",
+  "total_distance",
+  "column_break_kpqo",
+  "current_odometer",
+  "extra_billing_section",
+  "allowed_limit",
+  "extra_distance",
+  "extra_billing_col_break",
+  "extra_cost",
+  "damage",
+  "section_break_vfxo",
+  "down_payment",
+  "sales_employee",
+  "sales_employee_name",
+  "column_break_agou",
+  "total_cost",
+  "checklist_section",
+  "checklist",
+  "notes_section",
+  "notes",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "receiving_info_section",
+   "fieldtype": "Section Break",
+   "label": "معلومات استلام السيارة"
+  },
+  {
+   "fieldname": "car",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "السيارة المستلمة",
+   "link_filters": "[[\"Car\",\"status\",\"=\",\"مؤجر\"]]",
+   "options": "Car",
+   "reqd": 1
+  },
+  {
+   "fieldname": "booking",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "عقد الحجز المرتبط",
+   "options": "Car Booking",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "booking.start_date",
+   "fieldname": "pickup_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "تاريخ التسليم في العقد",
+   "options": "Car Booking",
+   "reqd": 1
+  },
+  {
+   "fieldname": "real_days",
+   "fieldtype": "Data",
+   "label": "عدد الأيام الفعلي",
+   "read_only": 1
+  },
+  {
+   "fieldname": "info_col_break",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "booking.customer_name_fetched",
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "label": "اسم العميل المستأجر",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "booking.duration_days",
+   "fieldname": "duration_days",
+   "fieldtype": "Int",
+   "label": "عدد الأيام في العقد",
+   "read_only": 1
+  },
+  {
+   "fieldname": "receiving_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": " تاريخ الاستلام الفعلي ",
+   "reqd": 1
+  },
+  {
+   "fieldname": "mainly_cost",
+   "fieldtype": "Int",
+   "label": "التكلفة الاساسية"
+  },
+  {
+   "fieldname": "odometer_section",
+   "fieldtype": "Section Break",
+   "label": "قراءات عداد الكيلومتر"
+  },
+  {
+   "fetch_from": "car.current_odometer",
+   "fieldname": "previous_odometer",
+   "fieldtype": "Int",
+   "label": "قراءة العداد السابقة (كم)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_distance",
+   "fieldtype": "Int",
+   "label": "اجمالي المسافة المقطوعة (كم)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_kpqo",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "current_odometer",
+   "fieldtype": "Int",
+   "label": "قراءة العداد الحالية (كم)",
+   "reqd": 1
+  },
+  {
+   "fieldname": "extra_billing_section",
+   "fieldtype": "Section Break",
+   "label": "قسم التكلفة الاضافية"
+  },
+  {
+   "fieldname": "allowed_limit",
+   "fieldtype": "Int",
+   "label": "الحد المسموح للمسافة",
+   "read_only": 1
+  },
+  {
+   "fieldname": "extra_distance",
+   "fieldtype": "Int",
+   "label": "المسافة الإضافية الزائدة (كم)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "extra_billing_col_break",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "extra_cost",
+   "fieldtype": "Currency",
+   "label": "الكلفة الإضافية المترتبة",
+   "read_only": 1
+  },
+  {
+   "fieldname": "damage",
+   "fieldtype": "Currency",
+   "label": "الاضرار"
+  },
+  {
+   "fieldname": "section_break_vfxo",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fetch_from": "booking.down_payment",
+   "fieldname": "down_payment",
+   "fieldtype": "Currency",
+   "label": "دفعة سابقة",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sales_employee",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "موظف المبيعات",
+   "options": "Employee",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "sales_employee.employee_name",
+   "fieldname": "sales_employee_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "اسم الموظف",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_agou",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_cost",
+   "fieldtype": "Currency",
+   "label": "التكلفة النهائية",
+   "read_only": 1
+  },
+  {
+   "fieldname": "checklist_section",
+   "fieldtype": "Section Break",
+   "label": "فحص حالة السيارة"
+  },
+  {
+   "fieldname": "checklist",
+   "fieldtype": "Attach",
+   "label": "قائمة فحص السيارة (استلام)"
+  },
+  {
+   "fieldname": "notes_section",
+   "fieldtype": "Section Break",
+   "label": "ملاحظات"
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Small Text",
+   "label": "ملاحظات"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Car Receipt",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2026-06-24 13:39:07.694230",
+ "modified_by": "Administrator",
+ "module": "Gate Cars",
+ "name": "Car Receipt",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "select": 1,
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "role": "مدير فرع",
+   "read": 1,
+   "report": 1,
+   "submit": 1,
+   "cancel": 1,
+   "write": 1
+  },
+  {
+   "role": "مشرف أسطول",
+   "read": 1,
+   "report": 1
+  },
+  {
+   "role": "موظف مبيعات",
+   "read": 1,
+   "report": 1,
+   "write": 1,
+   "create": 1,
+   "submit": 1,
+   "print": 1,
+   "email": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

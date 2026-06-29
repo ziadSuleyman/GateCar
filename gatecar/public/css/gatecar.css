@@ -1,0 +1,62 @@
+/* ===== Gate Cars Workspace Styles ===== */
+
+/* --- Card Widgets (البطاقات) --- */
+body .widget.links-widget-box {
+	border: 1px solid var(--border-color) !important;
+	border-radius: 14px !important;
+	transition: all 0.3s ease !important;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+	overflow: hidden !important;
+}
+
+body .widget.links-widget-box:hover {
+	border-color: #4caf50 !important;
+	box-shadow: 0 6px 20px rgba(76, 175, 80, 0.18) !important;
+	transform: translateY(-3px) !important;
+}
+
+/* Card header */
+body .widget.links-widget-box .widget-head .widget-title {
+	font-size: var(--text-lg) !important;
+	font-weight: 700 !important;
+}
+
+/* Card links */
+body .widget.links-widget-box .widget-body .link-item {
+	padding: 8px 14px !important;
+	margin: 2px 6px !important;
+	border-radius: 8px !important;
+	transition: all 0.2s ease !important;
+}
+
+body .widget.links-widget-box .widget-body .link-item:hover {
+	background-color: rgba(76, 175, 80, 0.08) !important;
+}
+
+/* --- Shortcut Widgets (الاختصارات العلوية) --- */
+body .widget.shortcut-widget-box {
+	border: 1px solid var(--border-color) !important;
+	border-radius: 12px !important;
+	transition: all 0.3s ease !important;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
+}
+
+body .widget.shortcut-widget-box:hover {
+	border-color: #4caf50 !important;
+	box-shadow: 0 4px 14px rgba(76, 175, 80, 0.16) !important;
+	transform: translateY(-2px) !important;
+}
+
+/* --- Sidebar (القائمة الجانبية) --- */
+body .desk-sidebar .desk-sidebar-item {
+	border-radius: 8px !important;
+	transition: all 0.2s ease !important;
+}
+
+body .desk-sidebar .desk-sidebar-item.selected {
+	background-color: rgba(76, 175, 80, 0.1) !important;
+}
+
+body .desk-sidebar .desk-sidebar-item:hover {
+	background-color: rgba(76, 175, 80, 0.05) !important;
+}

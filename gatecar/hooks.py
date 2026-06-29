@@ -10,23 +10,21 @@ app_license = "mit"
 
 # required_apps = []
 
-# Each item in the list will be shown as an app in the apps page
-# add_to_apps_screen = [
-# 	{
-# 		"name": "gatecar",
-# 		"logo": "/assets/gatecar/logo.png",
-# 		"title": "Gate Cars",
-# 		"route": "/gatecar",
-# 		"has_permission": "gatecar.api.permission.has_app_permission"
-# 	}
-# ]
+add_to_apps_screen = [
+	{
+		"name": "gatecar",
+		"logo": "/assets/gatecar/logo.png",
+		"title": "Gate Cars",
+		"route": "/app/gate-cars",
+	}
+]
 
 # Includes in <head>
 # ------------------
 
 # include js, css files in header of desk.html
-# app_include_css = "/assets/gatecar/css/gatecar.css"
-# app_include_js = "/assets/gatecar/js/gatecar.js"
+app_include_css = "/assets/gatecar/css/gatecar.css"
+app_include_js = "/assets/gatecar/js/gatecar.js"
 
 # include js, css files in header of web template
 # web_include_css = "/assets/gatecar/css/gatecar.css"
@@ -138,34 +136,21 @@ app_license = "mit"
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
+doc_events = {
+	"Employee": {
+		"after_insert": "gatecar.employee_role.on_employee_update",
+		"on_update": "gatecar.employee_role.on_employee_update",
+	}
+}
 
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
-# 	"all": [
-# 		"gatecar.tasks.all"
-# 	],
-# 	"daily": [
-# 		"gatecar.tasks.daily"
-# 	],
-# 	"hourly": [
-# 		"gatecar.tasks.hourly"
-# 	],
-# 	"weekly": [
-# 		"gatecar.tasks.weekly"
-# 	],
-# 	"monthly": [
-# 		"gatecar.tasks.monthly"
-# 	],
-# }
+scheduler_events = {
+	"daily": [
+		"gatecar.tasks.check_upcoming_maintenance",
+	],
+}
 
 # Testing
 # -------
@@ -246,6 +231,11 @@ app_license = "mit"
 
 # Automatically update python controller files with type annotations for this app.
 export_python_type_annotations = True
+
+fixtures = [
+	{"dt": "Role", "filters": [["name", "in", ["مدير فرع", "مشرف أسطول", "موظف مبيعات"]]]},
+	{"dt": "Designation", "filters": [["name", "in", ["مدير فرع", "مشرف أسطول", "موظف مبيعات"]]]},
+]
 
 # Require all whitelisted methods to have type annotations
 require_type_annotated_api_methods = True

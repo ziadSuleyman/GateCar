@@ -1,0 +1,94 @@
+{
+ "actions": [],
+ "allow_bulk_edit": 1,
+ "allow_rename": 1,
+ "autoname": "field:name_category",
+ "creation": "2026-06-23 11:14:27.873245",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "name_category",
+  "description",
+  "small_term",
+  "med_term",
+  "long_term"
+ ],
+ "fields": [
+  {
+   "fieldname": "name_category",
+   "fieldtype": "Data",
+   "label": "اسم التصنيف",
+   "unique": 1
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Data",
+   "label": "وصف التصنيف"
+  },
+  {
+   "fieldname": "small_term",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "الباقة الصغرى(3-7)",
+   "options": "Price Package",
+   "reqd": 1
+  },
+  {
+   "fieldname": "med_term",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "الباقة الوسطى (من 7-20)",
+   "options": "Price_pacage_monthly",
+   "reqd": 1
+  },
+  {
+   "fieldname": "long_term",
+   "fieldtype": "Link",
+   "label": "الباقة الكبرى (اكبر من 20)",
+   "options": "Price_Package_Over"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-06-24 00:00:26.868836",
+ "modified_by": "Administrator",
+ "module": "Gate Cars",
+ "name": "Car Category",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "role": "مدير فرع",
+   "read": 1,
+   "report": 1
+  },
+  {
+   "role": "مشرف أسطول",
+   "read": 1,
+   "report": 1
+  },
+  {
+   "role": "موظف مبيعات",
+   "read": 1,
+   "report": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}
