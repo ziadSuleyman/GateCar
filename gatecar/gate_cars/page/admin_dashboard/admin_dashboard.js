@@ -7,8 +7,8 @@ frappe.pages["admin-dashboard"].on_page_load = function (wrapper) {
 
 	page.profit_month = "";
 	page.profit_year = String(new Date().getFullYear());
-	page.date_from = "";
-	page.date_to = "";
+	page.date_from = moment().startOf("month").format("YYYY-MM-DD");
+	page.date_to = moment().endOf("month").format("YYYY-MM-DD");
 
 	page.main.html('<div class="admin-dashboard-container"></div>');
 	page.set_secondary_action(__("تحديث"), () => load_dashboard(page), "refresh");
@@ -31,11 +31,7 @@ function load_dashboard(page) {
 		profit_args.year = year;
 	}
 
-	const summary_args = {};
-	if (page.date_from && page.date_to) {
-		summary_args.date_from = page.date_from;
-		summary_args.date_to = page.date_to;
-	}
+	const summary_args = { date_from: page.date_from, date_to: page.date_to };
 
 	Promise.all([
 		frappe.xcall("dashboard_stats"),
@@ -69,29 +65,35 @@ function render_dashboard(page, container, data, profitability, filter_month, fi
 			${is_admin ? `
 			<!-- 1. ملخص الأرباح -->
 			<div class="frappe-card" style="margin-bottom: 20px; padding: 15px;">
-				${collapsible_header("fa-coins", "#2e7d32", "ملخص الأرباح")}
-				<div class="collapsible-body" style="display: none; margin-top: 12px;">
-					<div class="row" style="margin-bottom: 15px; display: flex; flex-wrap: wrap;">
-						${stat_card("إجمالي الإيرادات", format_currency(summary.total_revenue), "green", "fa-arrow-up")}
-						${stat_card("إجمالي الصيانة", format_currency(summary.total_maintenance), "red", "fa-arrow-down")}
-						${stat_card("إجمالي تبديل الزيت", format_currency(summary.total_oil_change || 0), "orange", "fa-oil-can")}
-						${stat_card("صافي الربح الكلي", format_currency(summary.total_profit), summary.total_profit >= 0 ? "green" : "red", "fa-chart-line")}
+				<h5 style="margin: 0 0 12px; font-weight: 600;">
+					<i class="fa fa-coins" style="margin-left: 5px; color: #2e7d32;"></i>
+					ملخص الأرباح
+				</h5>
+				<div>
+					<div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+						<span style="font-weight: 600; font-size: 13px;">من:</span>
+						<input type="date" id="profit-date-from" class="form-control input-sm" style="width: 160px;" value="${page.date_from}">
+						<span style="font-weight: 600; font-size: 13px;">إلى:</span>
+						<input type="date" id="profit-date-to" class="form-control input-sm" style="width: 160px;" value="${page.date_to}">
+						<button id="calc-period-profit" class="btn btn-sm btn-primary">احسب</button>
 					</div>
-					<div style="border-top: 1px solid var(--border-color); padding-top: 15px;">
-						<div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-							<span style="font-weight: 600; font-size: 13px;">أرباح فترة زمنية:</span>
-							<input type="date" id="profit-date-from" class="form-control input-sm" style="width: 160px;" value="${page.date_from}">
-							<span>إلى</span>
-							<input type="date" id="profit-date-to" class="form-control input-sm" style="width: 160px;" value="${page.date_to}">
-							<button id="calc-period-profit" class="btn btn-sm btn-primary">احسب</button>
-						</div>
-						${summary.period_profit !== null ? `
-						<div class="row" style="margin-top: 12px; display: flex; flex-wrap: wrap;">
-							${stat_card("إيرادات الفترة", format_currency(summary.period_revenue), "green", "fa-arrow-up")}
-							${stat_card("صيانة الفترة", format_currency(summary.period_maintenance), "red", "fa-arrow-down")}
-							${stat_card("زيت الفترة", format_currency(summary.period_oil_change || 0), "orange", "fa-oil-can")}
-							${stat_card("ربح الفترة", format_currency(summary.period_profit), summary.period_profit >= 0 ? "green" : "red", "fa-calculator")}
-						</div>` : ""}
+					<div class="row" style="margin-top: 12px; display: flex; flex-wrap: wrap;">
+						${(() => {
+							const rev   = summary.period_revenue || 0;
+							const maint = summary.period_maintenance || 0;
+							const oil   = summary.period_oil_change || 0;
+							const net   = summary.period_profit || 0;
+							const company_share   = rev * 0.20;
+							const investor_share  = (rev * 0.80) - maint - oil;
+							return `
+							${stat_card("إجمالي الإيرادات", format_currency(rev), "green", "fa-arrow-up")}
+							${stat_card("إجمالي الصيانة", format_currency(maint), "red", "fa-arrow-down")}
+							${stat_card("إجمالي تبديل الزيت", format_currency(oil), "orange", "fa-oil-can")}
+							${stat_card("صافي الربح", format_currency(net), net >= 0 ? "green" : "red", "fa-calculator")}
+							${stat_card("صافي أرباح الشركة", format_currency(company_share), "blue", "fa-building")}
+							${stat_card("صافي أرباح المستثمرين", format_currency(investor_share), investor_share >= 0 ? "purple" : "red", "fa-users")}
+							`;
+						})()}
 					</div>
 				</div>
 			</div>` : ""}
