@@ -63,7 +63,7 @@ function render_dashboard(page, container, data, profitability, filter_month, fi
 					<h3 style="margin: 0; color: #fff; font-weight: 700; font-size: 22px;">لوحة المراقبة</h3>
 					<p style="margin: 5px 0 0; color: rgba(255,255,255,0.85); font-size: 13px;">مرحباً، ${frappe.session.user_fullname} — ${frappe.datetime.str_to_user(frappe.datetime.get_today())}</p>
 				</div>
-				<img src="/files/gatecar_logo.png" alt="Gate Cars" style="height: 55px; border-radius: 8px; background: rgba(255,255,255,0.15); padding: 5px;">
+				<img src="/assets/gatecar/logo.png" alt="Gate Cars" style="height: 55px; border-radius: 8px; background: rgba(255,255,255,0.15); padding: 5px;">
 			</div>
 
 			${is_admin ? `
