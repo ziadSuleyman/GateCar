@@ -10,7 +10,10 @@
 .editor-js-container::before {
 	content: "";
 	position: absolute;
-	inset: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
 	background-image: url("/assets/gatecar/images/parking-bg.png");
 	background-repeat: no-repeat;
 	background-position: center;
@@ -23,7 +26,10 @@
 .editor-js-container::after {
 	content: "";
 	position: absolute;
-	inset: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
 	background: linear-gradient(135deg, rgba(10, 20, 15, 0.75), rgba(10, 20, 15, 0.55));
 	z-index: 0;
 	pointer-events: none;
