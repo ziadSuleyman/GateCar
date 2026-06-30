@@ -6,7 +6,14 @@ def after_install():
 	create_server_scripts()
 	create_client_scripts()
 	create_print_formats()
+	set_branding()
 	frappe.db.commit()
+
+
+def set_branding():
+	logo = "/assets/gatecar/logo.png"
+	frappe.db.set_value("Website Settings", "Website Settings", "favicon", logo)
+	frappe.db.set_value("Navbar Settings", "Navbar Settings", "app_logo", logo)
 
 
 def create_server_scripts():
