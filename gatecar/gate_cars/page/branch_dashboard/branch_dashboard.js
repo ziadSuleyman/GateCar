@@ -50,99 +50,89 @@ function render_branch_dashboard(container, data, profitability) {
 
 			<!-- الإجمالي العام -->
 			<div class="frappe-card" style="margin-bottom: 20px; padding: 15px;">
-				<h5 style="margin: 0 0 12px; font-weight: 600;">
-					<i class="fa fa-car" style="margin-left: 5px; color: #1565c0;"></i>
-					إجمالي السيارات
-				</h5>
-				<div class="row" style="display: flex; flex-wrap: wrap;">
-					${bstat("إجمالي", data.total_cars, "blue", "fa-car")}
-					${bstat("متوفرة", available, "green", "fa-check-circle")}
-					${bstat("محجوزة", reserved, "yellow", "fa-clock")}
-					${bstat("مؤجرة", rented, "orange", "fa-key")}
-					${bstat("صيانة", in_maintenance, "red", "fa-wrench")}
-					${bstat("جاهز للتسليم", ready, "purple", "fa-thumbs-up")}
-					${bstat("مجمدة", data.frozen_cars, "grey", "fa-snowflake")}
+				${bcollapsible_header("fa-car", "#1565c0", "إجمالي السيارات")}
+				<div class="collapsible-body" style="display: none; margin-top: 12px;">
+					<div class="row" style="display: flex; flex-wrap: wrap;">
+						${bstat("إجمالي", data.total_cars, "blue", "fa-car")}
+						${bstat("متوفرة", available, "green", "fa-check-circle")}
+						${bstat("محجوزة", reserved, "yellow", "fa-clock")}
+						${bstat("مؤجرة", rented, "orange", "fa-key")}
+						${bstat("صيانة", in_maintenance, "red", "fa-wrench")}
+						${bstat("جاهز للتسليم", ready, "purple", "fa-thumbs-up")}
+						${bstat("مجمدة", data.frozen_cars, "grey", "fa-snowflake")}
+					</div>
 				</div>
 			</div>
 
 			<!-- جدول الأساطيل -->
 			<div class="frappe-card" style="margin-bottom: 20px; padding: 15px;">
-				<h5 style="margin-bottom: 15px; font-weight: 600;">
-					<i class="fa fa-layer-group" style="margin-left: 5px;"></i>
-					الأساطيل
-				</h5>
-				<div class="table-responsive">
-					<table class="table table-bordered table-hover" style="margin-bottom: 0;">
-						<thead style="background: var(--subtle-accent);">
-							<tr>
-								<th>الأسطول</th>
-								<th>الفرع</th>
-								<th>إجمالي السيارات</th>
-								<th>متوفرة</th>
-								<th>مؤجرة</th>
-							</tr>
-						</thead>
-						<tbody>
-							${data.fleets.map((f) => `
+				${bcollapsible_header("fa-layer-group", "var(--text-color)", "الأساطيل")}
+				<div class="collapsible-body" style="display: none; margin-top: 12px;">
+					<div class="table-responsive">
+						<table class="table table-bordered table-hover" style="margin-bottom: 0;">
+							<thead style="background: var(--subtle-accent);">
 								<tr>
-									<td><strong>${f.fleet_name}</strong></td>
-									<td>${f.branch}</td>
-									<td>${f.car_count}</td>
-									<td><span class="indicator-pill green">${f.available}</span></td>
-									<td><span class="indicator-pill orange">${f.rented}</span></td>
+									<th>الأسطول</th>
+									<th>الفرع</th>
+									<th>إجمالي السيارات</th>
+									<th>متوفرة</th>
+									<th>مؤجرة</th>
 								</tr>
-							`).join("")}
-						</tbody>
-					</table>
+							</thead>
+							<tbody>
+								${data.fleets.map((f) => `
+									<tr>
+										<td><strong>${f.fleet_name}</strong></td>
+										<td>${f.branch}</td>
+										<td>${f.car_count}</td>
+										<td><span class="indicator-pill green">${f.available}</span></td>
+										<td><span class="indicator-pill orange">${f.rented}</span></td>
+									</tr>
+								`).join("")}
+							</tbody>
+						</table>
+					</div>
 				</div>
 			</div>
 
 			<!-- جدول السيارات مع الصيانة -->
 			<div class="frappe-card" style="margin-bottom: 20px; padding: 15px;">
-				<h5 style="margin-bottom: 15px; font-weight: 600;">
-					<i class="fa fa-chart-line" style="margin-left: 5px;"></i>
-					حالة السيارات والتكاليف
-				</h5>
-				<div class="table-responsive">
-					<table class="table table-bordered table-hover" style="margin-bottom: 0;">
-						<thead style="background: var(--subtle-accent);">
-							<tr>
-								<th>السيارة</th>
-								<th>النوع</th>
-								<th>الموديل</th>
-								<th>الحالة</th>
-								<th>تكاليف الصيانة</th>
-								<th>تكاليف تبديل الزيت</th>
-							</tr>
-						</thead>
-						<tbody>
-							${profitability.map((car) => `
+				${bcollapsible_header("fa-chart-line", "var(--text-color)", "حالة السيارات والتكاليف")}
+				<div class="collapsible-body" style="display: none; margin-top: 12px;">
+					<div class="table-responsive">
+						<table class="table table-bordered table-hover" style="margin-bottom: 0;">
+							<thead style="background: var(--subtle-accent);">
 								<tr>
-									<td><a href="/app/car/${car.name}"><strong>${car.name}</strong></a></td>
-									<td>${car.brand}</td>
-									<td>${car.model}</td>
-									<td>${car.status}</td>
-									<td style="color: #c62828;">${bcurrency(car.total_maintenance)}</td>
-									<td style="color: #e65100;">${bcurrency(car.total_oil_change || 0)}</td>
+									<th>السيارة</th>
+									<th>النوع</th>
+									<th>الموديل</th>
+									<th>الحالة</th>
+									<th>تكاليف الصيانة</th>
+									<th>تكاليف تبديل الزيت</th>
 								</tr>
-							`).join("")}
-						</tbody>
-					</table>
+							</thead>
+							<tbody>
+								${profitability.map((car) => `
+									<tr>
+										<td><a href="/app/car/${car.name}"><strong>${car.name}</strong></a></td>
+										<td>${car.brand}</td>
+										<td>${car.model}</td>
+										<td>${car.status}</td>
+										<td style="color: #c62828;">${bcurrency(car.total_maintenance)}</td>
+										<td style="color: #e65100;">${bcurrency(car.total_oil_change || 0)}</td>
+									</tr>
+								`).join("")}
+							</tbody>
+						</table>
+					</div>
 				</div>
 			</div>
 
 			<!-- بطاقات الفروع - قابلة للطي -->
 			${data.branches.map((b) => `
 			<div class="frappe-card" style="margin-bottom: 20px; padding: 15px;">
-				<div style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;" onclick="$(this).next().toggle(); $(this).find('.toggle-icon').toggleClass('fa-chevron-down fa-chevron-up');">
-					<h5 style="margin: 0; font-weight: 600;">
-						<i class="fa fa-building" style="margin-left: 5px; color: #2e7d32;"></i>
-						${b.branch_name}
-						<span style="font-size: 12px; color: var(--text-muted); margin-right: 8px;">${b.city || ""}</span>
-					</h5>
-					<i class="fa fa-chevron-down toggle-icon" style="color: var(--text-muted);"></i>
-				</div>
-				<div style="display: none; margin-top: 12px;">
+				${bcollapsible_header("fa-building", "#2e7d32", `${b.branch_name} <span style="font-size: 12px; color: var(--text-muted); font-weight: 400; margin-right: 8px;">${b.city || ""}</span>`)}
+				<div class="collapsible-body" style="display: none; margin-top: 12px;">
 					<div class="row" style="display: flex; flex-wrap: wrap;">
 						${bstat("إجمالي", b.car_count, "blue", "fa-car")}
 						${bstat("متوفرة", b.available, "green", "fa-check-circle")}
@@ -158,6 +148,23 @@ function render_branch_dashboard(container, data, profitability) {
 
 		</div>
 	`);
+
+	container.find(".collapsible-toggle").on("click", function () {
+		$(this).find(".toggle-icon").toggleClass("fa-chevron-down fa-chevron-up");
+		$(this).closest(".frappe-card").find(".collapsible-body").toggle();
+	});
+}
+
+function bcollapsible_header(icon, color, title) {
+	return `
+		<div style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;" class="collapsible-toggle">
+			<h5 style="margin: 0; font-weight: 600;">
+				<i class="fa ${icon}" style="margin-left: 5px; color: ${color};"></i>
+				${title}
+			</h5>
+			<i class="fa fa-chevron-down toggle-icon" style="color: var(--text-muted);"></i>
+		</div>
+	`;
 }
 
 function bstat(label, value, color, icon) {

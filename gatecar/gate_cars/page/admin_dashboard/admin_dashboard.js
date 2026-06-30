@@ -69,41 +69,43 @@ function render_dashboard(page, container, data, profitability, filter_month, fi
 			${is_admin ? `
 			<!-- 1. ملخص الأرباح -->
 			<div class="frappe-card" style="margin-bottom: 20px; padding: 15px;">
-				<h5 style="margin-bottom: 15px; font-weight: 600;">
-					<i class="fa fa-coins" style="margin-left: 5px; color: #2e7d32;"></i>
-					ملخص الأرباح
-				</h5>
-				<div class="row" style="margin-bottom: 15px; display: flex; flex-wrap: wrap;">
-					${stat_card("إجمالي الإيرادات", format_currency(summary.total_revenue), "green", "fa-arrow-up")}
-					${stat_card("إجمالي الصيانة", format_currency(summary.total_maintenance), "red", "fa-arrow-down")}
-					${stat_card("إجمالي تبديل الزيت", format_currency(summary.total_oil_change || 0), "orange", "fa-oil-can")}
-					${stat_card("صافي الربح الكلي", format_currency(summary.total_profit), summary.total_profit >= 0 ? "green" : "red", "fa-chart-line")}
-				</div>
-				<div style="border-top: 1px solid var(--border-color); padding-top: 15px;">
-					<div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-						<span style="font-weight: 600; font-size: 13px;">أرباح فترة زمنية:</span>
-						<input type="date" id="profit-date-from" class="form-control input-sm" style="width: 160px;" value="${page.date_from}">
-						<span>إلى</span>
-						<input type="date" id="profit-date-to" class="form-control input-sm" style="width: 160px;" value="${page.date_to}">
-						<button id="calc-period-profit" class="btn btn-sm btn-primary">احسب</button>
+				${collapsible_header("fa-coins", "#2e7d32", "ملخص الأرباح")}
+				<div class="collapsible-body" style="display: none; margin-top: 12px;">
+					<div class="row" style="margin-bottom: 15px; display: flex; flex-wrap: wrap;">
+						${stat_card("إجمالي الإيرادات", format_currency(summary.total_revenue), "green", "fa-arrow-up")}
+						${stat_card("إجمالي الصيانة", format_currency(summary.total_maintenance), "red", "fa-arrow-down")}
+						${stat_card("إجمالي تبديل الزيت", format_currency(summary.total_oil_change || 0), "orange", "fa-oil-can")}
+						${stat_card("صافي الربح الكلي", format_currency(summary.total_profit), summary.total_profit >= 0 ? "green" : "red", "fa-chart-line")}
 					</div>
-					${summary.period_profit !== null ? `
-					<div class="row" style="margin-top: 12px; display: flex; flex-wrap: wrap;">
-						${stat_card("إيرادات الفترة", format_currency(summary.period_revenue), "green", "fa-arrow-up")}
-						${stat_card("صيانة الفترة", format_currency(summary.period_maintenance), "red", "fa-arrow-down")}
-						${stat_card("زيت الفترة", format_currency(summary.period_oil_change || 0), "orange", "fa-oil-can")}
-						${stat_card("ربح الفترة", format_currency(summary.period_profit), summary.period_profit >= 0 ? "green" : "red", "fa-calculator")}
-					</div>` : ""}
+					<div style="border-top: 1px solid var(--border-color); padding-top: 15px;">
+						<div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+							<span style="font-weight: 600; font-size: 13px;">أرباح فترة زمنية:</span>
+							<input type="date" id="profit-date-from" class="form-control input-sm" style="width: 160px;" value="${page.date_from}">
+							<span>إلى</span>
+							<input type="date" id="profit-date-to" class="form-control input-sm" style="width: 160px;" value="${page.date_to}">
+							<button id="calc-period-profit" class="btn btn-sm btn-primary">احسب</button>
+						</div>
+						${summary.period_profit !== null ? `
+						<div class="row" style="margin-top: 12px; display: flex; flex-wrap: wrap;">
+							${stat_card("إيرادات الفترة", format_currency(summary.period_revenue), "green", "fa-arrow-up")}
+							${stat_card("صيانة الفترة", format_currency(summary.period_maintenance), "red", "fa-arrow-down")}
+							${stat_card("زيت الفترة", format_currency(summary.period_oil_change || 0), "orange", "fa-oil-can")}
+							${stat_card("ربح الفترة", format_currency(summary.period_profit), summary.period_profit >= 0 ? "green" : "red", "fa-calculator")}
+						</div>` : ""}
+					</div>
 				</div>
 			</div>` : ""}
 
 			<!-- 2. جدول أرباح السيارات -->
 			<div class="frappe-card" style="margin-bottom: 20px; padding: 15px;">
-				<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
-					<h5 style="margin: 0; font-weight: 600;">
-						<i class="fa fa-chart-line" style="margin-left: 5px;"></i>
-						أرباح السيارات ${filter_month ? `(${filter_month}/${filter_year})` : "(الكل)"}
-					</h5>
+				<div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+					<div style="display: flex; align-items: center; gap: 8px; cursor: pointer; flex: 1;" class="collapsible-toggle">
+						<h5 style="margin: 0; font-weight: 600;">
+							<i class="fa fa-chart-line" style="margin-left: 5px;"></i>
+							أرباح السيارات ${filter_month ? `(${filter_month}/${filter_year})` : "(الكل)"}
+						</h5>
+						<i class="fa fa-chevron-down toggle-icon" style="color: var(--text-muted);"></i>
+					</div>
 					<div style="display: flex; gap: 8px; align-items: center;">
 						<select id="profit-month" class="form-control input-sm" style="width: auto;">
 							<option value="">كل الشهور</option>
@@ -127,124 +129,118 @@ function render_dashboard(page, container, data, profitability, filter_month, fi
 						</select>
 					</div>
 				</div>
-				<div class="table-responsive">
-					<table class="table table-bordered table-hover" style="margin-bottom: 0;">
-						<thead style="background: var(--subtle-accent);">
-							<tr>
-								<th>السيارة</th>
-								<th>النوع</th>
-								<th>الموديل</th>
-								<th>الحالة</th>
-								${is_admin ? `<th>الإيرادات</th>` : ""}
-								<th>تكاليف الصيانة</th>
-								<th>تكاليف تبديل الزيت</th>
-								${is_admin ? `<th>صافي الربح</th>` : ""}
-								${is_admin ? `<th>التقرير</th>` : ""}
-							</tr>
-						</thead>
-						<tbody>
-							${profitability.map((car) => {
-								const profit_color = car.net_profit > 0 ? "green" : car.net_profit < 0 ? "red" : "grey";
-								return `
+				<div class="collapsible-body" style="display: none; margin-top: 12px;">
+					<div class="table-responsive">
+						<table class="table table-bordered table-hover" style="margin-bottom: 0;">
+							<thead style="background: var(--subtle-accent);">
 								<tr>
-									<td><a href="/app/car/${car.name}"><strong>${car.name}</strong></a></td>
-									<td>${car.brand}</td>
-									<td>${car.model}</td>
-									<td>${car.status}</td>
-									${is_admin ? `<td style="color: #2e7d32;">${format_currency(car.total_revenue)}</td>` : ""}
-									<td style="color: #c62828;">${format_currency(car.total_maintenance)}</td>
-									<td style="color: #e65100;">${format_currency(car.total_oil_change || 0)}</td>
-									${is_admin ? `<td><strong style="color: ${profit_color === "green" ? "#2e7d32" : profit_color === "red" ? "#c62828" : "#616161"};">${format_currency(car.net_profit)}</strong></td>` : ""}
-									${is_admin ? `<td><a href="/app/query-report/Owner Car Report?car=${car.name}" class="btn btn-xs btn-primary-light" style="white-space: nowrap;"><i class="fa fa-file-alt" style="margin-left: 4px;"></i>عرض التقرير</a></td>` : ""}
-								</tr>`;
-							}).join("")}
-						</tbody>
-					</table>
+									<th>السيارة</th>
+									<th>النوع</th>
+									<th>الموديل</th>
+									<th>الحالة</th>
+									${is_admin ? `<th>الإيرادات</th>` : ""}
+									<th>تكاليف الصيانة</th>
+									<th>تكاليف تبديل الزيت</th>
+									${is_admin ? `<th>صافي الربح</th>` : ""}
+									${is_admin ? `<th>التقرير</th>` : ""}
+								</tr>
+							</thead>
+							<tbody>
+								${profitability.map((car) => {
+									const profit_color = car.net_profit > 0 ? "green" : car.net_profit < 0 ? "red" : "grey";
+									return `
+									<tr>
+										<td><a href="/app/car/${car.name}"><strong>${car.name}</strong></a></td>
+										<td>${car.brand}</td>
+										<td>${car.model}</td>
+										<td>${car.status}</td>
+										${is_admin ? `<td style="color: #2e7d32;">${format_currency(car.total_revenue)}</td>` : ""}
+										<td style="color: #c62828;">${format_currency(car.total_maintenance)}</td>
+										<td style="color: #e65100;">${format_currency(car.total_oil_change || 0)}</td>
+										${is_admin ? `<td><strong style="color: ${profit_color === "green" ? "#2e7d32" : profit_color === "red" ? "#c62828" : "#616161"};">${format_currency(car.net_profit)}</strong></td>` : ""}
+										${is_admin ? `<td><a href="/app/query-report/Owner Car Report?car=${car.name}" class="btn btn-xs btn-primary-light" style="white-space: nowrap;"><i class="fa fa-file-alt" style="margin-left: 4px;"></i>عرض التقرير</a></td>` : ""}
+									</tr>`;
+								}).join("")}
+							</tbody>
+						</table>
+					</div>
 				</div>
 			</div>
 
 			<!-- 3. جدول الفروع -->
 			<div class="frappe-card" style="margin-bottom: 20px; padding: 15px;">
-				<h5 style="margin-bottom: 15px; font-weight: 600;">
-					<i class="fa fa-building" style="margin-left: 5px;"></i>
-					ملخص الفروع
-				</h5>
-				<div class="table-responsive">
-					<table class="table table-bordered table-hover" style="margin-bottom: 0;">
-						<thead style="background: var(--subtle-accent);">
-							<tr>
-								<th>الفرع</th>
-								<th>المدينة</th>
-								<th>إجمالي</th>
-								<th>متوفرة</th>
-								<th>محجوزة</th>
-								<th>مؤجرة</th>
-								<th>صيانة</th>
-								<th>جاهز</th>
-								<th>مجمدة</th>
-							</tr>
-						</thead>
-						<tbody>
-							${data.branches.map((b) => `
+				${collapsible_header("fa-building", "var(--text-color)", "ملخص الفروع")}
+				<div class="collapsible-body" style="display: none; margin-top: 12px;">
+					<div class="table-responsive">
+						<table class="table table-bordered table-hover" style="margin-bottom: 0;">
+							<thead style="background: var(--subtle-accent);">
 								<tr>
-									<td><strong>${b.branch_name}</strong></td>
-									<td>${b.city || "-"}</td>
-									<td>${b.car_count}</td>
-									<td><span class="indicator-pill green">${b.available}</span></td>
-									<td><span class="indicator-pill yellow">${b.reserved}</span></td>
-									<td><span class="indicator-pill orange">${b.rented}</span></td>
-									<td><span class="indicator-pill red">${b.in_maintenance}</span></td>
-									<td><span class="indicator-pill purple">${b.ready}</span></td>
-									<td><span class="indicator-pill grey">${b.frozen}</span></td>
+									<th>الفرع</th>
+									<th>المدينة</th>
+									<th>إجمالي</th>
+									<th>متوفرة</th>
+									<th>محجوزة</th>
+									<th>مؤجرة</th>
+									<th>صيانة</th>
+									<th>جاهز</th>
+									<th>مجمدة</th>
 								</tr>
-							`).join("")}
-						</tbody>
-					</table>
+							</thead>
+							<tbody>
+								${data.branches.map((b) => `
+									<tr>
+										<td><strong>${b.branch_name}</strong></td>
+										<td>${b.city || "-"}</td>
+										<td>${b.car_count}</td>
+										<td><span class="indicator-pill green">${b.available}</span></td>
+										<td><span class="indicator-pill yellow">${b.reserved}</span></td>
+										<td><span class="indicator-pill orange">${b.rented}</span></td>
+										<td><span class="indicator-pill red">${b.in_maintenance}</span></td>
+										<td><span class="indicator-pill purple">${b.ready}</span></td>
+										<td><span class="indicator-pill grey">${b.frozen}</span></td>
+									</tr>
+								`).join("")}
+							</tbody>
+						</table>
+					</div>
 				</div>
 			</div>
 
 			<!-- 4. جدول الأساطيل -->
 			<div class="frappe-card" style="margin-bottom: 20px; padding: 15px;">
-				<h5 style="margin-bottom: 15px; font-weight: 600;">
-					<i class="fa fa-layer-group" style="margin-left: 5px;"></i>
-					الأساطيل
-				</h5>
-				<div class="table-responsive">
-					<table class="table table-bordered table-hover" style="margin-bottom: 0;">
-						<thead style="background: var(--subtle-accent);">
-							<tr>
-								<th>الأسطول</th>
-								<th>الفرع</th>
-								<th>إجمالي السيارات</th>
-								<th>متوفرة</th>
-								<th>مؤجرة</th>
-							</tr>
-						</thead>
-						<tbody>
-							${data.fleets.map((f) => `
+				${collapsible_header("fa-layer-group", "var(--text-color)", "الأساطيل")}
+				<div class="collapsible-body" style="display: none; margin-top: 12px;">
+					<div class="table-responsive">
+						<table class="table table-bordered table-hover" style="margin-bottom: 0;">
+							<thead style="background: var(--subtle-accent);">
 								<tr>
-									<td><strong>${f.fleet_name}</strong></td>
-									<td>${f.branch}</td>
-									<td>${f.car_count}</td>
-									<td><span class="indicator-pill green">${f.available}</span></td>
-									<td><span class="indicator-pill orange">${f.rented}</span></td>
+									<th>الأسطول</th>
+									<th>الفرع</th>
+									<th>إجمالي السيارات</th>
+									<th>متوفرة</th>
+									<th>مؤجرة</th>
 								</tr>
-							`).join("")}
-						</tbody>
-					</table>
+							</thead>
+							<tbody>
+								${data.fleets.map((f) => `
+									<tr>
+										<td><strong>${f.fleet_name}</strong></td>
+										<td>${f.branch}</td>
+										<td>${f.car_count}</td>
+										<td><span class="indicator-pill green">${f.available}</span></td>
+										<td><span class="indicator-pill orange">${f.rented}</span></td>
+									</tr>
+								`).join("")}
+							</tbody>
+						</table>
+					</div>
 				</div>
 			</div>
 
 			<!-- 5. البطاقات - قابلة للطي -->
 			<div class="frappe-card" style="margin-bottom: 20px; padding: 15px;">
-				<div style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;" onclick="$(this).next().toggle(); $(this).find('.toggle-icon').toggleClass('fa-chevron-down fa-chevron-up');">
-					<h5 style="margin: 0; font-weight: 600;">
-						<i class="fa fa-car" style="margin-left: 5px; color: #1565c0;"></i>
-						الإجمالي العام
-					</h5>
-					<i class="fa fa-chevron-down toggle-icon" style="color: var(--text-muted);"></i>
-				</div>
-				<div style="display: none; margin-top: 12px;">
+				${collapsible_header("fa-car", "#1565c0", "الإجمالي العام")}
+				<div class="collapsible-body" style="display: none; margin-top: 12px;">
 					<div class="row" style="display: flex; flex-wrap: wrap;">
 						${stat_card("إجمالي السيارات", data.total_cars, "blue", "fa-car")}
 						${stat_card("متوفرة", available, "green", "fa-check-circle")}
@@ -260,15 +256,8 @@ function render_dashboard(page, container, data, profitability, filter_month, fi
 			<!-- 6. بطاقات الفروع - قابلة للطي -->
 			${data.branches.map((b) => `
 			<div class="frappe-card" style="margin-bottom: 20px; padding: 15px;">
-				<div style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;" onclick="$(this).next().toggle(); $(this).find('.toggle-icon').toggleClass('fa-chevron-down fa-chevron-up');">
-					<h5 style="margin: 0; font-weight: 600;">
-						<i class="fa fa-building" style="margin-left: 5px; color: #2e7d32;"></i>
-						${b.branch_name}
-						<span style="font-size: 12px; color: var(--text-muted); margin-right: 8px;">${b.city || ""}</span>
-					</h5>
-					<i class="fa fa-chevron-down toggle-icon" style="color: var(--text-muted);"></i>
-				</div>
-				<div style="display: none; margin-top: 12px;">
+				${collapsible_header("fa-building", "#2e7d32", `${b.branch_name} <span style="font-size: 12px; color: var(--text-muted); font-weight: 400; margin-right: 8px;">${b.city || ""}</span>`)}
+				<div class="collapsible-body" style="display: none; margin-top: 12px;">
 					<div class="row" style="display: flex; flex-wrap: wrap;">
 						${stat_card("إجمالي", b.car_count, "blue", "fa-car")}
 						${stat_card("متوفرة", b.available, "green", "fa-check-circle")}
@@ -285,6 +274,11 @@ function render_dashboard(page, container, data, profitability, filter_month, fi
 		</div>
 	`);
 
+	container.find(".collapsible-toggle").on("click", function () {
+		$(this).find(".toggle-icon").toggleClass("fa-chevron-down fa-chevron-up");
+		$(this).closest(".frappe-card").find(".collapsible-body").toggle();
+	});
+
 	container.find("#profit-month, #profit-year").on("change", function () {
 		page.profit_month = container.find("#profit-month").val();
 		page.profit_year = container.find("#profit-year").val();
@@ -300,6 +294,18 @@ function render_dashboard(page, container, data, profitability, filter_month, fi
 		}
 		load_dashboard(page);
 	});
+}
+
+function collapsible_header(icon, color, title) {
+	return `
+		<div style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;" class="collapsible-toggle">
+			<h5 style="margin: 0; font-weight: 600;">
+				<i class="fa ${icon}" style="margin-left: 5px; color: ${color};"></i>
+				${title}
+			</h5>
+			<i class="fa fa-chevron-down toggle-icon" style="color: var(--text-muted);"></i>
+		</div>
+	`;
 }
 
 function stat_card(label, value, color, icon) {
