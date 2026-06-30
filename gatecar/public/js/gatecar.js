@@ -1,6 +1,6 @@
 // Gate Cars Workspace Enhancements
 
-$(document).on("page-change", function () {
+frappe.router.on("change", function () {
 	if (frappe.get_route_str() === "Workspaces/Gate Cars") {
 		setTimeout(enhance_workspace, 300);
 	}

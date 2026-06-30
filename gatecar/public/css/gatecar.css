@@ -1,6 +1,6 @@
 /* ===== Gate Cars Workspace Styles ===== */
 
-/* --- Workspace Background (خلفية الشعار المموهة) --- */
+/* --- Workspace Background (خلفية المرآب) --- */
 .editor-js-container {
 	position: relative;
 	border-radius: 14px;
@@ -11,12 +11,11 @@
 	content: "";
 	position: absolute;
 	inset: 0;
-	background-image: url("/assets/gatecar/logo.png");
+	background-image: url("/assets/gatecar/images/parking-bg.png");
 	background-repeat: no-repeat;
 	background-position: center;
-	background-size: 55%;
-	filter: blur(22px) brightness(0.55);
-	transform: scale(1.2);
+	background-size: cover;
+	transform: scale(1.05);
 	z-index: 0;
 	pointer-events: none;
 }
@@ -25,15 +24,17 @@
 	content: "";
 	position: absolute;
 	inset: 0;
-	background: linear-gradient(135deg, rgba(10, 20, 15, 0.78), rgba(10, 20, 15, 0.6));
+	background: linear-gradient(135deg, rgba(10, 20, 15, 0.75), rgba(10, 20, 15, 0.55));
 	z-index: 0;
 	pointer-events: none;
 }
 
 .editor-js-container #editorjs,
-.editor-js-container .codex-editor {
+.editor-js-container .codex-editor,
+.editor-js-container .codex-editor__redactor {
 	position: relative;
 	z-index: 1;
+	background: transparent !important;
 }
 
 /* --- Card Widgets (البطاقات) --- */
@@ -92,15 +93,36 @@ body .widget.shortcut-widget-box:hover {
 }
 
 /* --- Sidebar (القائمة الجانبية) --- */
-body .desk-sidebar .desk-sidebar-item {
+body .body-sidebar {
+	background: var(--card-bg) !important;
+}
+
+body .body-sidebar .standard-sidebar-item {
 	border-radius: 8px !important;
 	transition: all 0.2s ease !important;
 }
 
-body .desk-sidebar .desk-sidebar-item.selected {
-	background-color: rgba(76, 175, 80, 0.1) !important;
+body .body-sidebar .standard-sidebar-item.active-sidebar {
+	background-color: rgba(76, 175, 80, 0.14) !important;
+	box-shadow: none !important;
 }
 
-body .desk-sidebar .desk-sidebar-item:hover {
-	background-color: rgba(76, 175, 80, 0.05) !important;
+body .body-sidebar .standard-sidebar-item.active-sidebar .sidebar-item-label,
+body .body-sidebar .standard-sidebar-item.active-sidebar .sidebar-item-icon svg {
+	color: #2e7d32 !important;
+	fill: #2e7d32 !important;
+}
+
+body .body-sidebar .standard-sidebar-item:not(.active-sidebar):hover {
+	background-color: rgba(76, 175, 80, 0.07) !important;
+	border-radius: 8px !important;
+}
+
+body .body-sidebar .sidebar-header {
+	border-radius: 10px !important;
+	transition: all 0.2s ease !important;
+}
+
+body .body-sidebar .sidebar-header:hover {
+	background-color: rgba(76, 175, 80, 0.07) !important;
 }
