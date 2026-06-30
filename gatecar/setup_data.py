@@ -7,6 +7,7 @@ def after_install():
 	create_client_scripts()
 	create_print_formats()
 	set_branding()
+	create_role_workspaces()
 	frappe.db.commit()
 
 
@@ -14,6 +15,214 @@ def set_branding():
 	logo = "/assets/gatecar/logo.png"
 	frappe.db.set_value("Website Settings", "Website Settings", "favicon", logo)
 	frappe.db.set_value("Navbar Settings", "Navbar Settings", "app_logo", logo)
+
+
+BANNER_HTML = (
+	'<div style="background: linear-gradient(135deg, #1b5e20, #4caf50); border-radius: 12px; '
+	'padding: 20px 25px; display: flex; align-items: center; justify-content: space-between;">'
+	'<div><h3 style="margin: 0; color: #fff; font-weight: 700; font-size: 20px;">Gate Cars</h3>'
+	'<p style="margin: 5px 0 0; color: rgba(255,255,255,0.85); font-size: 13px;">'
+	"نظام إدارة تأجير السيارات</p></div>"
+	'<img src="/assets/gatecar/logo.png" alt="Gate Cars" style="height: 50px; border-radius: 8px; '
+	'background: rgba(255,255,255,0.15); padding: 5px;"></div>'
+)
+
+ROLE_WORKSPACES = {
+	"المبيعات": {
+		"icon": "file",
+		"role": "موظف مبيعات",
+		"shortcuts": [
+			("حجز جديد", "Car Booking", "DocType", "file"),
+			("استلام سيارة", "Car Receipt", "DocType", "check"),
+			("عميل جديد", "Customer Car", "DocType", "users"),
+			("السيارات", "Car", "DocType", "tool"),
+		],
+		"cards": [
+			("الحجوزات", [("Car Booking", "Car Booking", "DocType")]),
+			("استلام السيارات", [("Car Receipt", "Car Receipt", "DocType")]),
+			(
+				"العملاء والسيارات",
+				[
+					("Customer Car", "Customer Car", "DocType"),
+					("Car", "Car", "DocType"),
+					("Car Category", "Car Category", "DocType"),
+				],
+			),
+		],
+		"sidebar_items": [
+			("المبيعات", "المبيعات", "Workspace", "home"),
+			("حجز جديد", "Car Booking", "DocType", "file"),
+			("استلام سيارة", "Car Receipt", "DocType", "check"),
+			("العملاء", "Customer Car", "DocType", "users"),
+			("السيارات", "Car", "DocType", "tool"),
+			("تصنيف السيارات", "Car Category", "DocType", None),
+			("القيود المالية", "Revenue", "DocType", "accounting"),
+		],
+	},
+	"الأسطول": {
+		"icon": "tool",
+		"role": "مشرف أسطول",
+		"shortcuts": [
+			("السيارات", "Car", "DocType", "tool"),
+			("صيانة جديدة", "Car Maintenance", "DocType", "wrench"),
+			("الأساطيل", "Vehicle Fleet", "DocType", None),
+		],
+		"cards": [
+			("السيارات", [("Car", "Car", "DocType"), ("Car Category", "Car Category", "DocType")]),
+			("الصيانة", [("Car Maintenance", "Car Maintenance", "DocType")]),
+			(
+				"الأساطيل والفروع",
+				[("Vehicle Fleet", "Vehicle Fleet", "DocType"), ("Car Branch", "Car Branch", "DocType")],
+			),
+		],
+		"sidebar_items": [
+			("الأسطول", "الأسطول", "Workspace", "home"),
+			("السيارات", "Car", "DocType", "tool"),
+			("تصنيف السيارات", "Car Category", "DocType", None),
+			("الصيانة", "Car Maintenance", "DocType", "wrench"),
+			("تبديل الزيت", "Oil Change", "DocType", None),
+			("الأساطيل", "Vehicle Fleet", "DocType", None),
+			("الفروع", "Car Branch", "DocType", None),
+		],
+	},
+	"إدارة الفرع": {
+		"icon": "building",
+		"role": "مدير فرع",
+		"shortcuts": [
+			("لوحة تحكم الفرع", "branch-dashboard", "Page", "dashboard"),
+			("الحجوزات", "Car Booking", "DocType", "file"),
+			("الفروع", "Car Branch", "DocType", None),
+			("الأساطيل", "Vehicle Fleet", "DocType", None),
+		],
+		"cards": [
+			(
+				"العمليات",
+				[
+					("Car Booking", "Car Booking", "DocType"),
+					("Car Receipt", "Car Receipt", "DocType"),
+					("Customer Car", "Customer Car", "DocType"),
+				],
+			),
+			(
+				"السيارات",
+				[
+					("Car", "Car", "DocType"),
+					("Car Maintenance", "Car Maintenance", "DocType"),
+					("Car Category", "Car Category", "DocType"),
+				],
+			),
+			(
+				"الهيكل التنظيمي",
+				[
+					("Car Branch", "Car Branch", "DocType"),
+					("Vehicle Fleet", "Vehicle Fleet", "DocType"),
+					("cities", "cities", "DocType"),
+					("Employee", "Employee", "DocType"),
+				],
+			),
+		],
+		"sidebar_items": [
+			("إدارة الفرع", "إدارة الفرع", "Workspace", "home"),
+			("لوحة تحكم الفرع", "branch-dashboard", "Page", "dashboard"),
+			("الحجوزات", "Car Booking", "DocType", "file"),
+			("استلام السيارات", "Car Receipt", "DocType", "check"),
+			("العملاء", "Customer Car", "DocType", "users"),
+			("السيارات", "Car", "DocType", "tool"),
+			("الصيانة", "Car Maintenance", "DocType", "wrench"),
+			("تصنيف السيارات", "Car Category", "DocType", None),
+			("الفروع", "Car Branch", "DocType", None),
+			("الأساطيل", "Vehicle Fleet", "DocType", None),
+			("المدن", "cities", "DocType", None),
+			("الموظفين", "Employee", "DocType", "users"),
+		],
+	},
+}
+
+
+def create_role_workspaces():
+	import json
+
+	for title, config in ROLE_WORKSPACES.items():
+		if not frappe.db.exists("Workspace", title):
+			content = [{"id": "banner", "type": "header", "data": {"text": BANNER_HTML, "col": 12}}]
+			idx = 1
+			for s_label, s_link, s_type, _icon in config["shortcuts"]:
+				content.append(
+					{"id": f"sc{idx}", "type": "shortcut", "data": {"shortcut_name": s_label, "col": 3}}
+				)
+				idx += 1
+			content.append({"id": f"sp{idx}", "type": "spacer", "data": {"col": 12}})
+			idx += 1
+			for card_label, _links in config["cards"]:
+				content.append(
+					{"id": f"c{idx}", "type": "card", "data": {"card_name": card_label, "col": 4}}
+				)
+				idx += 1
+
+			ws = frappe.new_doc("Workspace")
+			ws.title = title
+			ws.label = title
+			ws.public = 1
+			ws.icon = config["icon"]
+			ws.content = json.dumps(content, ensure_ascii=False)
+
+			for s_label, s_link, s_type, s_icon in config["shortcuts"]:
+				ws.append(
+					"shortcuts",
+					{
+						"label": s_label,
+						"link_to": s_link,
+						"type": s_type,
+						"color": "Green",
+						"icon": s_icon,
+					},
+				)
+
+			for card_label, links in config["cards"]:
+				ws.append(
+					"links",
+					{"label": card_label, "type": "Card Break", "link_type": "DocType"},
+				)
+				for link_label, link_to, link_type in links:
+					ws.append(
+						"links",
+						{
+							"label": link_label,
+							"link_to": link_to,
+							"link_type": link_type,
+							"type": "Link",
+						},
+					)
+
+			ws.insert(ignore_permissions=True)
+			print(f"  Created Workspace: {title}")
+
+		if not frappe.db.exists("Workspace Sidebar", title):
+			sidebar = frappe.new_doc("Workspace Sidebar")
+			sidebar.title = title
+			sidebar.header_icon = config["icon"]
+			for label, link_to, link_type, icon in config["sidebar_items"]:
+				sidebar.append(
+					"items",
+					{"label": label, "link_to": link_to, "link_type": link_type, "type": "Link", "icon": icon},
+				)
+			sidebar.insert(ignore_permissions=True)
+			frappe.db.set_value("Workspace Sidebar", sidebar.name, "for_user", None)
+			print(f"  Created Workspace Sidebar: {title}")
+
+		if not frappe.db.exists("Desktop Icon", {"label": title}):
+			icon = frappe.new_doc("Desktop Icon")
+			icon.label = title
+			icon.link_type = "Workspace Sidebar"
+			icon.link_to = title
+			icon.standard = 1
+			icon.icon_type = "Link"
+			icon.logo_url = "/assets/gatecar/logo.png"
+			icon.insert(ignore_permissions=True)
+			print(f"  Created Desktop Icon: {title}")
+
+	frappe.db.sql("DELETE FROM `tabDesktop Layout`")
+	frappe.cache.delete_key("bootinfo")
 
 
 def create_server_scripts():
