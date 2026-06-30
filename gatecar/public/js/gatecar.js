@@ -4,7 +4,14 @@ $(document).on("page-change", function () {
 	if (frappe.get_route_str() === "Workspaces/Gate Cars") {
 		setTimeout(enhance_workspace, 300);
 	}
+	if (frappe.get_route()[0] === "Workspaces") {
+		setTimeout(hide_workspace_breadcrumb, 100);
+	}
 });
+
+function hide_workspace_breadcrumb() {
+	$(".navbar-breadcrumbs").hide();
+}
 
 function enhance_workspace() {
 	const cards = document.querySelectorAll(
