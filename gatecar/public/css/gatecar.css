@@ -1,12 +1,56 @@
 /* ===== Gate Cars Workspace Styles ===== */
 
+/* --- Workspace Background (خلفية الشعار المموهة) --- */
+.editor-js-container {
+	position: relative;
+	border-radius: 14px;
+	overflow: hidden;
+}
+
+.editor-js-container::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background-image: url("/assets/gatecar/logo.png");
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 55%;
+	filter: blur(22px) brightness(0.55);
+	transform: scale(1.2);
+	z-index: 0;
+	pointer-events: none;
+}
+
+.editor-js-container::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(135deg, rgba(10, 20, 15, 0.78), rgba(10, 20, 15, 0.6));
+	z-index: 0;
+	pointer-events: none;
+}
+
+.editor-js-container #editorjs,
+.editor-js-container .codex-editor {
+	position: relative;
+	z-index: 1;
+}
+
 /* --- Card Widgets (البطاقات) --- */
 body .widget.links-widget-box {
+	background-color: var(--card-bg) !important;
 	border: 1px solid var(--border-color) !important;
 	border-radius: 14px !important;
 	transition: all 0.3s ease !important;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25) !important;
 	overflow: hidden !important;
+}
+
+/* Section labels (العمليات اليومية ...) sit on the dark backdrop */
+.editor-js-container .widget-group .group-title,
+.editor-js-container h4.widget-group-title,
+.editor-js-container .codex-editor [contenteditable] h4 {
+	color: #fff !important;
 }
 
 body .widget.links-widget-box:hover {
