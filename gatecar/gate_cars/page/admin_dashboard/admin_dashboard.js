@@ -98,14 +98,11 @@ function render_dashboard(page, container, data, profitability, filter_month, fi
 
 			<!-- 2. جدول أرباح السيارات -->
 			<div class="frappe-card" style="margin-bottom: 20px; padding: 15px;">
-				<div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
-					<div style="display: flex; align-items: center; gap: 8px; cursor: pointer; flex: 1;" class="collapsible-toggle">
-						<h5 style="margin: 0; font-weight: 600;">
-							<i class="fa fa-chart-line" style="margin-left: 5px;"></i>
-							أرباح السيارات ${filter_month ? `(${filter_month}/${filter_year})` : "(الكل)"}
-						</h5>
-						<i class="fa fa-chevron-down toggle-icon" style="color: var(--text-muted);"></i>
-					</div>
+				<div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; cursor: pointer;" class="collapsible-toggle">
+					<h5 style="margin: 0; font-weight: 600;">
+						<i class="fa fa-chart-line" style="margin-left: 5px;"></i>
+						أرباح السيارات ${filter_month ? `(${filter_month}/${filter_year})` : "(الكل)"}
+					</h5>
 					<div style="display: flex; gap: 8px; align-items: center;">
 						<select id="profit-month" class="form-control input-sm" style="width: auto;">
 							<option value="">كل الشهور</option>
@@ -127,6 +124,7 @@ function render_dashboard(page, container, data, profitability, filter_month, fi
 							<option value="2026" ${filter_year == "2026" ? "selected" : ""}>2026</option>
 							<option value="2027" ${filter_year == "2027" ? "selected" : ""}>2027</option>
 						</select>
+						<i class="fa fa-chevron-down toggle-icon" style="color: var(--text-muted);"></i>
 					</div>
 				</div>
 				<div class="collapsible-body" style="display: none; margin-top: 12px;">
@@ -277,6 +275,10 @@ function render_dashboard(page, container, data, profitability, filter_month, fi
 	container.find(".collapsible-toggle").on("click", function () {
 		$(this).find(".toggle-icon").toggleClass("fa-chevron-down fa-chevron-up");
 		$(this).closest(".frappe-card").find(".collapsible-body").toggle();
+	});
+
+	container.find("#profit-month, #profit-year").on("click", function (e) {
+		e.stopPropagation();
 	});
 
 	container.find("#profit-month, #profit-year").on("change", function () {
