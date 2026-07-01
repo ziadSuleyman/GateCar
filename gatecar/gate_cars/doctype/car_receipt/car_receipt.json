@@ -226,6 +226,16 @@
    "label": "ملاحظات"
   },
   {
+   "fieldname": "previous_payments_section",
+   "fieldtype": "Section Break",
+   "label": "الإيصالات السابقة"
+  },
+  {
+   "fieldname": "previous_payments_html",
+   "fieldtype": "HTML",
+   "label": "الإيصالات السابقة"
+  },
+  {
    "fieldname": "amended_from",
    "fieldtype": "Link",
    "label": "Amended From",
