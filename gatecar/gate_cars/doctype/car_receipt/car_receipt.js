@@ -28,7 +28,7 @@ function load_previous_payments(frm) {
 
 	frappe.db.get_list("Revenue", {
 		filters: { booking_reference: frm.doc.booking },
-		fields: ["name", "date", "amount", "payment_method", "receiver", "notes"],
+		fields: ["name", "date", "amount", "payment_method", "receiver", "notes", "payment_type"],
 		order_by: "date asc",
 	}).then(rows => {
 		if (!rows || rows.length === 0) {
@@ -48,17 +48,27 @@ function load_previous_payments(frm) {
 			const emp_map = {};
 			(emps || []).forEach(e => { emp_map[e.name] = e.employee_name; });
 
-		const total = rows.reduce((s, r) => s + (r.amount || 0), 0);
-		const rows_html = rows.map((r, i) => `
-			<tr>
+		const total = rows.reduce((s, r) => {
+			return s + ((r.payment_type === "دفع" ? -1 : 1) * (r.amount || 0));
+		}, 0);
+		const rows_html = rows.map((r, i) => {
+			const is_payment = r.payment_type === "دفع";
+			const color = is_payment ? "#c62828" : "#2e7d32";
+			const sign = is_payment ? "- " : "";
+			const type_badge = is_payment
+				? `<span style="background:#fbe9e7;color:#c62828;padding:2px 6px;border-radius:4px;font-size:11px;font-weight:600;">دفع</span>`
+				: `<span style="background:#e8f5e9;color:#2e7d32;padding:2px 6px;border-radius:4px;font-size:11px;font-weight:600;">قبض</span>`;
+			return `
+			<tr style="${is_payment ? 'background:#fff8f8;' : ''}">
 				<td>${i + 1}</td>
-				<td><a href="/app/revenue/${r.name}">${r.name}</a></td>
+				<td><a href="/app/revenue/${r.name}">${r.name}</a> ${type_badge}</td>
 				<td>${frappe.datetime.str_to_user(r.date)}</td>
-				<td style="font-weight:600; color:#2e7d32;">${format_currency(r.amount)}</td>
+				<td style="font-weight:700; color:${color};">${sign}${format_currency(r.amount)}</td>
 				<td>${r.payment_method || "-"}</td>
 				<td>${emp_map[r.receiver] || r.receiver || "-"}</td>
 				<td>${r.notes || "-"}</td>
-			</tr>`).join("");
+			</tr>`;
+		}).join("");
 
 		wrapper.html(`
 			<div class="table-responsive" style="margin-top: 6px;">
