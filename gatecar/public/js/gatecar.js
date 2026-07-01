@@ -5,6 +5,11 @@ function sync_workspace_bg() {
 	if (route[0] === "Workspaces") {
 		document.body.classList.add("gatecar-workspace");
 		setTimeout(hide_workspace_breadcrumb, 150);
+		// Force sidebar expanded to show all items
+		setTimeout(() => {
+			const sc = document.querySelector(".body-sidebar-container");
+			if (sc && !sc.classList.contains("expanded")) sc.classList.add("expanded");
+		}, 200);
 		if (frappe.get_route_str() === "Workspaces/Gate Cars") {
 			setTimeout(enhance_workspace, 350);
 		}

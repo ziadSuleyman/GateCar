@@ -1,69 +1,58 @@
 /* ===== Gate Cars Workspace Styles ===== */
 
-/* --- Workspace Full Background (صورة كاملة على body) --- */
-
-body.gatecar-workspace {
-	background-image: url("/assets/gatecar/images/parking-bg.png") !important;
-	background-size: cover !important;
-	background-position: center 15% !important;
-	background-attachment: fixed !important;
-}
-
-/* جميع الحاويات المتوسطة شفافة لإظهار خلفية body */
-body.gatecar-workspace .main-section,
-body.gatecar-workspace #body,
-body.gatecar-workspace .layout-main,
-body.gatecar-workspace .layout-main-section-wrapper,
-body.gatecar-workspace .layout-main-section {
-	background: transparent !important;
-}
-
-/* المحتوى الرئيسي: تعتيم خفيف */
+/* --- Workspace Background: blurred logo behind content only --- */
 body.gatecar-workspace .editor-js-container {
 	position: relative;
 	border-radius: 14px;
 	overflow: hidden;
-	background: rgba(8, 16, 10, 0.52) !important;
 }
 
-/* السايد بار: تعتيم أقوى لوضوح النصوص */
-body.gatecar-workspace .body-sidebar {
-	background: rgba(5, 12, 8, 0.80) !important;
+body.gatecar-workspace .editor-js-container::before {
+	content: "";
+	position: absolute;
+	top: 0; right: 0; bottom: 0; left: 0;
+	background-image: url("/assets/gatecar/logo.png");
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 60%;
+	filter: blur(28px) brightness(0.45);
+	transform: scale(1.2);
+	z-index: 0;
+	pointer-events: none;
 }
 
-/* نصوص السايد بار بيضاء */
-body.gatecar-workspace .body-sidebar .sidebar-item-label {
-	color: rgba(255, 255, 255, 0.88) !important;
+body.gatecar-workspace .editor-js-container::after {
+	content: "";
+	position: absolute;
+	top: 0; right: 0; bottom: 0; left: 0;
+	background: rgba(6, 14, 8, 0.60);
+	z-index: 0;
+	pointer-events: none;
 }
 
-body.gatecar-workspace .body-sidebar .sidebar-item-icon svg {
-	color: rgba(255, 255, 255, 0.60) !important;
-	fill: rgba(255, 255, 255, 0.60) !important;
-}
-
-body.gatecar-workspace .body-sidebar .standard-sidebar-item.active-sidebar {
-	background-color: rgba(76, 175, 80, 0.30) !important;
-	box-shadow: none !important;
-}
-
-body.gatecar-workspace .body-sidebar .standard-sidebar-item.active-sidebar .sidebar-item-label {
-	color: #a5d6a7 !important;
-}
-
-body.gatecar-workspace .body-sidebar .standard-sidebar-item:not(.active-sidebar):hover {
-	background-color: rgba(255, 255, 255, 0.10) !important;
-}
-
-body.gatecar-workspace .body-sidebar .sidebar-header .header-title,
-body.gatecar-workspace .body-sidebar .sidebar-header .header-subtitle {
-	color: rgba(255, 255, 255, 0.90) !important;
-}
-
-/* البطاقات تبقى بيضاء وواضحة */
 body.gatecar-workspace .editor-js-container #editorjs,
 body.gatecar-workspace .editor-js-container .codex-editor,
 body.gatecar-workspace .editor-js-container .codex-editor__redactor {
+	position: relative;
+	z-index: 1;
 	background: transparent !important;
+}
+
+/* --- Sidebar: force expanded + transparent on workspace --- */
+body.gatecar-workspace .body-sidebar-container {
+	/* force expanded state */
+}
+
+body.gatecar-workspace .body-sidebar {
+	width: var(--sidebar-width) !important;
+	background: var(--surface-menu-bar) !important;
+}
+
+body.gatecar-workspace .body-sidebar .sidebar-item-label,
+body.gatecar-workspace .body-sidebar .header-title {
+	display: block !important;
+	opacity: 1 !important;
+	width: auto !important;
 }
 
 /* --- Card Widgets (البطاقات) --- */
@@ -148,70 +137,3 @@ body .body-sidebar .sidebar-header {
 	transition: all 0.2s ease !important;
 }
 
-/* --- Sidebar Workspace Background (خلفية المرآب على السايد بار) --- */
-body.gatecar-workspace .body-sidebar {
-	background: transparent !important;
-	position: relative;
-}
-
-body.gatecar-workspace .body-sidebar::before {
-	content: "";
-	position: absolute;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
-	background-image: url("/assets/gatecar/images/parking-bg.png");
-	background-size: cover;
-	background-position: center;
-	z-index: 0;
-	pointer-events: none;
-}
-
-body.gatecar-workspace .body-sidebar::after {
-	content: "";
-	position: absolute;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
-	background: rgba(8, 18, 12, 0.84);
-	z-index: 0;
-	pointer-events: none;
-}
-
-body.gatecar-workspace .body-sidebar > * {
-	position: relative;
-	z-index: 1;
-}
-
-body.gatecar-workspace .body-sidebar .sidebar-item-label {
-	color: rgba(255, 255, 255, 0.88) !important;
-}
-
-body.gatecar-workspace .body-sidebar .sidebar-item-icon svg {
-	color: rgba(255, 255, 255, 0.65) !important;
-	fill: rgba(255, 255, 255, 0.65) !important;
-}
-
-body.gatecar-workspace .body-sidebar .standard-sidebar-item.active-sidebar {
-	background-color: rgba(76, 175, 80, 0.28) !important;
-}
-
-body.gatecar-workspace .body-sidebar .standard-sidebar-item.active-sidebar .sidebar-item-label {
-	color: #a5d6a7 !important;
-}
-
-body.gatecar-workspace .body-sidebar .standard-sidebar-item:not(.active-sidebar):hover {
-	background-color: rgba(255, 255, 255, 0.08) !important;
-}
-
-body.gatecar-workspace .body-sidebar .sidebar-header .header-title,
-body.gatecar-workspace .body-sidebar .sidebar-header .header-subtitle {
-	color: rgba(255, 255, 255, 0.9) !important;
-}
-
-body.gatecar-workspace .body-sidebar .sidebar-toggle-btn {
-	background: rgba(30, 50, 35, 0.85) !important;
-	border-color: rgba(76, 175, 80, 0.4) !important;
-}
