@@ -25,7 +25,7 @@ frappe.ui.form.on("Car Booking", {
 				});
 			}, __("Create"));
 
-			frm.add_custom_button(__("دفعة"), () => {
+			frm.add_custom_button(__("إيصال قبض"), () => {
 				const today = frappe.datetime.get_today();
 				const defaults = {
 					booking_reference: frm.doc.name,
@@ -53,6 +53,13 @@ frappe.ui.form.on("Car Booking", {
 							frappe.new_doc("Revenue", defaults);
 						});
 					});
+			}, __("Create"));
+
+			frm.add_custom_button(__("إيصال دفع"), () => {
+				frappe.new_doc("Car Maintenance", {
+					car: frm.doc.car,
+					التاريخ: frappe.datetime.get_today(),
+				});
 			}, __("Create"));
 
 			frm.page.set_inner_btn_group_as_primary(__("Create"));
