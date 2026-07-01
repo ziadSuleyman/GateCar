@@ -1,15 +1,24 @@
 // Gate Cars Workspace Enhancements
 
-frappe.router.on("change", function () {
-	if (frappe.get_route_str() === "Workspaces/Gate Cars") {
-		setTimeout(enhance_workspace, 300);
-	}
-	if (frappe.get_route()[0] === "Workspaces") {
-		setTimeout(hide_workspace_breadcrumb, 100);
+function sync_workspace_bg() {
+	const route = frappe.get_route ? frappe.get_route() : [];
+	if (route[0] === "Workspaces") {
 		document.body.classList.add("gatecar-workspace");
+		setTimeout(hide_workspace_breadcrumb, 150);
+		if (frappe.get_route_str() === "Workspaces/Gate Cars") {
+			setTimeout(enhance_workspace, 350);
+		}
 	} else {
 		document.body.classList.remove("gatecar-workspace");
 	}
+}
+
+// SPA navigation
+frappe.router.on("change", sync_workspace_bg);
+
+// Initial hard-reload — wait for router to resolve first route
+$(document).ready(function () {
+	setTimeout(sync_workspace_bg, 600);
 });
 
 function hide_workspace_breadcrumb() {
