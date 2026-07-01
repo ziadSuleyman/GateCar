@@ -26,12 +26,33 @@ frappe.ui.form.on("Car Booking", {
 			}, __("Create"));
 
 			frm.add_custom_button(__("دفعة"), () => {
-				frappe.new_doc("Revenue", {
+				const today = frappe.datetime.get_today();
+				const defaults = {
 					booking_reference: frm.doc.name,
 					car: frm.doc.car,
 					customer_name: frm.doc.customer_name_fetched,
-					date: frappe.datetime.get_today(),
-				});
+					date: today,
+				};
+				frappe.db.get_value("Employee", { user_id: frappe.session.user }, "name")
+					.then(r => {
+						const employee = r.message && r.message.name;
+						if (employee) defaults.receiver = employee;
+						if (!employee) {
+							frappe.new_doc("Revenue", defaults);
+							return;
+						}
+						frappe.db.get_value("Shift Assignment", {
+							employee: employee,
+							status: "Active",
+							docstatus: 1,
+							start_date: ["<=", today],
+							end_date: [">=", today],
+						}, "shift_type").then(sr => {
+							const shift = sr.message && sr.message.shift_type;
+							if (shift) defaults.shift = shift;
+							frappe.new_doc("Revenue", defaults);
+						});
+					});
 			}, __("Create"));
 
 			frm.page.set_inner_btn_group_as_primary(__("Create"));
