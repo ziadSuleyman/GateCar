@@ -3,7 +3,7 @@
  "allow_bulk_edit": 1,
  "allow_rename": 1,
  "autoname": "field:customer_name",
- "creation": "2026-06-19 16:40:49.126055",
+ "creation": "2026-06-25 01:03:32.658038",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
@@ -12,47 +12,58 @@
   "international_phone",
   "emergency_number",
   "nationality",
-  "صورة_الهوية_او_جواز_السفر"
+  "column_break_svwe",
+  "\u0635\u0648\u0631\u0629_\u0627\u0644\u0647\u0648\u064a\u0629_\u0627\u0648_\u062c\u0648\u0627\u0632_\u0627\u0644\u0633\u0641\u0631",
+  "\u0635\u0648\u0631\u0629_\u0631\u062e\u0635\u0629_\u0627\u0644\u0642\u064a\u0627\u062f\u0629"
  ],
  "fields": [
   {
    "fieldname": "customer_name",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "الاسم الثلاثي للزبون",
+   "label": "\u0627\u0644\u0627\u0633\u0645 \u0627\u0644\u062b\u0644\u0627\u062b\u064a \u0644\u0644\u0632\u0628\u0648\u0646",
    "reqd": 1,
    "unique": 1
   },
   {
    "fieldname": "phone",
    "fieldtype": "Phone",
-   "label": "رقم الهاتف"
+   "label": "\u0631\u0642\u0645 \u0627\u0644\u0647\u0627\u062a\u0641"
   },
   {
    "fieldname": "international_phone",
    "fieldtype": "Phone",
-   "label": "رقم الهاتف الدولي"
+   "label": "\u0631\u0642\u0645 \u0627\u0644\u0647\u0627\u062a\u0641 \u0627\u0644\u062f\u0648\u0644\u064a"
   },
   {
    "fieldname": "emergency_number",
    "fieldtype": "Phone",
-   "label": "رقم الطوارئ"
+   "label": "\u0631\u0642\u0645 \u0627\u0644\u0637\u0648\u0627\u0631\u0626"
   },
   {
    "fieldname": "nationality",
    "fieldtype": "Data",
-   "label": "الجنسية "
+   "label": "\u0627\u0644\u062c\u0646\u0633\u064a\u0629 "
   },
   {
-   "fieldname": "صورة_الهوية_او_جواز_السفر",
+   "fieldname": "\u0635\u0648\u0631\u0629_\u0627\u0644\u0647\u0648\u064a\u0629_\u0627\u0648_\u062c\u0648\u0627\u0632_\u0627\u0644\u0633\u0641\u0631",
    "fieldtype": "Attach",
-   "label": "صورة الهوية او جواز السفر"
+   "label": "\u0635\u0648\u0631\u0629 \u0627\u0644\u0647\u0648\u064a\u0629 \u0627\u0648 \u062c\u0648\u0627\u0632 \u0627\u0644\u0633\u0641\u0631"
+  },
+  {
+   "fieldname": "column_break_svwe",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "\u0635\u0648\u0631\u0629_\u0631\u062e\u0635\u0629_\u0627\u0644\u0642\u064a\u0627\u062f\u0629",
+   "fieldtype": "Attach",
+   "label": "\u0635\u0648\u0631\u0629 \u0631\u062e\u0635\u0629 \u0627\u0644\u0642\u064a\u0627\u062f\u0629"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-06-22 14:18:37.187281",
+ "modified": "2026-07-01 05:25:58.841688",
  "modified_by": "Administrator",
  "module": "Gate Cars",
  "name": "Customer Car",
@@ -72,21 +83,21 @@
    "write": 1
   },
   {
-   "role": "مدير فرع",
-   "read": 1,
-   "report": 1
-  },
-  {
-   "role": "مشرف أسطول",
-   "read": 1,
-   "report": 1
-  },
-  {
-   "role": "موظف مبيعات",
    "read": 1,
    "report": 1,
-   "write": 1,
-   "create": 1
+   "role": "\u0645\u062f\u064a\u0631 \u0641\u0631\u0639"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "role": "\u0645\u0634\u0631\u0641 \u0623\u0633\u0637\u0648\u0644"
+  },
+  {
+   "create": 1,
+   "read": 1,
+   "report": 1,
+   "role": "\u0645\u0648\u0638\u0641 \u0645\u0628\u064a\u0639\u0627\u062a",
+   "write": 1
   }
  ],
  "row_format": "Dynamic",

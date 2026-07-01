@@ -98,11 +98,7 @@ body .widget.shortcut-widget-box:hover {
 	transform: translateY(-2px) !important;
 }
 
-/* --- Sidebar (القائمة الجانبية) --- */
-body .body-sidebar {
-	background: var(--card-bg) !important;
-}
-
+/* --- Sidebar (القائمة الجانبية) - Default --- */
 body .body-sidebar .standard-sidebar-item {
 	border-radius: 8px !important;
 	transition: all 0.2s ease !important;
@@ -129,6 +125,70 @@ body .body-sidebar .sidebar-header {
 	transition: all 0.2s ease !important;
 }
 
-body .body-sidebar .sidebar-header:hover {
-	background-color: rgba(76, 175, 80, 0.07) !important;
+/* --- Sidebar Workspace Background (خلفية المرآب على السايد بار) --- */
+body.gatecar-workspace .body-sidebar {
+	background: transparent !important;
+	position: relative;
+}
+
+body.gatecar-workspace .body-sidebar::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	background-image: url("/assets/gatecar/images/parking-bg.png");
+	background-size: cover;
+	background-position: center;
+	z-index: 0;
+	pointer-events: none;
+}
+
+body.gatecar-workspace .body-sidebar::after {
+	content: "";
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	background: rgba(8, 18, 12, 0.84);
+	z-index: 0;
+	pointer-events: none;
+}
+
+body.gatecar-workspace .body-sidebar > * {
+	position: relative;
+	z-index: 1;
+}
+
+body.gatecar-workspace .body-sidebar .sidebar-item-label {
+	color: rgba(255, 255, 255, 0.88) !important;
+}
+
+body.gatecar-workspace .body-sidebar .sidebar-item-icon svg {
+	color: rgba(255, 255, 255, 0.65) !important;
+	fill: rgba(255, 255, 255, 0.65) !important;
+}
+
+body.gatecar-workspace .body-sidebar .standard-sidebar-item.active-sidebar {
+	background-color: rgba(76, 175, 80, 0.28) !important;
+}
+
+body.gatecar-workspace .body-sidebar .standard-sidebar-item.active-sidebar .sidebar-item-label {
+	color: #a5d6a7 !important;
+}
+
+body.gatecar-workspace .body-sidebar .standard-sidebar-item:not(.active-sidebar):hover {
+	background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body.gatecar-workspace .body-sidebar .sidebar-header .header-title,
+body.gatecar-workspace .body-sidebar .sidebar-header .header-subtitle {
+	color: rgba(255, 255, 255, 0.9) !important;
+}
+
+body.gatecar-workspace .body-sidebar .sidebar-toggle-btn {
+	background: rgba(30, 50, 35, 0.85) !important;
+	border-color: rgba(76, 175, 80, 0.4) !important;
 }

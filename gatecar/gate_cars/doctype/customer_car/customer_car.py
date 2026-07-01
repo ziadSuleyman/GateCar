@@ -20,6 +20,7 @@ class CustomerCar(Document):
 		nationality: DF.Data | None
 		phone: DF.Phone | None
 		صورة_الهوية_او_جواز_السفر: DF.Attach | None
+		صورة_رخصة_القيادة: DF.Attach | None
 	# end: auto-generated types
 
 	_DOCTYPE_NAME = "Customer Car"

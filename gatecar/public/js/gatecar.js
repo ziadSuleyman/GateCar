@@ -6,6 +6,9 @@ frappe.router.on("change", function () {
 	}
 	if (frappe.get_route()[0] === "Workspaces") {
 		setTimeout(hide_workspace_breadcrumb, 100);
+		document.body.classList.add("gatecar-workspace");
+	} else {
+		document.body.classList.remove("gatecar-workspace");
 	}
 });
 

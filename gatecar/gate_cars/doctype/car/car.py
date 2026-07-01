@@ -27,10 +27,9 @@ class Car(Document):
 		owner_car: DF.Link | None
 		plate_no: DF.Data
 		status: DF.Literal["\u0645\u062a\u0648\u0641\u0631", "\u0645\u062d\u062c\u0648\u0632", "\u0645\u0624\u062c\u0631", "\u062f\u0627\u062e\u0644 \u0627\u0644\u0635\u064a\u0627\u0646\u0629", "\u062c\u0627\u0647\u0632 \u0644\u0644\u062a\u0633\u0644\u064a\u0645", "\u0645\u062c\u0645\u062f\u0629"]
-		تاريخ_اخر_صيانة: DF.Date | None
 		تاريخ_التأمين_الشامل: DF.Date | None
-		تاريخ_الصيانة_القادمة: DF.Date | None
 		سنة_الصنع: DF.Data | None
+		صورة_السيارة: DF.Attach | None
 	# end: auto-generated types
 
 	_DOCTYPE_NAME = "Car"
