@@ -5,7 +5,7 @@
 body.gatecar-workspace {
 	background-image: url("/assets/gatecar/images/parking-bg.png") !important;
 	background-size: cover !important;
-	background-position: center !important;
+	background-position: center 15% !important;
 	background-attachment: fixed !important;
 }
 

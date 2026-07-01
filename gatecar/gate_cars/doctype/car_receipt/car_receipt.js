@@ -36,6 +36,18 @@ function load_previous_payments(frm) {
 			return;
 		}
 
+		const receiver_ids = [...new Set(rows.map(r => r.receiver).filter(Boolean))];
+		const emp_promise = receiver_ids.length
+			? frappe.db.get_list("Employee", {
+				filters: { name: ["in", receiver_ids] },
+				fields: ["name", "employee_name"],
+			})
+			: Promise.resolve([]);
+
+		emp_promise.then(emps => {
+			const emp_map = {};
+			(emps || []).forEach(e => { emp_map[e.name] = e.employee_name; });
+
 		const total = rows.reduce((s, r) => s + (r.amount || 0), 0);
 		const rows_html = rows.map((r, i) => `
 			<tr>
@@ -44,7 +56,7 @@ function load_previous_payments(frm) {
 				<td>${frappe.datetime.str_to_user(r.date)}</td>
 				<td style="font-weight:600; color:#2e7d32;">${format_currency(r.amount)}</td>
 				<td>${r.payment_method || "-"}</td>
-				<td>${r.receiver || "-"}</td>
+				<td>${emp_map[r.receiver] || r.receiver || "-"}</td>
 				<td>${r.notes || "-"}</td>
 			</tr>`).join("");
 
@@ -72,7 +84,8 @@ function load_previous_payments(frm) {
 					</tfoot>
 				</table>
 			</div>`);
-	});
+		}); // emp_promise.then
+	}); // rows.then
 }
 
 function format_currency(val) {
