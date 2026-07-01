@@ -24,6 +24,16 @@ frappe.ui.form.on("Car Booking", {
 					mainly_cost: frm.doc.cost,
 				});
 			}, __("Create"));
+
+			frm.add_custom_button(__("دفعة"), () => {
+				frappe.new_doc("Revenue", {
+					booking_reference: frm.doc.name,
+					car: frm.doc.car,
+					customer_name: frm.doc.customer_name_fetched,
+					date: frappe.datetime.get_today(),
+				});
+			}, __("Create"));
+
 			frm.page.set_inner_btn_group_as_primary(__("Create"));
 		}
 	},
