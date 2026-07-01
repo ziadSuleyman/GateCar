@@ -12,7 +12,6 @@
   "reason",
   "cost",
   "الفاتورة",
-  "revenue_entry",
   "amended_from"
  ],
  "fields": [
@@ -49,13 +48,6 @@
    "fieldname": "الفاتورة",
    "fieldtype": "Attach",
    "label": "الفاتورة"
-  },
-  {
-   "fieldname": "revenue_entry",
-   "fieldtype": "Link",
-   "label": "القيد المالي",
-   "options": "Revenue",
-   "read_only": 1
   },
   {
    "fieldname": "amended_from",

@@ -28,6 +28,7 @@ frappe.ui.form.on("Car Booking", {
 			frm.add_custom_button(__("إيصال قبض"), () => {
 				const today = frappe.datetime.get_today();
 				const defaults = {
+					payment_type: "قبض",
 					booking_reference: frm.doc.name,
 					car: frm.doc.car,
 					customer_name: frm.doc.customer_name_fetched,
@@ -56,10 +57,20 @@ frappe.ui.form.on("Car Booking", {
 			}, __("Create"));
 
 			frm.add_custom_button(__("إيصال دفع"), () => {
-				frappe.new_doc("Car Maintenance", {
+				const today = frappe.datetime.get_today();
+				const defaults = {
+					payment_type: "دفع",
+					booking_reference: frm.doc.name,
 					car: frm.doc.car,
-					التاريخ: frappe.datetime.get_today(),
-				});
+					customer_name: frm.doc.customer_name_fetched,
+					date: today,
+				};
+				frappe.db.get_value("Employee", { user_id: frappe.session.user }, "name")
+					.then(r => {
+						const employee = r.message && r.message.name;
+						if (employee) defaults.receiver = employee;
+						frappe.new_doc("Revenue", defaults);
+					});
 			}, __("Create"));
 
 			frm.page.set_inner_btn_group_as_primary(__("Create"));

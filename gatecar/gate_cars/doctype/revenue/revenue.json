@@ -7,6 +7,7 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "payment_type",
   "date",
   "booking_reference",
   "receiver",
@@ -20,6 +21,15 @@
  ],
  "fields": [
   {
+   "default": "قبض",
+   "fieldname": "payment_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "نوع القيد",
+   "options": "قبض\nدفع",
+   "reqd": 1
+  },
+  {
    "fieldname": "date",
    "fieldtype": "Date",
    "in_list_view": 1,
@@ -31,8 +41,7 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "\u0631\u0642\u0645 \u0627\u0644\u062d\u062c\u0632",
-   "options": "Car Booking",
-   "reqd": 1
+   "options": "Car Booking"
   },
   {
    "fieldname": "amount",
@@ -49,8 +58,7 @@
    "fieldname": "receiver",
    "fieldtype": "Link",
    "label": "\u0627\u0644\u0645\u0648\u0638\u0641 \u0627\u0644\u0645\u0633\u062a\u0644\u0645",
-   "options": "Employee",
-   "reqd": 1
+   "options": "Employee"
   },
   {
    "fieldname": "column_break_gwxh",
