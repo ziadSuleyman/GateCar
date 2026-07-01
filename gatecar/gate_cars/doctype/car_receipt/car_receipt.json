@@ -173,13 +173,6 @@
    "fieldtype": "Section Break"
   },
   {
-   "fetch_from": "booking.down_payment",
-   "fieldname": "down_payment",
-   "fieldtype": "Currency",
-   "label": "دفعة سابقة",
-   "read_only": 1
-  },
-  {
    "fieldname": "sales_employee",
    "fieldtype": "Link",
    "hidden": 1,
