@@ -17,16 +17,20 @@
   "customer_name",
   "payment_method",
   "amount",
-  "shift"
+  "shift",
+  "signatures_section",
+  "payer_signature",
+  "sig_col_break",
+  "receiver_signature"
  ],
  "fields": [
   {
-   "default": "قبض",
+   "default": "\u0642\u0628\u0636",
    "fieldname": "payment_type",
    "fieldtype": "Select",
    "in_list_view": 1,
-   "label": "نوع القيد",
-   "options": "قبض\nدفع",
+   "label": "\u0646\u0648\u0639 \u0627\u0644\u0642\u064a\u062f",
+   "options": "\u0642\u0628\u0636\n\u062f\u0641\u0639",
    "reqd": 1
   },
   {
@@ -49,7 +53,7 @@
    "label": "\u0627\u0644\u0645\u0628\u0644\u063a"
   },
   {
-   "default": "\u064a\u062f\u0648\u064a\u0627",
+   "default": "\u0643\u0627\u0634",
    "fieldname": "payment_method",
    "fieldtype": "Data",
    "label": "\u0637\u0631\u064a\u0642\u0629 \u0627\u0644\u062f\u0641\u0639"
@@ -87,12 +91,31 @@
    "fieldname": "notes",
    "fieldtype": "Data",
    "label": "\u0645\u0644\u0627\u062d\u0638\u0627\u062a"
+  },
+  {
+   "fieldname": "signatures_section",
+   "fieldtype": "Section Break",
+   "label": "\u0627\u0644\u062a\u0648\u0642\u064a\u0639\u0627\u062a"
+  },
+  {
+   "fieldname": "payer_signature",
+   "fieldtype": "Signature",
+   "label": "\u062a\u0648\u0642\u064a\u0639 \u0627\u0644\u062f\u0627\u0641\u0639"
+  },
+  {
+   "fieldname": "sig_col_break",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "receiver_signature",
+   "fieldtype": "Signature",
+   "label": "\u062a\u0648\u0642\u064a\u0639 \u0627\u0644\u0645\u0633\u062a\u0644\u0645"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-06-28 08:25:32.778998",
+ "modified": "2026-07-05 11:11:40.132456",
  "modified_by": "Administrator",
  "module": "Gate Cars",
  "name": "Revenue",

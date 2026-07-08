@@ -40,4 +40,21 @@ frappe.query_reports["Owner Car Report"] = {
 			reqd: 1,
 		},
 	],
+
+	onload(report) {
+		report.page.add_inner_button(__("سجل حركة السيارة"), function () {
+			const car = frappe.query_report.get_filter_value("car");
+			if (!car) {
+				frappe.msgprint(__("يرجى اختيار سيارة أولاً"));
+				return;
+			}
+			const from_date = frappe.query_report.get_filter_value("from_date");
+			const to_date = frappe.query_report.get_filter_value("to_date");
+			frappe.set_route("query-report", "Car Activity Report", {
+				car: car,
+				from_date: from_date,
+				to_date: to_date,
+			});
+		});
+	},
 };

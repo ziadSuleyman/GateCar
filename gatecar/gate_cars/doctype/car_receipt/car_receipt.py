@@ -25,12 +25,15 @@ class CarReceipt(Document):
 		duration_days: DF.Int
 		extra_cost: DF.Currency
 		extra_distance: DF.Int
+		grand_total: DF.Currency
+		local_tax: DF.Currency
 		mainly_cost: DF.Int
 		pickup_date: DF.Date
 		previous_odometer: DF.Int
 		real_days: DF.Data | None
 		receiving_date: DF.Date
 		sales_employee: DF.Link
+		spending_tax: DF.Currency
 		total_cost: DF.Currency
 		total_distance: DF.Int
 	# end: auto-generated types
@@ -42,6 +45,29 @@ class CarReceipt(Document):
 			self.sales_employee = frappe.db.get_value(
 				"Employee", {"user_id": frappe.session.user}, "name"
 			)
+
+	def validate(self) -> None:
+		self.compute_totals()
+
+	def compute_totals(self) -> None:
+		"""Authoritative invoice totals (mirrors the client script).
+
+		Tax base is the rental only (base cost + extra distance) — the damage
+		compensation is added afterwards, untaxed.
+			ضريبة الإنفاق = الإيجار × نسبة الإنفاق
+			ضريبة المحلية = ضريبة الإنفاق × نسبة المحلية
+			الإجمالي النهائي = الإيجار + الأضرار + ضريبة الإنفاق + ضريبة المحلية
+		"""
+		rental = (self.mainly_cost or 0) + (self.extra_cost or 0)
+
+		settings = frappe.get_cached_doc("Gate Cars Settings")
+		spend_rate = settings.spending_tax_rate or 0
+		local_rate = settings.local_tax_rate or 0
+
+		self.spending_tax = round(rental * spend_rate / 100.0, 2)
+		self.local_tax = round(self.spending_tax * local_rate / 100.0, 2)
+		self.total_cost = round(rental + (self.damage or 0), 2)
+		self.grand_total = round(self.total_cost + self.spending_tax + self.local_tax, 2)
 
 	def on_submit(self) -> None:
 		if self.car:
@@ -55,28 +81,28 @@ class CarReceipt(Document):
 				frappe.db.set_value("Revenue", rev, "notes", self.notes)
 
 	def check_oil_change(self) -> None:
+		from gatecar.maintenance_status import TYPE_KM, has_open_of_type
+
 		next_oil = frappe.db.get_value("Car", self.car, "next_oil_change") or 0
 		if not next_oil or self.current_odometer < next_oil:
 			return
 
-		has_open = frappe.db.exists(
-			"Oil Change", {"car": self.car, "docstatus": 0}
-		)
-		if has_open:
+		if has_open_of_type(self.car, TYPE_KM):
 			return
 
 		car = frappe.get_doc("Car", self.car)
 		car_label = f"{car.brand} {car.model} ({car.plate_no})"
 
-		oil_change = frappe.get_doc({
-			"doctype": "Oil Change",
+		maintenance = frappe.get_doc({
+			"doctype": "Periodic Maintenance",
 			"car": self.car,
+			"maintenance_type": TYPE_KM,
 			"odometer_at_alert": self.current_odometer,
 		})
-		oil_change.insert(ignore_permissions=True)
+		maintenance.insert(ignore_permissions=True)
 
-		subject = f"تنبيه: السيارة {car_label} تحتاج تغيير زيت"
-		message = f"السيارة {car_label} وصل عدادها إلى {self.current_odometer} كم وتجاوزت موعد تغيير الزيت ({next_oil} كم)"
+		subject = f"تنبيه: السيارة {car_label} تحتاج صيانة دورية"
+		message = f"السيارة {car_label} وصل عدادها إلى {self.current_odometer} كم وتجاوزت موعد الصيانة الدورية ({next_oil} كم)"
 
 		from gatecar.tasks import get_notification_recipients
 		recipients = get_notification_recipients(
@@ -94,7 +120,7 @@ class CarReceipt(Document):
 			"subject": subject,
 			"email_content": message,
 			"type": "Alert",
-			"document_type": "Oil Change",
-			"document_name": oil_change.name,
+			"document_type": "Periodic Maintenance",
+			"document_name": maintenance.name,
 			"for_user": recipients[0] if recipients else "Administrator",
 		}).insert(ignore_permissions=True)

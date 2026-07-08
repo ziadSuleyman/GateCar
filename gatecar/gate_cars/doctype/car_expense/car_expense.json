@@ -2,19 +2,19 @@
  "actions": [],
  "allow_bulk_edit": 1,
  "allow_rename": 1,
- "autoname": "OIL-.####",
- "creation": "2026-06-27 14:00:00.000000",
+ "autoname": "EXP-.####",
+ "creation": "2026-07-01 00:00:00.000000",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "car",
-  "odometer_at_alert",
-  "column_break_1",
+  "expense_type",
   "التاريخ",
-  "oil_name",
+  "new_due_date",
+  "column_break_1",
+  "التوصيف",
+  "التكلفة",
   "section_break_1",
-  "cost",
-  "column_break_2",
   "الفاتورة",
   "amended_from"
  ],
@@ -29,42 +29,49 @@
    "reqd": 1
   },
   {
-   "fieldname": "odometer_at_alert",
-   "fieldtype": "Int",
+   "fieldname": "expense_type",
+   "fieldtype": "Select",
    "in_list_view": 1,
-   "label": "العداد عند التنبيه",
-   "read_only": 1
+   "in_standard_filter": 1,
+   "label": "نوع المصروف",
+   "options": "عام\nتأمين إلزامي\nتأمين شامل\nتسجيل",
+   "default": "عام",
+   "reqd": 1
+  },
+  {
+   "fieldname": "التاريخ",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "التاريخ",
+   "reqd": 1
+  },
+  {
+   "fieldname": "new_due_date",
+   "fieldtype": "Date",
+   "label": "تاريخ الانتهاء الجديد",
+   "depends_on": "eval:doc.expense_type && doc.expense_type != 'عام'"
   },
   {
    "fieldname": "column_break_1",
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "التاريخ",
-   "fieldtype": "Date",
-   "in_list_view": 1,
-   "label": "تاريخ التغيير"
-  },
-  {
-   "fieldname": "oil_name",
+   "fieldname": "التوصيف",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "اسم الزيت"
+   "label": "التوصيف"
+  },
+  {
+   "fieldname": "التكلفة",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "التكلفة",
+   "reqd": 1
   },
   {
    "fieldname": "section_break_1",
    "fieldtype": "Section Break",
-   "label": "التكلفة والفاتورة"
-  },
-  {
-   "fieldname": "cost",
-   "fieldtype": "Currency",
-   "in_list_view": 1,
-   "label": "التكلفة"
-  },
-  {
-   "fieldname": "column_break_2",
-   "fieldtype": "Column Break"
+   "label": "الفاتورة"
   },
   {
    "fieldname": "الفاتورة",
@@ -76,7 +83,7 @@
    "fieldtype": "Link",
    "label": "Amended From",
    "no_copy": 1,
-   "options": "Oil Change",
+   "options": "Car Expense",
    "print_hide": 1,
    "read_only": 1
   }
@@ -85,10 +92,10 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-06-27 14:00:00.000000",
+ "modified": "2026-07-01 00:00:00.000000",
  "modified_by": "Administrator",
  "module": "Gate Cars",
- "name": "Oil Change",
+ "name": "Car Expense",
  "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
@@ -110,7 +117,9 @@
   {
    "role": "مدير فرع",
    "read": 1,
-   "report": 1
+   "report": 1,
+   "write": 1,
+   "create": 1
   },
   {
    "role": "مشرف أسطول",

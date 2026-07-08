@@ -8,16 +8,20 @@ app_license = "mit"
 # Apps
 # ------------------
 
+
 # required_apps = []
 
 add_to_apps_screen = [
 	{
 		"name": "gatecar",
-		"logo": "/assets/gatecar/logo.png",
+		"logo": "/assets/gatecar/images/logo.svg",
 		"title": "Gate Cars",
 		"route": "/app/gate-cars",
 	}
 ]
+
+# Navbar / desk brand logo
+app_logo_url = "/assets/gatecar/images/logo.svg"
 
 # Includes in <head>
 # ------------------
@@ -75,10 +79,9 @@ app_include_js = "/assets/gatecar/js/gatecar.js"
 # ----------
 
 # add methods and filters to jinja environment
-# jinja = {
-# 	"methods": "gatecar.utils.jinja_methods",
-# 	"filters": "gatecar.utils.jinja_filters"
-# }
+jinja = {
+	"methods": ["gatecar.utils.number_ordered_lists"],
+}
 
 # Installation
 # ------------

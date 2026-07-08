@@ -64,12 +64,10 @@ ROLE_WORKSPACES = {
 		"role": "مشرف أسطول",
 		"shortcuts": [
 			("السيارات", "Car", "DocType", "tool"),
-			("صيانة جديدة", "Car Maintenance", "DocType", "wrench"),
 			("الأساطيل", "Vehicle Fleet", "DocType", None),
 		],
 		"cards": [
 			("السيارات", [("Car", "Car", "DocType"), ("Car Category", "Car Category", "DocType")]),
-			("الصيانة", [("Car Maintenance", "Car Maintenance", "DocType")]),
 			(
 				"الأساطيل والفروع",
 				[("Vehicle Fleet", "Vehicle Fleet", "DocType"), ("Car Branch", "Car Branch", "DocType")],
@@ -79,8 +77,7 @@ ROLE_WORKSPACES = {
 			("الأسطول", "الأسطول", "Workspace", "home"),
 			("السيارات", "Car", "DocType", "tool"),
 			("تصنيف السيارات", "Car Category", "DocType", None),
-			("الصيانة", "Car Maintenance", "DocType", "wrench"),
-			("تبديل الزيت", "Oil Change", "DocType", None),
+			("الصيانة الدورية", "Periodic Maintenance", "DocType", None),
 			("الأساطيل", "Vehicle Fleet", "DocType", None),
 			("الفروع", "Car Branch", "DocType", None),
 		],
@@ -107,7 +104,6 @@ ROLE_WORKSPACES = {
 				"السيارات",
 				[
 					("Car", "Car", "DocType"),
-					("Car Maintenance", "Car Maintenance", "DocType"),
 					("Car Category", "Car Category", "DocType"),
 				],
 			),
@@ -128,7 +124,6 @@ ROLE_WORKSPACES = {
 			("استلام السيارات", "Car Receipt", "DocType", "check"),
 			("العملاء", "Customer Car", "DocType", "users"),
 			("السيارات", "Car", "DocType", "tool"),
-			("الصيانة", "Car Maintenance", "DocType", "wrench"),
 			("تصنيف السيارات", "Car Category", "DocType", None),
 			("الفروع", "Car Branch", "DocType", None),
 			("الأساطيل", "Vehicle Fleet", "DocType", None),
@@ -279,21 +274,18 @@ month = frappe.form_dict.get("month")
 year = frappe.form_dict.get("year")
 
 date_filter_rev = ""
-date_filter_maint = ""
 date_filter_oil = ""
 
 if month and year:
     date_filter_rev = f"AND MONTH(r.date) = {int(month)} AND YEAR(r.date) = {int(year)}"
-    date_filter_maint = f"AND MONTH(m.التاريخ) = {int(month)} AND YEAR(m.التاريخ) = {int(year)}"
     date_filter_oil = f"AND MONTH(o.التاريخ) = {int(month)} AND YEAR(o.التاريخ) = {int(year)}"
 
 cars = frappe.db.sql(f\"\"\"
     SELECT
         c.name, c.brand, c.model, c.plate_no, c.status,
         IFNULL(rev.total_revenue, 0) as total_revenue,
-        IFNULL(maint.total_cost, 0) as total_maintenance,
         IFNULL(oil.total_cost, 0) as total_oil_change,
-        IFNULL(rev.total_revenue, 0) - IFNULL(maint.total_cost, 0) - IFNULL(oil.total_cost, 0) as net_profit
+        IFNULL(rev.total_revenue, 0) - IFNULL(oil.total_cost, 0) as net_profit
     FROM `tabCar` c
     LEFT JOIN (
         SELECT cb.car, SUM(r.amount) as total_revenue
@@ -303,14 +295,8 @@ cars = frappe.db.sql(f\"\"\"
         GROUP BY cb.car
     ) rev ON rev.car = c.name
     LEFT JOIN (
-        SELECT m.car, SUM(m.cost) as total_cost
-        FROM `tabCar Maintenance` m
-        WHERE m.docstatus = 1 {date_filter_maint}
-        GROUP BY m.car
-    ) maint ON maint.car = c.name
-    LEFT JOIN (
         SELECT o.car, SUM(o.cost) as total_cost
-        FROM `tabOil Change` o
+        FROM `tabPeriodic Maintenance` o
         WHERE o.docstatus = 1 {date_filter_oil}
         GROUP BY o.car
     ) oil ON oil.car = c.name
@@ -328,27 +314,22 @@ date_from = frappe.form_dict.get("date_from")
 date_to = frappe.form_dict.get("date_to")
 
 total_revenue = frappe.db.sql("SELECT IFNULL(SUM(amount),0) FROM `tabRevenue`")[0][0]
-total_maintenance = frappe.db.sql("SELECT IFNULL(SUM(cost),0) FROM `tabCar Maintenance` WHERE docstatus=1")[0][0]
-total_oil_change = frappe.db.sql("SELECT IFNULL(SUM(cost),0) FROM `tabOil Change` WHERE docstatus=1")[0][0]
-total_profit = total_revenue - total_maintenance - total_oil_change
+total_oil_change = frappe.db.sql("SELECT IFNULL(SUM(cost),0) FROM `tabPeriodic Maintenance` WHERE docstatus=1")[0][0]
+total_profit = total_revenue - total_oil_change
 
 period_profit = None
 period_revenue = 0
-period_maintenance = 0
 period_oil_change = 0
 if date_from and date_to:
     period_revenue = frappe.db.sql("SELECT IFNULL(SUM(amount),0) FROM `tabRevenue` WHERE date BETWEEN %s AND %s", (date_from, date_to))[0][0]
-    period_maintenance = frappe.db.sql("SELECT IFNULL(SUM(cost),0) FROM `tabCar Maintenance` WHERE docstatus=1 AND التاريخ BETWEEN %s AND %s", (date_from, date_to))[0][0]
-    period_oil_change = frappe.db.sql("SELECT IFNULL(SUM(cost),0) FROM `tabOil Change` WHERE docstatus=1 AND التاريخ BETWEEN %s AND %s", (date_from, date_to))[0][0]
-    period_profit = period_revenue - period_maintenance - period_oil_change
+    period_oil_change = frappe.db.sql("SELECT IFNULL(SUM(cost),0) FROM `tabPeriodic Maintenance` WHERE docstatus=1 AND التاريخ BETWEEN %s AND %s", (date_from, date_to))[0][0]
+    period_profit = period_revenue - period_oil_change
 
 frappe.response["message"] = {
     "total_revenue": total_revenue,
-    "total_maintenance": total_maintenance,
     "total_oil_change": total_oil_change,
     "total_profit": total_profit,
     "period_revenue": period_revenue,
-    "period_maintenance": period_maintenance,
     "period_oil_change": period_oil_change,
     "period_profit": period_profit,
 }
@@ -396,7 +377,7 @@ if not user_branch and frappe.session.user == "Administrator":
 if not user_branch:
     frappe.response["message"] = []
 else:
-    cars = frappe.db.sql("SELECT c.name, c.brand, c.model, c.plate_no, c.status, IFNULL(maint.total_cost, 0) as total_maintenance, IFNULL(oil.total_cost, 0) as total_oil_change FROM `tabCar` c JOIN `tabVehicle Fleet` f ON c.fleet = f.name LEFT JOIN (SELECT m.car, SUM(m.cost) as total_cost FROM `tabCar Maintenance` m WHERE m.docstatus = 1 GROUP BY m.car) maint ON maint.car = c.name LEFT JOIN (SELECT o.car, SUM(o.cost) as total_cost FROM `tabOil Change` o WHERE o.docstatus = 1 GROUP BY o.car) oil ON oil.car = c.name WHERE f.branch = %s ORDER BY c.name", user_branch, as_dict=True)
+    cars = frappe.db.sql("SELECT c.name, c.brand, c.model, c.plate_no, c.status, IFNULL(oil.total_cost, 0) as total_oil_change FROM `tabCar` c JOIN `tabVehicle Fleet` f ON c.fleet = f.name LEFT JOIN (SELECT o.car, SUM(o.cost) as total_cost FROM `tabPeriodic Maintenance` o WHERE o.docstatus = 1 GROUP BY o.car) oil ON oil.car = c.name WHERE f.branch = %s ORDER BY c.name", user_branch, as_dict=True)
     frappe.response["message"] = cars
 """,
 		},

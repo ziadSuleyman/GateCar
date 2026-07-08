@@ -1,12 +1,16 @@
 {
  "app": "gate_cars",
  "charts": [],
- "content": "[{\"id\":\"jvbH4ZR-5H\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"gate-car-banner\",\"col\":12}},{\"id\":\"sc1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"\u0644\u0648\u062d\u0629 \u0627\u0644\u0645\u0631\u0627\u0642\u0628\u0629\",\"col\":12}},{\"id\":\"sp1\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"hdr2\",\"type\":\"header\",\"data\":{\"text\":\"<span style=\\\"color: #81c784; text-shadow: 0 1px 3px rgba(0,0,0,0.5); border-right: 3px solid #4caf50; padding-right: 10px; font-weight: 600;\\\">\u0627\u0644\u0639\u0645\u0644\u064a\u0627\u062a \u0627\u0644\u064a\u0648\u0645\u064a\u0629</span>\",\"col\":12}},{\"id\":\"c1\",\"type\":\"card\",\"data\":{\"card_name\":\"\u0627\u0644\u062d\u062c\u0648\u0632\u0627\u062a\",\"col\":4}},{\"id\":\"c2\",\"type\":\"card\",\"data\":{\"card_name\":\"\u0627\u0633\u062a\u0644\u0627\u0645 \u0627\u0644\u0633\u064a\u0627\u0631\u0627\u062a\",\"col\":4}},{\"id\":\"c3\",\"type\":\"card\",\"data\":{\"card_name\":\"\u0627\u0644\u0642\u064a\u0648\u062f \u0627\u0644\u0645\u0627\u0644\u064a\u0629\",\"col\":4}},{\"id\":\"sp2\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"dXq6mwToXG\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"hdr3\",\"type\":\"header\",\"data\":{\"text\":\"<span style=\\\"color: #81c784; text-shadow: 0 1px 3px rgba(0,0,0,0.5); border-right: 3px solid #4caf50; padding-right: 10px; font-weight: 600;\\\">\u0625\u062f\u0627\u0631\u0629 \u0627\u0644\u0633\u064a\u0627\u0631\u0627\u062a \u0648\u0627\u0644\u0639\u0645\u0644\u0627\u0621</span>\",\"col\":12}},{\"id\":\"c4\",\"type\":\"card\",\"data\":{\"card_name\":\"\u0627\u0644\u0633\u064a\u0627\u0631\u0627\u062a\",\"col\":4}},{\"id\":\"c5\",\"type\":\"card\",\"data\":{\"card_name\":\"\u0627\u0644\u0632\u0628\u0627\u0626\u0646\",\"col\":4}},{\"id\":\"c6\",\"type\":\"card\",\"data\":{\"card_name\":\"\u0627\u0644\u0645\u0633\u0645\u0649 \u0627\u0644\u0648\u0638\u064a\u0641\u064a\",\"col\":4}},{\"id\":\"sp3\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"Ky6Fzvn8mu\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"hdr4\",\"type\":\"header\",\"data\":{\"text\":\"<span style=\\\"color: #81c784; text-shadow: 0 1px 3px rgba(0,0,0,0.5); border-right: 3px solid #4caf50; padding-right: 10px; font-weight: 600;\\\">\u0627\u0644\u0647\u064a\u0643\u0644 \u0627\u0644\u062a\u0646\u0638\u064a\u0645\u064a</span>\",\"col\":12}},{\"id\":\"c7\",\"type\":\"card\",\"data\":{\"card_name\":\"\u0627\u0644\u0641\u0631\u0648\u0639 \u0648\u0627\u0644\u0623\u0633\u0627\u0637\u064a\u0644\",\"col\":4}},{\"id\":\"c8\",\"type\":\"card\",\"data\":{\"card_name\":\"\u0627\u0644\u0645\u0648\u0638\u0641\u064a\u0646 \u0648\u0627\u0644\u0648\u0631\u062f\u064a\u0627\u062a\",\"col\":4}},{\"id\":\"c9\",\"type\":\"card\",\"data\":{\"card_name\":\"\u0627\u0644\u0645\u062f\u0646\",\"col\":4}}]",
+ "content": "[{\"id\":\"gcd-dashboard-01\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"gatecar-dashboard\",\"col\":12}},{\"id\":\"Ol7GaBustk\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"gatecar\",\"col\":12}}]",
  "creation": "2026-06-23 10:22:19.277708",
  "custom_blocks": [
   {
-   "custom_block_name": "gate-car-banner",
-   "label": "gate-car-banner"
+   "custom_block_name": "gatecar",
+   "label": "gatecar"
+  },
+  {
+   "custom_block_name": "gatecar-dashboard",
+   "label": "gatecar-dashboard"
   }
  ],
  "docstatus": 0,
@@ -19,63 +23,6 @@
  "label": "Gate Cars",
  "link_type": "DocType",
  "links": [
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "\u0627\u0644\u062d\u062c\u0648\u0632\u0627\u062a",
-   "link_count": 1,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Car Booking",
-   "link_count": 0,
-   "link_to": "Car Booking",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "\u0627\u0633\u062a\u0644\u0627\u0645 \u0627\u0644\u0633\u064a\u0627\u0631\u0627\u062a",
-   "link_count": 1,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Car Receipt",
-   "link_count": 0,
-   "link_to": "Car Receipt",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "\u0627\u0644\u0642\u064a\u0648\u062f \u0627\u0644\u0645\u0627\u0644\u064a\u0629",
-   "link_count": 1,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Revenue",
-   "link_count": 0,
-   "link_to": "Revenue",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
   {
    "hidden": 0,
    "is_query_report": 0,
@@ -98,53 +45,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "\u0627\u0644\u0632\u0628\u0627\u0626\u0646",
-   "link_count": 1,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Customer Car",
-   "link_count": 0,
-   "link_to": "Customer Car",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "\u0627\u0644\u0645\u0633\u0645\u0649 \u0627\u0644\u0648\u0638\u064a\u0641\u064a",
-   "link_count": 1,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Designation",
-   "link_count": 0,
-   "link_to": "Designation",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "\u0627\u0644\u0641\u0631\u0648\u0639 \u0648\u0627\u0644\u0623\u0633\u0627\u0637\u064a\u0644",
-   "link_count": 0,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Car Branch",
    "link_count": 0,
    "link_to": "Car Branch",
@@ -161,15 +61,6 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "\u0627\u0644\u0645\u0648\u0638\u0641\u064a\u0646 \u0648\u0627\u0644\u0648\u0631\u062f\u064a\u0627\u062a",
-   "link_count": 0,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
   },
   {
    "hidden": 0,
@@ -200,29 +91,9 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
-  },
-  {
-   "description": "\u0627\u0644\u0645\u062f\u0646 \u064a\u062a\u0645 \u0625\u0646\u0634\u0627\u0626\u0647\u0627 \u0645\u0646 \u0623\u062c\u0644 \u0627\u0644\u0645\u0633\u0627\u0639\u062f\u0629 \u0641\u064a \u062a\u062d\u062f\u064a\u062f \u0645\u0648\u0642\u0639 \u0627\u0644\u0623\u0641\u0631\u0639",
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "\u0627\u0644\u0645\u062f\u0646",
-   "link_count": 1,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "cities",
-   "link_count": 0,
-   "link_to": "cities",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
   }
  ],
- "modified": "2026-07-01 15:08:06.143725",
+ "modified": "2026-07-03 18:15:34.675662",
  "modified_by": "Administrator",
  "module": "Gate Cars",
  "name": "Gate Cars",
@@ -232,16 +103,7 @@
  "quick_lists": [],
  "roles": [],
  "sequence_id": 0.0,
- "shortcuts": [
-  {
-   "color": "Green",
-   "doc_view": "",
-   "icon": "dashboard",
-   "label": "\u0644\u0648\u062d\u0629 \u0627\u0644\u0645\u0631\u0627\u0642\u0628\u0629",
-   "link_to": "admin-dashboard",
-   "type": "Page"
-  }
- ],
+ "shortcuts": [],
  "title": "Gate Cars",
  "type": "Workspace"
 }

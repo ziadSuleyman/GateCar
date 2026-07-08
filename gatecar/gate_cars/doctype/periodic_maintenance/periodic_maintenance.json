@@ -1,0 +1,144 @@
+{
+ "actions": [],
+ "allow_bulk_edit": 1,
+ "allow_rename": 1,
+ "autoname": "OIL-.####",
+ "creation": "2026-07-06 16:02:51.597129",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "car",
+  "maintenance_type",
+  "odometer_at_alert",
+  "column_break_1",
+  "\u0627\u0644\u062a\u0627\u0631\u064a\u062e",
+  "oil_name",
+  "section_break_1",
+  "cost",
+  "column_break_2",
+  "\u0627\u0644\u0641\u0627\u062a\u0648\u0631\u0629",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "car",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "\u0627\u0644\u0633\u064a\u0627\u0631\u0629",
+   "options": "Car",
+   "reqd": 1
+  },
+  {
+   "default": "\u0635\u064a\u0627\u0646\u0629 \u062f\u0648\u0631\u064a\u0629 (\u0643\u0645)",
+   "fieldname": "maintenance_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "\u0646\u0648\u0639 \u0627\u0644\u0635\u064a\u0627\u0646\u0629",
+   "options": "\u0635\u064a\u0627\u0646\u0629 \u062f\u0648\u0631\u064a\u0629 (\u0643\u0645)",
+   "reqd": 1
+  },
+  {
+   "fieldname": "odometer_at_alert",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "\u0627\u0644\u0639\u062f\u0627\u062f \u0639\u0646\u062f \u0627\u0644\u062a\u0646\u0628\u064a\u0647",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "\u0627\u0644\u062a\u0627\u0631\u064a\u062e",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "\u062a\u0627\u0631\u064a\u062e \u0627\u0644\u0635\u064a\u0627\u0646\u0629"
+  },
+  {
+   "fieldname": "oil_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "\u0645\u0627 \u062a\u0645 \u0627\u0635\u0644\u0627\u062d\u0647"
+  },
+  {
+   "fieldname": "section_break_1",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "cost",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "\u0627\u0644\u062a\u0643\u0644\u0641\u0629"
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "\u0627\u0644\u0641\u0627\u062a\u0648\u0631\u0629",
+   "fieldtype": "Attach",
+   "label": "\u0627\u0644\u0641\u0627\u062a\u0648\u0631\u0629"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Periodic Maintenance",
+   "print_hide": 1,
+   "read_only": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2026-07-08 10:47:56.141613",
+ "modified_by": "Administrator",
+ "module": "Gate Cars",
+ "name": "Periodic Maintenance",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "role": "\u0645\u062f\u064a\u0631 \u0641\u0631\u0639"
+  },
+  {
+   "create": 1,
+   "read": 1,
+   "report": 1,
+   "role": "\u0645\u0634\u0631\u0641 \u0623\u0633\u0637\u0648\u0644",
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "role": "\u0645\u0648\u0638\u0641 \u0645\u0628\u064a\u0639\u0627\u062a"
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

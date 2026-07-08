@@ -12,12 +12,51 @@ frappe.ui.form.on("Car Receipt", {
 
 	refresh(frm) {
 		load_previous_payments(frm);
+		// On a fresh receipt, pull return odometer + date if not entered yet.
+		if (frm.doc.booking && (!frm.doc.current_odometer || !frm.doc.receiving_date)) {
+			fetch_return_inspection(frm);
+		}
 	},
 
 	booking(frm) {
 		load_previous_payments(frm);
+		fetch_return_inspection(frm);
+	},
+
+	current_odometer(frm) {
+		// اجمالي المسافة المقطوعة = القراءة الحالية - القراءة السابقة
+		if (frm.doc.current_odometer && frm.doc.previous_odometer != null) {
+			frm.set_value(
+				"total_distance",
+				Math.max(0, frm.doc.current_odometer - frm.doc.previous_odometer)
+			);
+		}
 	},
 });
+
+// Auto-fetch the odometer + date/time recorded in the "عند الاستلام" (return)
+// Car Inspection for the same booking → current reading + actual receiving date.
+function fetch_return_inspection(frm) {
+	if (!frm.doc.booking) return;
+	frappe.db
+		.get_list("Car Inspection", {
+			filters: { booking: frm.doc.booking, inspection_type: "عند الاستلام" },
+			fields: ["name", "odometer", "inspection_date"],
+			order_by: "creation desc",
+			limit: 1,
+		})
+		.then((rows) => {
+			if (!rows || !rows.length) return;
+			const insp = rows[0];
+			if (insp.odometer) {
+				frm.set_value("current_odometer", insp.odometer);
+			}
+			if (insp.inspection_date) {
+				// inspection_date is Datetime; receiving_date is a Date → take the date part.
+				frm.set_value("receiving_date", insp.inspection_date.split(" ")[0]);
+			}
+		});
+}
 
 function load_previous_payments(frm) {
 	const wrapper = frm.fields_dict.previous_payments_html.$wrapper;
@@ -51,6 +90,8 @@ function load_previous_payments(frm) {
 		const total = rows.reduce((s, r) => {
 			return s + ((r.payment_type === "دفع" ? -1 : 1) * (r.amount || 0));
 		}, 0);
+			const grand = frm.doc.grand_total || 0;
+			const remaining = grand - total;
 		const rows_html = rows.map((r, i) => {
 			const is_payment = r.payment_type === "دفع";
 			const color = is_payment ? "#c62828" : "#2e7d32";
@@ -89,6 +130,11 @@ function load_previous_payments(frm) {
 						<tr style="background: #e8f5e9; font-weight: 700;">
 							<td colspan="3" style="text-align:right;">الإجمالي المدفوع</td>
 							<td style="color:#2e7d32;">${format_currency(total)}</td>
+							<td colspan="3"></td>
+						</tr>
+						<tr style="background: ${remaining > 0 ? '#fff8e1' : '#e8f5e9'}; font-weight: 700;">
+							<td colspan="3" style="text-align:right;">المتبقي</td>
+							<td style="color:${remaining > 0 ? '#e65100' : '#2e7d32'};">${format_currency(remaining)}</td>
 							<td colspan="3"></td>
 						</tr>
 					</tfoot>

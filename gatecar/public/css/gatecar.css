@@ -1,139 +1,100 @@
-/* ===== Gate Cars Workspace Styles ===== */
+@import url('https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&display=swap');
 
-/* --- Workspace Background: blurred logo behind content only --- */
-body.gatecar-workspace .editor-js-container {
-	position: relative;
-	border-radius: 14px;
-	overflow: hidden;
+body {
 }
 
-body.gatecar-workspace .editor-js-container::before {
-	content: "";
-	position: absolute;
-	top: 0; right: 0; bottom: 0; left: 0;
-	background-image: url("/assets/gatecar/logo.png");
-	background-repeat: no-repeat;
-	background-position: center;
-	background-size: 60%;
-	filter: blur(28px) brightness(0.45);
-	transform: scale(1.2);
-	z-index: 0;
-	pointer-events: none;
+:root {
+    --font-stack : "Almarai", sans-serif !important;
+    --surface-menu-bar : #cbffce;
 }
 
-body.gatecar-workspace .editor-js-container::after {
-	content: "";
-	position: absolute;
-	top: 0; right: 0; bottom: 0; left: 0;
-	background: rgba(6, 14, 8, 0.60);
-	z-index: 0;
-	pointer-events: none;
+.body-sidebar {
+    border-left: 1px solid #ededed00;
 }
 
-body.gatecar-workspace .editor-js-container #editorjs,
-body.gatecar-workspace .editor-js-container .codex-editor,
-body.gatecar-workspace .editor-js-container .codex-editor__redactor {
-	position: relative;
-	z-index: 1;
-	background: transparent !important;
+.body-sidebar .body-sidebar-top
+{
+    overflow: visible;
 }
 
-/* --- Sidebar: force expanded + transparent on workspace --- */
-body.gatecar-workspace .body-sidebar-container {
-	/* force expanded state */
+.active-sidebar
+{
+    position: relative;
+    box-shadow: -20px 0px 0px 0px #ffffff;
+    border-radius: 0px 16px 16px 0px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin: 5px;
+}
+.active-sidebar::after
+{
+    content: "";
+    position: absolute;
+    bottom: -30px;
+    left: -15px;
+    width: 30px;
+    height: 30px;
+    border-radius: 30px 0 0 0;
+    background: #cbffce;
+    box-shadow: -4px -10px 0 4px #FFFFFF;
+}
+.active-sidebar::before {
+    content: "";
+    position: absolute;
+    top: -30px;
+    left: -15px;
+    width: 30px;
+    height: 30px;
+    border-radius: 0 0 0 34px;
+    background: #cbffce;
+    box-shadow: -10px 5px 0 4px #ffffff;
+}
+.body-sidebar .standard-sidebar-item:not(.active-sidebar):has(a:not(.section-break)):hover {
+    background-color: #cbffce;
+}
+/* ══ Top bar (page-head) themed to match the green sidebar ══════════════════ */
+.page-head {
+    background: linear-gradient(90deg, #cbffce 0%, #e6ffec 55%, #f2fff5 100%) !important;
+    border-bottom: 1px solid #a5e6b0 !important;
+    box-shadow: 0 1px 4px rgba(46, 125, 50, 0.10) !important;
+    backdrop-filter: none !important;
+}
+/* keep the head compact and vertically centered */
+.page-head .page-head-content { min-height: 50px; }
+
+/* dark-green, readable text & icons on the light-green bar */
+.page-head .navbar-breadcrumbs a,
+.page-head .navbar-breadcrumbs .breadcrumb-item,
+.page-head .navbar-breadcrumbs li,
+.page-head .title-area,
+.page-head .sidebar-toggle-btn { color: #1b5e20 !important; }
+.page-head .icon use,
+.page-head .es-icon use { stroke: #1b5e20 !important; }
+
+/* search widget button on the green bar */
+.page-head .search-widget-button {
+    background: rgba(255, 255, 255, 0.72) !important;
+    border: 1px solid #a5e6b0 !important;
+    color: #1b5e20 !important;
+}
+.page-head .search-widget-button:hover { background: #ffffff !important; }
+
+/* Gate Cars logo injected into the top bar */
+.gatecar-navbar-logo {
+    height: 26px;
+    width: auto;
+    margin: 0 6px 0 12px;
+    vertical-align: middle;
+    flex-shrink: 0;
 }
 
-body.gatecar-workspace .body-sidebar {
-	width: var(--sidebar-width) !important;
-	background: var(--surface-menu-bar) !important;
+/* ── Phone numbers must always read left-to-right (RTL form reverses them) ── */
+.frappe-control[data-fieldtype="Phone"] input,
+.frappe-control[data-fieldtype="Phone"] .control-value,
+.frappe-control[data-fieldtype="Phone"] .like-disabled-input,
+.frappe-control[data-fieldtype="Data"][data-fieldname*="phone"] input,
+.frappe-control[data-fieldtype="Data"][data-fieldname*="hone"] input {
+    direction: ltr !important;
+    text-align: left !important;
+    unicode-bidi: plaintext;
 }
-
-body.gatecar-workspace .body-sidebar .sidebar-item-label,
-body.gatecar-workspace .body-sidebar .header-title {
-	display: block !important;
-	opacity: 1 !important;
-	width: auto !important;
-}
-
-/* --- Card Widgets (البطاقات) --- */
-body .widget.links-widget-box {
-	background-color: var(--card-bg) !important;
-	border: 1px solid var(--border-color) !important;
-	border-radius: 14px !important;
-	transition: all 0.3s ease !important;
-	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25) !important;
-	overflow: hidden !important;
-}
-
-/* Section labels (العمليات اليومية ...) sit on the dark backdrop */
-.editor-js-container .widget-group .group-title,
-.editor-js-container h4.widget-group-title,
-.editor-js-container .codex-editor [contenteditable] h4 {
-	color: #fff !important;
-}
-
-body .widget.links-widget-box:hover {
-	border-color: #4caf50 !important;
-	box-shadow: 0 6px 20px rgba(76, 175, 80, 0.18) !important;
-	transform: translateY(-3px) !important;
-}
-
-/* Card header */
-body .widget.links-widget-box .widget-head .widget-title {
-	font-size: var(--text-lg) !important;
-	font-weight: 700 !important;
-}
-
-/* Card links */
-body .widget.links-widget-box .widget-body .link-item {
-	padding: 8px 14px !important;
-	margin: 2px 6px !important;
-	border-radius: 8px !important;
-	transition: all 0.2s ease !important;
-}
-
-body .widget.links-widget-box .widget-body .link-item:hover {
-	background-color: rgba(76, 175, 80, 0.08) !important;
-}
-
-/* --- Shortcut Widgets (الاختصارات العلوية) --- */
-body .widget.shortcut-widget-box {
-	border: 1px solid var(--border-color) !important;
-	border-radius: 12px !important;
-	transition: all 0.3s ease !important;
-	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
-}
-
-body .widget.shortcut-widget-box:hover {
-	border-color: #4caf50 !important;
-	box-shadow: 0 4px 14px rgba(76, 175, 80, 0.16) !important;
-	transform: translateY(-2px) !important;
-}
-
-/* --- Sidebar (القائمة الجانبية) - Default --- */
-body .body-sidebar .standard-sidebar-item {
-	border-radius: 8px !important;
-	transition: all 0.2s ease !important;
-}
-
-body .body-sidebar .standard-sidebar-item.active-sidebar {
-	background-color: rgba(76, 175, 80, 0.14) !important;
-	box-shadow: none !important;
-}
-
-body .body-sidebar .standard-sidebar-item.active-sidebar .sidebar-item-label,
-body .body-sidebar .standard-sidebar-item.active-sidebar .sidebar-item-icon svg {
-	color: #2e7d32 !important;
-	fill: #2e7d32 !important;
-}
-
-body .body-sidebar .standard-sidebar-item:not(.active-sidebar):hover {
-	background-color: rgba(76, 175, 80, 0.07) !important;
-	border-radius: 8px !important;
-}
-
-body .body-sidebar .sidebar-header {
-	border-radius: 10px !important;
-	transition: all 0.2s ease !important;
-}
-

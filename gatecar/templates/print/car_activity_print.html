@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>سجل الحركة الشهري</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+  font-size: 13px;
+  color: #17301b;
+  background: #eef3ef;
+  padding: 20px;
+  direction: rtl;
+}
+
+.sheet {
+  max-width: 900px;
+  margin: 0 auto;
+  background: #fff;
+  border: 1px solid #d9e9dd;
+  border-radius: 14px;
+  box-shadow: 0 6px 24px rgba(20, 83, 45, 0.08);
+  padding: 24px 26px 28px;
+}
+
+/* ══ TOP HEADER ══════════════════════════════════════════════════ */
+.top-header {
+  display: flex;
+  align-items: stretch;
+  gap: 22px;
+  margin-bottom: 18px;
+}
+.col-left {
+  width: 34%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.col-right { flex: 1; display: flex; flex-direction: column; }
+
+.logo { width: 140px; display: block; }
+
+.car-photo {
+  width: 100%;
+  max-height: 168px;
+  object-fit: contain;
+  background: #fff;
+  border: 1px solid #d9e9dd;
+  border-radius: 10px;
+  padding: 6px;
+  box-shadow: 0 2px 8px rgba(20, 83, 45, 0.10);
+}
+.car-photo-placeholder {
+  width: 100%;
+  height: 150px;
+  background: #f0f8f2;
+  border: 1px dashed #9ccaa6;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #7bb388;
+  font-size: 12px;
+}
+
+/* Report title */
+.report-title {
+  font-size: 23px;
+  font-weight: 800;
+  color: #14532d;
+  text-align: center;
+  margin-bottom: 14px;
+  letter-spacing: 0.3px;
+}
+.report-title::after {
+  content: "";
+  display: block;
+  width: 78px;
+  height: 3px;
+  margin: 7px auto 0;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #2e7d32, #7cc47f);
+}
+
+/* Info table */
+.info-tbl {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid #cfe8d6;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.info-tbl td {
+  padding: 8px 14px;
+  border-bottom: 1px solid #dcefe1;
+  vertical-align: middle;
+  font-size: 13px;
+}
+.info-tbl tr:last-child td { border-bottom: none; }
+.info-tbl td.lbl {
+  background: linear-gradient(180deg, #1f6e2a, #14532d);
+  color: #fff;
+  font-weight: 700;
+  width: 32%;
+  text-align: center;
+}
+.info-tbl td.val {
+  background: #f3faf4;
+  font-weight: 700;
+  color: #17301b;
+}
+
+/* ══ INSURANCE SECTION ════════════════════════════════════════════ */
+.ins-tbl {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 16px 0;
+  border: 1px solid #cfe8d6;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.ins-tbl td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #dcefe1;
+  vertical-align: middle;
+}
+.ins-tbl tr:last-child td { border-bottom: none; }
+.ins-tbl td.lbl {
+  background: linear-gradient(180deg, #2e7d32, #235e28);
+  color: #fff;
+  font-weight: 700;
+  width: 22%;
+  text-align: center;
+  font-size: 12.5px;
+}
+.ins-tbl td.val  { background: #f3faf4; width: 39%; font-weight: 600; }
+.ins-tbl td.val2 { background: #f3faf4; width: 39%; }
+
+/* ══ SECTION TITLE ════════════════════════════════════════════════ */
+.section-title {
+  font-size: 15.5px;
+  font-weight: 800;
+  color: #14532d;
+  text-align: right;
+  margin: 20px 0 8px;
+  padding-right: 13px;
+  position: relative;
+}
+.section-title::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 3px;
+  bottom: 3px;
+  width: 5px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #2e7d32, #14532d);
+}
+
+/* ══ DATA TABLES ══════════════════════════════════════════════════ */
+.dt {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid #cfe8d6;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(20, 83, 45, 0.06);
+}
+.dt th {
+  background: linear-gradient(180deg, #2e7d32, #1f6e2a);
+  color: #fff;
+  font-weight: 700;
+  font-size: 12px;
+  padding: 9px 6px;
+  text-align: center;
+  border-bottom: 1px solid #185f22;
+}
+.dt td {
+  padding: 8px 6px;
+  text-align: center;
+  border-bottom: 1px solid #e3f1e7;
+  font-size: 12.5px;
+  vertical-align: middle;
+}
+/* alternating rows */
+.dt tr.r-odd  td { background: #f3faf4; }
+.dt tr.r-even td { background: #fff; }
+
+/* remove the old spacer rows for a cleaner continuous table */
+.dt tr.sp { display: none; }
+
+/* total row */
+.dt tr.total-row td {
+  background: linear-gradient(180deg, #1b7a3d, #14532d);
+  color: #fff;
+  font-weight: 800;
+  font-size: 14.5px;
+  text-align: center;
+  padding: 10px 10px;
+  border-bottom: none;
+}
+
+/* no-data row */
+.dt tr.no-data td {
+  background: #fafafa;
+  color: #9aa79c;
+  text-align: center;
+  padding: 12px;
+}
+
+/* ══ SUMMARY TABLE ════════════════════════════════════════════════ */
+.sum-tbl {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 8px;
+  border: 1px solid #cfe8d6;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(20, 83, 45, 0.06);
+}
+.sum-tbl th {
+  background: linear-gradient(180deg, #1f6e2a, #14532d);
+  color: #fff;
+  font-weight: 700;
+  padding: 10px 6px;
+  text-align: center;
+  border-bottom: 1px solid #185f22;
+  font-size: 13px;
+}
+.sum-tbl td {
+  background: #f3faf4;
+  padding: 12px 6px;
+  text-align: center;
+  font-weight: 800;
+  font-size: 15px;
+  color: #17301b;
+}
+/* highlight the NET column (last) */
+.sum-tbl th:last-child { background: linear-gradient(180deg, #b8860b, #8a6508); }
+.sum-tbl td:last-child {
+  background: linear-gradient(180deg, #2e7d32, #1b7a3d);
+  color: #fff;
+  font-size: 16px;
+}
+
+/* ══ PRINT ════════════════════════════════════════════════════════ */
+@media print {
+  body { padding: 0; background: #fff; }
+  .sheet { box-shadow: none; border: none; border-radius: 0; max-width: 100%; padding: 0; }
+  @page { size: A4 portrait; margin: 8mm 10mm; }
+}
+</style>
+</head>
+<body>
+
+<div class="sheet">
+
+<!-- ══════════════ TOP HEADER ══════════════ -->
+<div class="top-header">
+
+  <!-- Left: logo + car photo -->
+  <div class="col-left">
+    <img class="logo" src="/assets/gatecar/logo.png" alt="GateCar">
+    {% if car_image %}
+      <img class="car-photo" src="{{ car_image }}" alt="">
+    {% else %}
+      <div class="car-photo-placeholder">صورة السيارة</div>
+    {% endif %}
+  </div>
+
+  <!-- Right: title + info table -->
+  <div class="col-right">
+    <div class="report-title">سجل الحركة الشهري</div>
+    <table class="info-tbl">
+      <tr>
+        <td class="lbl">التاريخ</td>
+        <td class="val">{{ date_label }}</td>
+      </tr>
+      <tr>
+        <td class="lbl">السيارة</td>
+        <td class="val">{{ car.brand }} {{ car.model }}</td>
+      </tr>
+      <tr>
+        <td class="lbl">الموديل</td>
+        <td class="val">{{ car.سنة_الصنع or "—" }}</td>
+      </tr>
+      <tr>
+        <td class="lbl">الرقم</td>
+        <td class="val">{{ car.plate_no or "—" }}</td>
+      </tr>
+      <tr>
+        <td class="lbl">المالك</td>
+        <td class="val">{{ owner_name or "—" }}</td>
+      </tr>
+    </table>
+  </div>
+
+</div>
+
+<!-- ══════════════ INSURANCE / STATUS ══════════════ -->
+<table class="ins-tbl">
+  <tr>
+    <td class="lbl">تأمين إلزامي</td>
+    <td class="val">{{ fmt_date(car.mandatory_insurance_date) if car.mandatory_insurance_date else "" }}</td>
+    <td class="val2"></td>
+  </tr>
+  <tr>
+    <td class="lbl">تأمين شامل</td>
+    <td class="val">{{ fmt_date(car.تاريخ_التأمين_الشامل) if car.تاريخ_التأمين_الشامل else "" }}</td>
+    <td class="val2"></td>
+  </tr>
+  <tr>
+    <td class="lbl">كيلومتراج</td>
+    <td class="val">{{ "{:,}".format(car.current_odometer or 0) }} كم</td>
+    <td class="val2"></td>
+  </tr>
+</table>
+
+<!-- ══════════════ MOVEMENT LOG ══════════════ -->
+<div class="section-title">سجل الحركة</div>
+<table class="dt">
+  <thead>
+    <tr>
+      <th>المستأجر</th>
+      <th>تاريخ التسليم</th>
+      <th>تاريخ الاستلام</th>
+      <th>الأيام</th>
+      <th>القيمة</th>
+      <th>ملاحظات</th>
+      <th>المجموع</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for b in bookings %}
+    <tr class="{{ 'r-odd' if loop.index is odd else 'r-even' }}">
+      <td>{{ b.customer_name or "—" }}</td>
+      <td>{{ fmt_date(b.start_date) }}</td>
+      <td>{{ fmt_date(b.end_date) }}</td>
+      <td>{{ b.duration_days or 0 }}</td>
+      <td>{{ money(b.rate_per_day) }} $</td>
+      <td></td>
+      <td>{{ money(b.total_cost) }} $</td>
+    </tr>
+    <tr class="sp"><td colspan="7"></td></tr>
+    {% else %}
+    <tr class="no-data"><td colspan="7">لا توجد حجوزات في هذه الفترة</td></tr>
+    {% endfor %}
+    <tr class="total-row">
+      <td colspan="6">المجموع</td>
+      <td>{{ money(total_rental) }} $</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ══════════════ MAINTENANCE LOG ══════════════ -->
+<div class="section-title">سجل الصيانة والمدفوعات</div>
+<table class="dt">
+  <thead>
+    <tr>
+      <th>الاجراء</th>
+      <th>التاريخ</th>
+      <th>الكيلومتراج</th>
+      <th>ملاحظات</th>
+      <th>القيمة</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for m in maintenance_rows %}
+    <tr class="{{ 'r-odd' if loop.index is odd else 'r-even' }}">
+      <td>{{ m.type }}{% if m.desc %} — {{ m.desc }}{% endif %}</td>
+      <td>{{ fmt_date(m.date) }}</td>
+      <td>{{ "{:,}".format(m.odometer) if m.odometer else "—" }}</td>
+      <td></td>
+      <td>{{ money(m.cost) }} $</td>
+    </tr>
+    <tr class="sp"><td colspan="5"></td></tr>
+    {% else %}
+    <tr class="no-data"><td colspan="5">لا توجد صيانة أو مدفوعات في هذه الفترة</td></tr>
+    {% endfor %}
+    <tr class="total-row">
+      <td colspan="4">المجموع</td>
+      <td>{{ money(total_costs) }} $</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ══════════════ SUMMARY ══════════════ -->
+<div class="section-title">الخلاصة</div>
+<table class="sum-tbl">
+  <thead>
+    <tr>
+      <th>كامل التأجير</th>
+      <th>نسبة الشركة {{ company_pct }}%</th>
+      <th>المدفوعات</th>
+      <th>الصافي</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>{{ money(total_rental) }} $</td>
+      <td>{{ money(company_amount) }} $</td>
+      <td>{{ money(total_costs) }} $</td>
+      <td>{{ money(owner_net) }} $</td>
+    </tr>
+  </tbody>
+</table>
+
+</div>
+
+</body>
+</html>

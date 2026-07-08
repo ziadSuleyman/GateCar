@@ -4,6 +4,8 @@
 import frappe
 from frappe.model.document import Document
 
+from gatecar.maintenance_status import guard_not_under_maintenance
+
 
 class CarBooking(Document):
 	# begin: auto-generated types
@@ -14,28 +16,43 @@ class CarBooking(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		address_fetched: DF.Data | None
 		amended_from: DF.Link | None
 		booking_id: DF.Data | None
 		brand_fetched: DF.Data | None
 		car: DF.Link | None
 		category_car: DF.Link
+		chassis_no_fetched: DF.Data | None
+		chosen_address: DF.Data | None
 		cost: DF.Int
 		current_odometer_fetched: DF.Int
 		customer: DF.Link
 		customer_name_fetched: DF.Data | None
 		date: DF.Date
-		down_payment: DF.Data | None
+		dob_fetched: DF.Data | None
 		duration_days: DF.Int
 		end_date: DF.Date
+		grand_total: DF.Currency
 		international_phone: DF.Data | None
+		local_tax: DF.Currency
+		license_expiry_date_fetched: DF.Date | None
+		license_issue_date_fetched: DF.Date | None
+		license_issue_place_fetched: DF.Data | None
+		license_no_fetched: DF.Data | None
 		model_fetched: DF.Data | None
+		mother_name_fetched: DF.Data | None
+		national_id_fetched: DF.Data | None
+		nationality_fetched: DF.Data | None
+		passport_no_fetched: DF.Data | None
 		phone_fetched: DF.Data | None
-		plate_no_fetched: DF.Int
+		plate_no_fetched: DF.Data | None
 		rate_per_day: DF.Currency
 		sales_employee: DF.Link | None
 		sales_employee_name: DF.Data | None
+		spending_tax: DF.Currency
 		start_date: DF.Date
-		status_fetched: DF.Literal["\u0645\u062a\u0648\u0641\u0631", "\u0645\u062d\u062c\u0648\u0632", "\u0645\u0624\u062c\u0631", "\u062f\u0627\u062e\u0644\u0627\u0644\u0635\u064a\u0627\u0646\u0629", "\u062c\u0627\u0647\u0632 \u0644\u0644\u062a\u0623\u062c\u064a\u0631", "\u0645\u062c\u0645\u062f\u0629"]
+		text_viwt: DF.TextEditor | None
+		year_fetched: DF.Data | None
 	# end: auto-generated types
 
 	_DOCTYPE_NAME = "Car Booking"
@@ -48,16 +65,42 @@ class CarBooking(Document):
 
 	def before_save(self) -> None:
 		if self.car and self.docstatus == 0:
+			# Block reserving a car that is currently under maintenance.
+			guard_not_under_maintenance(self.car)
 			self.set_car_status("محجوز")
 
 	def validate(self) -> None:
+		self.compute_taxes()
 		if self.docstatus == 1:
 			if not self.car:
 				frappe.throw("يجب اختيار السيارة قبل اعتماد العقد")
+			# Re-check on submit in case a maintenance opened after the draft was saved.
+			guard_not_under_maintenance(self.car)
 			if not self.customer:
 				frappe.throw("يجب اختيار العميل قبل اعتماد العقد")
 			if not self.start_date or not self.end_date:
 				frappe.throw("يجب تحديد تاريخ بدء وانتهاء الإيجار قبل اعتماد العقد")
+
+	def compute_taxes(self) -> None:
+		"""Contract taxes for print (mirrors Car Receipt, same settings/rates).
+
+		Tax base is the rental only (cost = daily rate × days):
+			ضريبة الإنفاق = الإيجار × نسبة الإنفاق
+			ضريبة المحلية = ضريبة الإنفاق × نسبة المحلية
+			الإجمالي شامل الضرائب = الإيجار + ضريبة الإنفاق + ضريبة المحلية
+
+		NOTE: display-only for the contract. Financial reports/dashboards keep
+		sourcing taxes from Car Receipt to avoid double-counting.
+		"""
+		rental = self.cost or 0
+
+		settings = frappe.get_cached_doc("Gate Cars Settings")
+		spend_rate = settings.spending_tax_rate or 0
+		local_rate = settings.local_tax_rate or 0
+
+		self.spending_tax = round(rental * spend_rate / 100.0, 2)
+		self.local_tax = round(self.spending_tax * local_rate / 100.0, 2)
+		self.grand_total = round(rental + self.spending_tax + self.local_tax, 2)
 
 	def on_submit(self) -> None:
 		if self.car:

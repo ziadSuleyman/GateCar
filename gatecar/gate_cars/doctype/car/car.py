@@ -38,6 +38,16 @@ class Car(Document):
 		if not self.custom_id:
 			self.custom_id = self.name
 			frappe.db.set_value("Car", self.name, "custom_id", self.name)
+		# Seed the first periodic-service threshold so the km cycle works from day one.
+		if not self.next_oil_change:
+			from gatecar.maintenance_status import MAINTENANCE_INTERVAL_KM
+
+			frappe.db.set_value(
+				"Car",
+				self.name,
+				"next_oil_change",
+				(self.current_odometer or 0) + MAINTENANCE_INTERVAL_KM,
+			)
 		self.update_fleet_and_branch_count(self.fleet)
 
 	def on_update(self) -> None:

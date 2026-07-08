@@ -1,0 +1,486 @@
+{
+ "actions": [],
+ "autoname": "INS-.#####",
+ "creation": "2026-07-04 10:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "info_section",
+  "booking",
+  "inspection_type",
+  "inspection_date",
+  "info_col_break",
+  "customer_name",
+  "car",
+  "plate_no",
+  "odometer",
+  "phone",
+  "external_section",
+  "ext_col1",
+  "front_bumper",
+  "rear_bumper",
+  "left_side",
+  "right_side",
+  "roof",
+  "license_plate_check",
+  "ext_col2",
+  "front_glass",
+  "windows_mirrors",
+  "lights",
+  "signals",
+  "external_notes",
+  "internal_section",
+  "int_col1",
+  "seats",
+  "dashboard_check",
+  "doors_locks",
+  "floor_carpet",
+  "ac_heating",
+  "no_smoking",
+  "int_col2",
+  "electric_windows",
+  "audio_system",
+  "interior_lighting",
+  "no_odors",
+  "internal_notes",
+  "mechanical_section",
+  "mech_col1",
+  "engine_warning",
+  "engine_oil",
+  "tires",
+  "spare_tire_tools",
+  "mech_col2",
+  "first_aid_kit",
+  "car_jack",
+  "charger_cable",
+  "safety_triangle",
+  "mechanical_notes",
+  "fuel_section",
+  "fuel_level_agreed",
+  "fuel_level",
+  "fuel_col_break",
+  "fuel_type",
+  "documents_present",
+  "damage_section",
+  "pre_existing_damage",
+  "signatures_section",
+  "customer_signature",
+  "sig_col_break",
+  "employee_signature",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "info_section",
+   "fieldtype": "Section Break",
+   "label": "معلومات الفحص"
+  },
+  {
+   "fieldname": "booking",
+   "fieldtype": "Link",
+   "label": "رقم الحجز",
+   "options": "Car Booking",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "inspection_type",
+   "fieldtype": "Select",
+   "label": "نوع الفحص",
+   "options": "عند التسليم\nعند الاستلام",
+   "reqd": 1,
+   "default": "عند التسليم",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "inspection_date",
+   "fieldtype": "Datetime",
+   "label": "التاريخ والوقت",
+   "reqd": 1
+  },
+  {
+   "fieldname": "info_col_break",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "label": "اسم العميل",
+   "read_only": 1
+  },
+  {
+   "fieldname": "car",
+   "fieldtype": "Link",
+   "label": "السيارة",
+   "options": "Car",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "plate_no",
+   "fieldtype": "Data",
+   "label": "رقم اللوحة",
+   "read_only": 1
+  },
+  {
+   "fieldname": "odometer",
+   "fieldtype": "Int",
+   "label": "عداد الكيلومترات (كم)"
+  },
+  {
+   "fieldname": "phone",
+   "fieldtype": "Data",
+   "label": "رقم الهاتف"
+  },
+  {
+   "fieldname": "external_section",
+   "fieldtype": "Section Break",
+   "label": "1. الفحص الخارجي للمركبة"
+  },
+  {
+   "fieldname": "ext_col1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "front_bumper",
+   "fieldtype": "Select",
+   "label": "الصدام الأمامي",
+   "options": "سليم\nمتضرر\nغير متاح",
+   "default": "سليم"
+  },
+  {
+   "fieldname": "rear_bumper",
+   "fieldtype": "Select",
+   "label": "الصدام الخلفي",
+   "options": "سليم\nمتضرر\nغير متاح",
+   "default": "سليم"
+  },
+  {
+   "fieldname": "left_side",
+   "fieldtype": "Select",
+   "label": "الجانب الأيسر",
+   "options": "سليم\nمتضرر\nغير متاح",
+   "default": "سليم"
+  },
+  {
+   "fieldname": "right_side",
+   "fieldtype": "Select",
+   "label": "الجانب الأيمن",
+   "options": "سليم\nمتضرر\nغير متاح",
+   "default": "سليم"
+  },
+  {
+   "fieldname": "roof",
+   "fieldtype": "Select",
+   "label": "السقف",
+   "options": "سليم\nمتضرر\nغير متاح",
+   "default": "سليم"
+  },
+  {
+   "fieldname": "license_plate_check",
+   "fieldtype": "Select",
+   "label": "لوحة المركبة",
+   "options": "سليم\nمتضرر\nغير متاح",
+   "default": "سليم"
+  },
+  {
+   "fieldname": "ext_col2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "front_glass",
+   "fieldtype": "Select",
+   "label": "الزجاج الأمامي",
+   "options": "سليم\nمتضرر\nغير متاح",
+   "default": "سليم"
+  },
+  {
+   "fieldname": "windows_mirrors",
+   "fieldtype": "Select",
+   "label": "النوافذ والمرايا",
+   "options": "سليم\nمتضرر\nغير متاح",
+   "default": "سليم"
+  },
+  {
+   "fieldname": "lights",
+   "fieldtype": "Select",
+   "label": "الأضواء الأمامية والخلفية",
+   "options": "سليم\nمتضرر\nغير متاح",
+   "default": "سليم"
+  },
+  {
+   "fieldname": "signals",
+   "fieldtype": "Select",
+   "label": "المصابيح والإشارات",
+   "options": "سليم\nمتضرر\nغير متاح",
+   "default": "سليم"
+  },
+  {
+   "fieldname": "external_notes",
+   "fieldtype": "Small Text",
+   "label": "ملاحظات خارجية"
+  },
+  {
+   "fieldname": "internal_section",
+   "fieldtype": "Section Break",
+   "label": "2. الفحص الداخلي للمركبة"
+  },
+  {
+   "fieldname": "int_col1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "seats",
+   "fieldtype": "Select",
+   "label": "المقاعد",
+   "options": "سليم\nمتضرر\nغير متاح",
+   "default": "سليم"
+  },
+  {
+   "fieldname": "dashboard_check",
+   "fieldtype": "Select",
+   "label": "لوحة القيادة",
+   "options": "سليم\nمتضرر\nغير متاح",
+   "default": "سليم"
+  },
+  {
+   "fieldname": "doors_locks",
+   "fieldtype": "Select",
+   "label": "الأبواب والأقفال الداخلية",
+   "options": "سليم\nمتضرر\nغير متاح",
+   "default": "سليم"
+  },
+  {
+   "fieldname": "floor_carpet",
+   "fieldtype": "Select",
+   "label": "الأرضية والسجاد",
+   "options": "سليم\nمتضرر\nغير متاح",
+   "default": "سليم"
+  },
+  {
+   "fieldname": "ac_heating",
+   "fieldtype": "Select",
+   "label": "نظام التكييف والتدفئة",
+   "options": "سليم\nمتضرر\nغير متاح",
+   "default": "سليم"
+  },
+  {
+   "fieldname": "no_smoking",
+   "fieldtype": "Select",
+   "label": "حرق سجائر",
+   "options": "سليم\nمتضرر\nغير متاح",
+   "default": "سليم"
+  },
+  {
+   "fieldname": "int_col2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "electric_windows",
+   "fieldtype": "Select",
+   "label": "النوافذ الكهربائية",
+   "options": "سليم\nمتضرر\nغير متاح",
+   "default": "سليم"
+  },
+  {
+   "fieldname": "audio_system",
+   "fieldtype": "Select",
+   "label": "النظام الصوتي والوسائط",
+   "options": "سليم\nمتضرر\nغير متاح",
+   "default": "سليم"
+  },
+  {
+   "fieldname": "interior_lighting",
+   "fieldtype": "Select",
+   "label": "الإضاءة الداخلية",
+   "options": "سليم\nمتضرر\nغير متاح",
+   "default": "سليم"
+  },
+  {
+   "fieldname": "no_odors",
+   "fieldtype": "Select",
+   "label": "خلو المركبة من الروائح",
+   "options": "سليم\nمتضرر\nغير متاح",
+   "default": "سليم"
+  },
+  {
+   "fieldname": "internal_notes",
+   "fieldtype": "Small Text",
+   "label": "ملاحظات داخلية"
+  },
+  {
+   "fieldname": "mechanical_section",
+   "fieldtype": "Section Break",
+   "label": "3. الفحص الميكانيكي وعناصر السلامة"
+  },
+  {
+   "fieldname": "mech_col1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "engine_warning",
+   "fieldtype": "Select",
+   "label": "مؤشر أعطال المحرك",
+   "options": "سليم\nمتضرر\nغير متاح",
+   "default": "سليم"
+  },
+  {
+   "fieldname": "engine_oil",
+   "fieldtype": "Select",
+   "label": "زيت المحرك",
+   "options": "سليم\nمتضرر\nغير متاح",
+   "default": "سليم"
+  },
+  {
+   "fieldname": "tires",
+   "fieldtype": "Select",
+   "label": "مستوى الإطارات",
+   "options": "سليم\nمتضرر\nغير متاح",
+   "default": "سليم"
+  },
+  {
+   "fieldname": "spare_tire_tools",
+   "fieldtype": "Select",
+   "label": "الإطار الاحتياطي وأدواته",
+   "options": "سليم\nمتضرر\nغير متاح",
+   "default": "سليم"
+  },
+  {
+   "fieldname": "mech_col2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "first_aid_kit",
+   "fieldtype": "Select",
+   "label": "حقيبة الإسعافات الأولية",
+   "options": "سليم\nمتضرر\nغير متاح",
+   "default": "سليم"
+  },
+  {
+   "fieldname": "car_jack",
+   "fieldtype": "Select",
+   "label": "رافعة السيارة",
+   "options": "سليم\nمتضرر\nغير متاح",
+   "default": "سليم"
+  },
+  {
+   "fieldname": "charger_cable",
+   "fieldtype": "Select",
+   "label": "وصلة شحن السيارة",
+   "options": "سليم\nمتضرر\nغير متاح",
+   "default": "سليم"
+  },
+  {
+   "fieldname": "safety_triangle",
+   "fieldtype": "Select",
+   "label": "مثلث الأمان",
+   "options": "سليم\nمتضرر\nغير متاح",
+   "default": "سليم"
+  },
+  {
+   "fieldname": "mechanical_notes",
+   "fieldtype": "Small Text",
+   "label": "ملاحظات ميكانيكية"
+  },
+  {
+   "fieldname": "fuel_section",
+   "fieldtype": "Section Break",
+   "label": "4. الوقود والمستندات"
+  },
+  {
+   "fieldname": "fuel_level_agreed",
+   "fieldtype": "Check",
+   "label": "مستوى الوقود متفق عليه"
+  },
+  {
+   "fieldname": "fuel_level",
+   "fieldtype": "Select",
+   "label": "مستوى الوقود",
+   "options": "فارغ\n1/4\n1/2\n3/4\nممتلئ"
+  },
+  {
+   "fieldname": "fuel_col_break",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "fuel_type",
+   "fieldtype": "Select",
+   "label": "نوع الوقود",
+   "options": "\nبنزين\nديزل"
+  },
+  {
+   "fieldname": "documents_present",
+   "fieldtype": "Check",
+   "label": "وجود المستندات داخل المركبة (رخصة - تأمين)"
+  },
+  {
+   "fieldname": "damage_section",
+   "fieldtype": "Section Break",
+   "label": "5. الملاحظات والأضرار الموجودة مسبقاً"
+  },
+  {
+   "fieldname": "pre_existing_damage",
+   "fieldtype": "Small Text",
+   "label": "الأضرار الموجودة مسبقاً (إن وجدت)"
+  },
+  {
+   "fieldname": "signatures_section",
+   "fieldtype": "Section Break",
+   "label": "التوقيعات"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "customer_signature",
+   "fieldtype": "Signature",
+   "label": "توقيع العميل"
+  },
+  {
+   "fieldname": "sig_col_break",
+   "fieldtype": "Column Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "employee_signature",
+   "fieldtype": "Signature",
+   "label": "توقيع الموظف"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Car Inspection",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  }
+ ],
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2026-07-04 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Gate Cars",
+ "name": "Car Inspection",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "amend": 1, "cancel": 1, "create": 1, "delete": 1,
+   "email": 1, "export": 1, "print": 1, "read": 1,
+   "report": 1, "role": "System Manager", "select": 1,
+   "share": 1, "submit": 1, "write": 1
+  },
+  {
+   "create": 1, "email": 1, "print": 1, "read": 1,
+   "report": 1, "role": "موظف مبيعات", "submit": 1, "write": 1
+  },
+  {
+   "cancel": 1, "read": 1, "report": 1, "role": "مدير فرع",
+   "submit": 1, "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

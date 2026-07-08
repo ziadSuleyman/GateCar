@@ -15,13 +15,14 @@ class Revenue(Document):
 		from frappe.types import DF
 
 		amount: DF.Currency
-		booking_reference: DF.Link
+		booking_reference: DF.Link | None
 		car: DF.Data | None
 		customer_name: DF.Data | None
 		date: DF.Date
 		notes: DF.Data | None
 		payment_method: DF.Data | None
-		receiver: DF.Link
+		payment_type: DF.Literal["\u0642\u0628\u0636", "\u062f\u0641\u0639"]
+		receiver: DF.Link | None
 		shift: DF.Link | None
 	# end: auto-generated types
 

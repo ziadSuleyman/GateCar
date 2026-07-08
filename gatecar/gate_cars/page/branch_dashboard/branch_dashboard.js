@@ -50,16 +50,16 @@ function render_branch_dashboard(container, data, profitability) {
 
 			<!-- الإجمالي العام -->
 			<div class="frappe-card" style="margin-bottom: 20px; padding: 15px;">
-				${bcollapsible_header("fa-car", "#1565c0", "إجمالي السيارات")}
+				${bcollapsible_header("fa-car", "#1565c0", "إجمالي عدد السيارات")}
 				<div class="collapsible-body" style="display: none; margin-top: 12px;">
 					<div class="row" style="display: flex; flex-wrap: wrap;">
 						${bstat("إجمالي", data.total_cars, "blue", "fa-car")}
 						${bstat("متوفرة", available, "green", "fa-check-circle")}
-						${bstat("محجوزة", reserved, "yellow", "fa-clock")}
+						${bstat("محجوزة", reserved, "yellow", "fa-calendar")}
 						${bstat("مؤجرة", rented, "orange", "fa-key")}
 						${bstat("صيانة", in_maintenance, "red", "fa-wrench")}
 						${bstat("جاهز للتسليم", ready, "purple", "fa-thumbs-up")}
-						${bstat("مجمدة", data.frozen_cars, "grey", "fa-snowflake")}
+						${bstat("مجمدة", data.frozen_cars, "grey", "fa-ban")}
 					</div>
 				</div>
 			</div>
@@ -74,7 +74,7 @@ function render_branch_dashboard(container, data, profitability) {
 								<tr>
 									<th>الأسطول</th>
 									<th>الفرع</th>
-									<th>إجمالي السيارات</th>
+									<th>إجمالي عدد السيارات</th>
 									<th>متوفرة</th>
 									<th>مؤجرة</th>
 								</tr>
@@ -107,8 +107,8 @@ function render_branch_dashboard(container, data, profitability) {
 									<th>النوع</th>
 									<th>الموديل</th>
 									<th>الحالة</th>
-									<th>تكاليف الصيانة</th>
-									<th>تكاليف تبديل الزيت</th>
+									<th>تكاليف الصيانة الدورية</th>
+									<th>مصاريف السيارة</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -118,8 +118,8 @@ function render_branch_dashboard(container, data, profitability) {
 										<td>${car.brand}</td>
 										<td>${car.model}</td>
 										<td>${car.status}</td>
-										<td style="color: #c62828;">${bcurrency(car.total_maintenance)}</td>
-										<td style="color: #e65100;">${bcurrency(car.total_oil_change || 0)}</td>
+										<td style="color: #e65100;">${bcurrency(car.total_periodic || 0)}</td>
+										<td style="color: #c62828;">${bcurrency(car.total_expense || 0)}</td>
 									</tr>
 								`).join("")}
 							</tbody>
@@ -136,11 +136,11 @@ function render_branch_dashboard(container, data, profitability) {
 					<div class="row" style="display: flex; flex-wrap: wrap;">
 						${bstat("إجمالي", b.car_count, "blue", "fa-car")}
 						${bstat("متوفرة", b.available, "green", "fa-check-circle")}
-						${bstat("محجوزة", b.reserved, "yellow", "fa-clock")}
+						${bstat("محجوزة", b.reserved, "yellow", "fa-calendar")}
 						${bstat("مؤجرة", b.rented, "orange", "fa-key")}
 						${bstat("صيانة", b.in_maintenance, "red", "fa-wrench")}
 						${bstat("جاهز للتسليم", b.ready, "purple", "fa-thumbs-up")}
-						${bstat("مجمدة", b.frozen, "grey", "fa-snowflake")}
+						${bstat("مجمدة", b.frozen, "grey", "fa-ban")}
 					</div>
 				</div>
 			</div>

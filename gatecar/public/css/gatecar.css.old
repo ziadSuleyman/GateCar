@@ -1,0 +1,233 @@
+/* ===== Gate Cars Global Styles ===== */
+
+/* --- Logo background: covers ALL desk pages --- */
+body::before {
+	content: "";
+	position: fixed;
+	top: 0; right: 0; bottom: 0; left: 0;
+	background-image: url("/assets/gatecar/logo.png");
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 75%;
+	filter: blur(12px) brightness(0.60);
+	z-index: 0;
+	pointer-events: none;
+}
+
+body::after {
+	content: "";
+	position: fixed;
+	top: 0; right: 0; bottom: 0; left: 0;
+	background: rgba(4, 12, 6, 0.45);
+	z-index: 0;
+	pointer-events: none;
+}
+
+/* All desk elements sit above the fixed background */
+.navbar,
+.page-wrapper,
+.layout-side-section,
+.layout-main-section,
+.body-sidebar,
+.body-sidebar-container,
+.page-container {
+	position: relative;
+	z-index: 1;
+}
+
+/* --- Transparent containers globally --- */
+.layout-main-section,
+.layout-main-section-wrapper,
+.page-container,
+.page-wrapper,
+.layout-side-section,
+.container,
+.frappe-app {
+	background: transparent !important;
+	box-shadow: none !important;
+}
+
+/* --- Page header (breadcrumb bar) --- */
+.page-head,
+.page-head-content,
+.sticky-top.page-head,
+.title-area,
+.page-title-area {
+	background: transparent !important;
+	box-shadow: none !important;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.10) !important;
+}
+
+/* --- List view container --- */
+.list-row-container,
+.frappe-list,
+.list-row-head,
+.list-row-head .list-row,
+.filter-area,
+.filter-section,
+.list-filters-wrapper {
+	background: transparent !important;
+}
+
+/* List rows: semi-transparent white for readability */
+.frappe-list .list-row {
+	background: rgba(255, 255, 255, 0.82) !important;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.30) !important;
+}
+
+.frappe-list .list-row:hover {
+	background: rgba(255, 255, 255, 0.95) !important;
+}
+
+/* List header row */
+.frappe-list .list-row-head {
+	background: rgba(255, 255, 255, 0.55) !important;
+	backdrop-filter: blur(4px);
+	-webkit-backdrop-filter: blur(4px);
+}
+
+/* Column filter bar */
+.frappe-list .columns-filter-wrapper,
+.list-filters {
+	background: transparent !important;
+}
+
+/* Form view */
+.page-form,
+.form-page,
+.form-wrapper,
+.form-container {
+	background: transparent !important;
+}
+
+/* Dashboard/page content wrappers */
+.page-content,
+.page-body {
+	background: transparent !important;
+}
+
+/* --- Navbar: semi-transparent dark on all pages --- */
+.navbar {
+	background: rgba(4, 15, 6, 0.55) !important;
+	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(8px);
+	box-shadow: none !important;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.navbar .navbar-brand,
+.navbar a,
+.navbar .nav-link,
+.navbar .page-title,
+.navbar-breadcrumbs {
+	color: rgba(255, 255, 255, 0.90) !important;
+}
+
+/* --- Sidebar: always transparent on all pages --- */
+.body-sidebar {
+	background: transparent !important;
+	border-right: none !important;
+	border-left: none !important;
+}
+
+.body-sidebar .sidebar-item-label,
+.body-sidebar .header-title {
+	display: block !important;
+	opacity: 1 !important;
+	width: auto !important;
+}
+
+.body-sidebar .standard-sidebar-item {
+	border-radius: 8px !important;
+	transition: all 0.2s ease !important;
+}
+
+.body-sidebar .standard-sidebar-item:hover {
+	background: rgba(76, 175, 80, 0.12) !important;
+}
+
+.body-sidebar .standard-sidebar-item.active-sidebar {
+	background: rgba(76, 175, 80, 0.20) !important;
+}
+
+.body-sidebar .standard-sidebar-item.active-sidebar .sidebar-item-label,
+.body-sidebar .standard-sidebar-item.active-sidebar .sidebar-item-icon svg {
+	color: #4caf50 !important;
+	fill: #4caf50 !important;
+}
+
+.body-sidebar .sidebar-header {
+	border-radius: 10px !important;
+	transition: all 0.2s ease !important;
+}
+
+/* --- Workspace-specific: editor content area --- */
+body.gatecar-workspace .editor-js-container {
+	border-radius: 14px;
+	overflow: visible;
+	background: transparent !important;
+}
+
+body.gatecar-workspace .editor-js-container::before,
+body.gatecar-workspace .editor-js-container::after {
+	display: none !important;
+}
+
+body.gatecar-workspace .editor-js-container #editorjs,
+body.gatecar-workspace .editor-js-container .codex-editor,
+body.gatecar-workspace .editor-js-container .codex-editor__redactor {
+	background: transparent !important;
+}
+
+/* Section headers on dark backdrop */
+body.gatecar-workspace .editor-js-container .widget-group .group-title,
+body.gatecar-workspace .editor-js-container h4.widget-group-title,
+body.gatecar-workspace .codex-editor [contenteditable] h4 {
+	color: #fff !important;
+}
+
+/* --- Card Widgets --- */
+body .widget.links-widget-box {
+	background-color: var(--card-bg) !important;
+	border: 1px solid var(--border-color) !important;
+	border-radius: 14px !important;
+	transition: all 0.3s ease !important;
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25) !important;
+	overflow: hidden !important;
+}
+
+body .widget.links-widget-box:hover {
+	border-color: #4caf50 !important;
+	box-shadow: 0 6px 20px rgba(76, 175, 80, 0.18) !important;
+	transform: translateY(-3px) !important;
+}
+
+body .widget.links-widget-box .widget-head .widget-title {
+	font-size: var(--text-lg) !important;
+	font-weight: 700 !important;
+}
+
+body .widget.links-widget-box .widget-body .link-item {
+	padding: 8px 14px !important;
+	margin: 2px 6px !important;
+	border-radius: 8px !important;
+	transition: all 0.2s ease !important;
+}
+
+body .widget.links-widget-box .widget-body .link-item:hover {
+	background-color: rgba(76, 175, 80, 0.08) !important;
+}
+
+/* --- Shortcut Widgets --- */
+body .widget.shortcut-widget-box {
+	border: 1px solid var(--border-color) !important;
+	border-radius: 12px !important;
+	transition: all 0.3s ease !important;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
+}
+
+body .widget.shortcut-widget-box:hover {
+	border-color: #4caf50 !important;
+	box-shadow: 0 4px 14px rgba(76, 175, 80, 0.16) !important;
+	transform: translateY(-2px) !important;
+}

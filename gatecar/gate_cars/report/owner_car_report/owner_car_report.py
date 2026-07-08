@@ -55,6 +55,12 @@ def get_columns() -> list[dict]:
 			"width": 120,
 		},
 		{
+			"fieldname": "taxes",
+			"label": _("الضرائب"),
+			"fieldtype": "Currency",
+			"width": 100,
+		},
+		{
 			"fieldname": "total_costs",
 			"label": _("التكاليف"),
 			"fieldtype": "Currency",
@@ -95,7 +101,11 @@ def get_data(filters: dict) -> list[dict]:
 
 		total_revenue = frappe.db.sql(
 			"""
-			SELECT COALESCE(SUM(r.amount), 0)
+			SELECT COALESCE(SUM(
+				CASE WHEN r.payment_type = 'قبض' THEN r.amount
+				     WHEN r.payment_type = 'دفع' THEN -r.amount
+				     ELSE 0 END
+			), 0)
 			FROM `tabRevenue` r
 			JOIN `tabCar Booking` b ON r.booking_reference = b.name
 			WHERE b.car = %s AND r.date BETWEEN %s AND %s AND b.docstatus = 1
@@ -103,27 +113,42 @@ def get_data(filters: dict) -> list[dict]:
 			(car.name, from_date, to_date),
 		)[0][0] or 0
 
-		maintenance_cost = frappe.db.sql(
-			"""
-			SELECT COALESCE(SUM(cost), 0)
-			FROM `tabCar Maintenance`
-			WHERE car = %s AND `التاريخ` BETWEEN %s AND %s AND docstatus = 1
-			""",
-			(car.name, from_date, to_date),
-		)[0][0] or 0
-
 		oil_cost = frappe.db.sql(
 			"""
 			SELECT COALESCE(SUM(cost), 0)
-			FROM `tabOil Change`
+			FROM `tabPeriodic Maintenance`
 			WHERE car = %s AND `التاريخ` BETWEEN %s AND %s AND docstatus = 1
 			""",
 			(car.name, from_date, to_date),
 		)[0][0] or 0
 
-		total_costs = maintenance_cost + oil_cost
-		gate_car_share = total_revenue * gate_percent / 100
-		owner_gross_share = total_revenue * owner_percent / 100
+		expense_cost = frappe.db.sql(
+			"""
+			SELECT COALESCE(SUM(`التكلفة`), 0)
+			FROM `tabCar Expense`
+			WHERE car = %s AND `التاريخ` BETWEEN %s AND %s AND docstatus = 1
+			""",
+			(car.name, from_date, to_date),
+		)[0][0] or 0
+
+		# Match the invoice tax to the rental start (pickup_date = booking start_date)
+		# so it lands in the same period as that rental's revenue.
+		taxes = frappe.db.sql(
+			"""
+			SELECT COALESCE(SUM(COALESCE(spending_tax, 0) + COALESCE(local_tax, 0)), 0)
+			FROM `tabCar Receipt`
+			WHERE car = %s AND pickup_date BETWEEN %s AND %s AND docstatus = 1
+			""",
+			(car.name, from_date, to_date),
+		)[0][0] or 0
+
+		# التكاليف = صيانة + مصاريف فقط (الضرائب لها عمودها المخصص)
+		total_costs = oil_cost + expense_cost
+		# الضريبة تُزال من القِدر أولاً، ثم تُقسَّم الحصص على الباقي — فلا الشركة
+		# ولا المالك يأخذ نسبته من قيمة الضريبة (مطابقة لقاعدة لوحة التحكم).
+		revenue_ex_tax = total_revenue - taxes
+		gate_car_share = revenue_ex_tax * gate_percent / 100
+		owner_gross_share = revenue_ex_tax * owner_percent / 100
 		owner_net = owner_gross_share - total_costs
 
 		if total_revenue or total_costs:
@@ -135,6 +160,7 @@ def get_data(filters: dict) -> list[dict]:
 				"total_revenue": total_revenue,
 				"gate_car_share": gate_car_share,
 				"owner_gross_share": owner_gross_share,
+				"taxes": taxes,
 				"total_costs": total_costs,
 				"owner_net": owner_net,
 			})

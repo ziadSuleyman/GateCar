@@ -34,11 +34,18 @@
   "sales_employee_name",
   "column_break_agou",
   "total_cost",
-  "checklist_section",
-  "checklist",
+  "spending_tax",
+  "local_tax",
+  "grand_total",
   "notes_section",
   "notes",
-  "amended_from"
+  "previous_payments_section",
+  "previous_payments_html",
+  "amended_from",
+  "signatures_section",
+  "customer_signature",
+  "sig_col_break",
+  "employee_signature"
  ],
  "fields": [
   {
@@ -195,18 +202,27 @@
   {
    "fieldname": "total_cost",
    "fieldtype": "Currency",
-   "label": "التكلفة النهائية",
+   "label": "الإجمالي قبل الضريبة",
    "read_only": 1
   },
   {
-   "fieldname": "checklist_section",
-   "fieldtype": "Section Break",
-   "label": "فحص حالة السيارة"
+   "fieldname": "spending_tax",
+   "fieldtype": "Currency",
+   "label": "ضريبة الإنفاق",
+   "read_only": 1
   },
   {
-   "fieldname": "checklist",
-   "fieldtype": "Attach",
-   "label": "قائمة فحص السيارة (استلام)"
+   "fieldname": "local_tax",
+   "fieldtype": "Currency",
+   "label": "ضريبة المحلية",
+   "read_only": 1
+  },
+  {
+   "fieldname": "grand_total",
+   "fieldtype": "Currency",
+   "label": "الإجمالي النهائي المستحق",
+   "read_only": 1,
+   "bold": 1
   },
   {
    "fieldname": "notes_section",
@@ -237,13 +253,34 @@
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
+  },
+  {
+   "fieldname": "signatures_section",
+   "fieldtype": "Section Break",
+   "label": "التوقيعات"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "customer_signature",
+   "fieldtype": "Signature",
+   "label": "توقيع العميل"
+  },
+  {
+   "fieldname": "sig_col_break",
+   "fieldtype": "Column Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "employee_signature",
+   "fieldtype": "Signature",
+   "label": "توقيع الموظف"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-06-24 13:39:07.694230",
+ "modified": "2026-07-02 10:00:00.000000",
  "modified_by": "Administrator",
  "module": "Gate Cars",
  "name": "Car Receipt",
