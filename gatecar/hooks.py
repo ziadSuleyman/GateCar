@@ -238,6 +238,17 @@ export_python_type_annotations = True
 fixtures = [
 	{"dt": "Role", "filters": [["name", "in", ["مدير فرع", "مشرف أسطول", "موظف مبيعات"]]]},
 	{"dt": "Designation", "filters": [["name", "in", ["مدير فرع", "مشرف أسطول", "موظف مبيعات"]]]},
+	# ── DB-stored config that git alone can't carry ──────────────────────────
+	{
+		"dt": "Client Script",
+		"filters": [["dt", "in", ["Car", "Car Booking", "Car Receipt", "Car Branch", "Customer Car", "Revenue"]]],
+	},
+	{"dt": "Server Script"},
+	{
+		"dt": "Print Format",
+		"filters": [["doc_type", "in", ["Car Booking", "Car Receipt", "Car Inspection", "Revenue", "Car"]]],
+	},
+	{"dt": "Gate Cars Settings"},
 ]
 
 # Require all whitelisted methods to have type annotations
