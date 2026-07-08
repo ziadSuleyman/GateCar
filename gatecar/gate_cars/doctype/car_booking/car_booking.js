@@ -209,8 +209,78 @@ function show_invoice_dialog(name) {
 	});
 }
 
+function build_revenues_html(rows) {
+	const money = (v) => format_currency(v || 0);
+	let total = 0;
+	const body = rows.map((r, i) => {
+		const is_pay = r.payment_type === "دفع";
+		total += (is_pay ? -1 : 1) * (r.amount || 0);
+		const color = is_pay ? "#c62828" : "#2e7d32";
+		const badge = is_pay
+			? `<span style="background:#fbe9e7;color:#c62828;padding:2px 7px;border-radius:4px;font-size:11px;font-weight:600;">دفع</span>`
+			: `<span style="background:#e8f5e9;color:#2e7d32;padding:2px 7px;border-radius:4px;font-size:11px;font-weight:600;">قبض</span>`;
+		return `<tr style="${is_pay ? 'background:#fff8f8;' : ''}">
+			<td style="padding:6px 8px;border-bottom:1px solid #eee;">${i + 1}</td>
+			<td style="padding:6px 8px;border-bottom:1px solid #eee;"><a href="/app/revenue/${r.name}">${r.name}</a> ${badge}</td>
+			<td style="padding:6px 8px;border-bottom:1px solid #eee;">${r.date ? frappe.datetime.str_to_user(r.date) : "—"}</td>
+			<td style="padding:6px 8px;border-bottom:1px solid #eee;text-align:left;font-weight:700;color:${color};">${is_pay ? "- " : ""}${money(r.amount)}</td>
+			<td style="padding:6px 8px;border-bottom:1px solid #eee;">${r.payment_method || "—"}</td>
+			<td style="padding:6px 8px;border-bottom:1px solid #eee;">${r.notes || "—"}</td>
+		</tr>`;
+	}).join("");
+
+	return `<div style="font-family:inherit;font-size:13px;">
+		<table style="width:100%;border-collapse:collapse;">
+			<thead><tr style="background:#2e7d32;color:#fff;">
+				<th style="padding:7px 8px;">#</th>
+				<th style="padding:7px 8px;">رقم القيد</th>
+				<th style="padding:7px 8px;">التاريخ</th>
+				<th style="padding:7px 8px;">المبلغ</th>
+				<th style="padding:7px 8px;">طريقة الدفع</th>
+				<th style="padding:7px 8px;">ملاحظات</th>
+			</tr></thead>
+			<tbody>${body}</tbody>
+		</table>
+		<div style="margin-top:12px;padding:10px 14px;background:#e8f5e9;border:2px solid #66bb6a;border-radius:8px;display:flex;justify-content:space-between;align-items:center;">
+			<span style="font-weight:700;color:#1b5e20;">إجمالي المقبوض (قبض − دفع)</span>
+			<span style="font-weight:800;font-size:18px;color:#1b5e20;">${money(total)}</span>
+		</div>
+	</div>`;
+}
+
+function show_revenues_dialog(booking_name) {
+	frappe.db.get_list("Revenue", {
+		filters: { booking_reference: booking_name },
+		fields: ["name", "date", "amount", "payment_type", "payment_method", "notes"],
+		order_by: "date asc, creation asc",
+		limit: 0,
+	}).then((rows) => {
+		if (!rows || !rows.length) {
+			frappe.msgprint(__("لا توجد قيود مالية مرتبطة بهذا العقد"));
+			return;
+		}
+		const d = new frappe.ui.Dialog({
+			title: __("القيود المالية — {0}", [booking_name]),
+			size: "large",
+			fields: [{ fieldtype: "HTML", fieldname: "body" }],
+			primary_action_label: __("فتح قائمة القيود"),
+			primary_action: () =>
+				frappe.set_route("List", "Revenue", { booking_reference: booking_name }),
+		});
+		d.fields_dict.body.$wrapper.html(build_revenues_html(rows));
+		d.show();
+	});
+}
+
 function render_rental_info_buttons(frm) {
 	const GROUP = __("معلومات التأجير");
+
+	// Financial entries (Revenue: قبض/دفع) linked to this booking
+	frm.add_custom_button(
+		__("عرض القيود المالية"),
+		() => show_revenues_dialog(frm.doc.name),
+		GROUP
+	);
 
 	// Inspections (تسليم / استلام) — view each checklist in a dialog
 	frappe.db.get_list("Car Inspection", {
