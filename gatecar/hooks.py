@@ -248,6 +248,10 @@ fixtures = [
 		"dt": "Print Format",
 		"filters": [["doc_type", "in", ["Car Booking", "Car Receipt", "Car Inspection", "Revenue", "Car"]]],
 	},
+	{
+		"dt": "Workspace",
+		"filters": [["name", "in", ["Gate Cars", "الأسطول", "المبيعات", "إدارة الفرع"]]],
+	},
 	{"dt": "Gate Cars Settings"},
 ]
 
