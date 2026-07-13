@@ -152,6 +152,8 @@ doc_events = {
 scheduler_events = {
 	"daily": [
 		"gatecar.tasks.check_upcoming_maintenance",
+		"gatecar.accrual.monthly_accrual_job",
+		"gatecar.accrual.reconcile_accrual_entries",
 	],
 }
 
@@ -252,6 +254,7 @@ fixtures = [
 		"dt": "Workspace",
 		"filters": [["name", "in", ["Gate Cars", "الأسطول", "المبيعات", "إدارة الفرع"]]],
 	},
+	{"dt": "Custom HTML Block"},
 	{"dt": "Gate Cars Settings"},
 ]
 

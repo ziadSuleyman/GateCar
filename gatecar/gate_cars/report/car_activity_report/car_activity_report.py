@@ -1,6 +1,6 @@
 import frappe
 from frappe import _
-from frappe.utils import fmt_money, format_date, flt
+from frappe.utils import fmt_money, format_date, flt, get_first_day, get_last_day
 
 
 def execute(filters=None):
@@ -37,28 +37,31 @@ def execute(filters=None):
 	data.append(_section_header("سجل الحركة"))
 	data.append(_table_header(["#", "المستأجر", "تاريخ التسليم", "تاريخ الاستلام", "الأيام", "القيمة اليومية", "المجموع", "ملاحظات"]))
 
+	# القيمة المعروضة هنا استحقاقية (Accrual) من Car Accrual Entry — قيمة العقد
+	# موزّعة على شهرها التقويمي، وليست الكاش الفعلي المُحصَّل (Revenue). أي حجز
+	# لم يُغلق بعد يظهر بتقدير تناسبي حسب أيامه في هذا الشهر؛ شهر إغلاق العقد
+	# (Car Receipt) يحمل كامل الفرق المتبقي (تأخير، مسافة زائدة، أضرار).
+	period_start = get_first_day(from_date)
+	period_end = get_last_day(to_date)
+
 	bookings = frappe.db.sql("""
 		SELECT
 			cb.name,
 			cb.customer_name_fetched AS customer_name,
 			cb.start_date AS delivery_date,
 			cb.end_date AS return_date,
-			cb.duration_days,
 			cb.rate_per_day,
-			COALESCE(SUM(
-				CASE WHEN r.payment_type = 'قبض' THEN r.amount
-				     WHEN r.payment_type = 'دفع' THEN -r.amount
-				     ELSE 0 END
-			), 0) AS total_cost
+			SUM(ae.days) AS accrued_days,
+			SUM(ae.total_amount) AS total_cost
 		FROM `tabCar Booking` cb
-		LEFT JOIN `tabRevenue` r
-			ON r.booking_reference = cb.name
+		JOIN `tabCar Accrual Entry` ae
+			ON ae.booking = cb.name AND ae.docstatus = 1
+			AND ae.period BETWEEN %(period_start)s AND %(period_end)s
 		WHERE cb.car = %(car)s
-		  AND cb.start_date BETWEEN %(from_date)s AND %(to_date)s
 		  AND cb.docstatus = 1
 		GROUP BY cb.name
 		ORDER BY cb.start_date
-	""", {"car": car_name, "from_date": from_date, "to_date": to_date}, as_dict=True)
+	""", {"car": car_name, "period_start": period_start, "period_end": period_end}, as_dict=True)
 
 	total_rental = 0
 	for i, b in enumerate(bookings, 1):
@@ -68,7 +71,7 @@ def execute(filters=None):
 			"label": b.customer_name or "—",
 			"date1": format_date(b.delivery_date),
 			"date2": format_date(b.return_date),
-			"qty": b.duration_days or 0,
+			"qty": b.accrued_days or 0,
 			"unit_cost": fmt_money(b.rate_per_day or 0),
 			"amount": fmt_money(b.total_cost or 0),
 			"notes": "",
@@ -84,14 +87,16 @@ def execute(filters=None):
 
 	maintenance_rows = []
 
-	# Periodic Maintenance
+	# Periodic Maintenance — same expanded month range as the accrual sections
+	# above (period_start/period_end), so every part of the report describes
+	# the same calendar-month window instead of drifting apart.
 	for m in frappe.db.sql("""
 		SELECT name, `التاريخ` AS date, oil_name AS desc_text, cost, odometer_at_alert AS odometer
 		FROM `tabPeriodic Maintenance`
 		WHERE car = %(car)s AND docstatus = 1
-		  AND `التاريخ` BETWEEN %(from_date)s AND %(to_date)s
+		  AND `التاريخ` BETWEEN %(period_start)s AND %(period_end)s
 		ORDER BY `التاريخ`
-	""", {"car": car_name, "from_date": from_date, "to_date": to_date}, as_dict=True):
+	""", {"car": car_name, "period_start": period_start, "period_end": period_end}, as_dict=True):
 		maintenance_rows.append({"type": "صيانة دورية", "date": m.date, "odometer": m.odometer, "desc": m.desc_text, "cost": m.cost})
 
 	# Car Expense
@@ -99,22 +104,24 @@ def execute(filters=None):
 		SELECT name, `التاريخ` AS date, `التوصيف` AS desc_text, `التكلفة` AS cost, 0 AS odometer
 		FROM `tabCar Expense`
 		WHERE car = %(car)s AND docstatus = 1
-		  AND `التاريخ` BETWEEN %(from_date)s AND %(to_date)s
+		  AND `التاريخ` BETWEEN %(period_start)s AND %(period_end)s
 		ORDER BY `التاريخ`
-	""", {"car": car_name, "from_date": from_date, "to_date": to_date}, as_dict=True):
+	""", {"car": car_name, "period_start": period_start, "period_end": period_end}, as_dict=True):
 		maintenance_rows.append({"type": "مصروف", "date": m.date, "odometer": m.odometer, "desc": m.desc_text, "cost": m.cost})
 
-	# Taxes (spending + local) from the Car Receipt invoices — matched to the rental
-	# start (pickup_date) so they land in the same period as the booking's revenue.
+	# Taxes (spending + local) from the same Car Accrual Entry rows behind
+	# total_rental above — so they land in whichever month they actually
+	# accrued/settled in, and never double-count against the accrual figure.
 	for m in frappe.db.sql("""
-		SELECT name, pickup_date AS date, (COALESCE(spending_tax,0) + COALESCE(local_tax,0)) AS cost
-		FROM `tabCar Receipt`
-		WHERE car = %(car)s AND docstatus = 1
-		  AND pickup_date BETWEEN %(from_date)s AND %(to_date)s
-		  AND (COALESCE(spending_tax,0) + COALESCE(local_tax,0)) > 0
-		ORDER BY pickup_date
-	""", {"car": car_name, "from_date": from_date, "to_date": to_date}, as_dict=True):
-		maintenance_rows.append({"type": "ضريبة", "date": m.date, "odometer": 0, "desc": "ضريبة إنفاق + محلية", "cost": m.cost})
+		SELECT ae.booking AS name, ae.period AS date,
+		       (COALESCE(ae.spending_tax,0) + COALESCE(ae.local_tax,0)) AS cost
+		FROM `tabCar Accrual Entry` ae
+		WHERE ae.car = %(car)s AND ae.docstatus = 1
+		  AND ae.period BETWEEN %(period_start)s AND %(period_end)s
+		  AND (COALESCE(ae.spending_tax,0) + COALESCE(ae.local_tax,0)) != 0
+		ORDER BY ae.period
+	""", {"car": car_name, "period_start": period_start, "period_end": period_end}, as_dict=True):
+		maintenance_rows.append({"type": "ضريبة", "date": m.date, "odometer": 0, "desc": "ضريبة إنفاق + محلية (استحقاق)", "cost": m.cost})
 
 	# Sort all by date
 	maintenance_rows.sort(key=lambda x: x["date"] or "")

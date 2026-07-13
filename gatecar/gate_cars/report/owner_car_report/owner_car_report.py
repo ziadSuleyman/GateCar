@@ -1,5 +1,6 @@
 import frappe
 from frappe import _
+from frappe.utils import get_first_day, get_last_day
 
 
 def execute(filters: dict | None = None) -> tuple:
@@ -93,6 +94,11 @@ def get_data(filters: dict) -> list[dict]:
 		fields=["name", "brand", "model", "plate_no", "owner_car"],
 	)
 
+	# استحقاقي من Car Accrual Entry — نفس مصدر Car Activity Report، وليس الكاش
+	# الفعلي من Revenue. راجع gatecar/accrual.py لمنطق التوليد الكامل.
+	period_start = get_first_day(from_date)
+	period_end = get_last_day(to_date)
+
 	data = []
 	for car in cars:
 		owner_name = ""
@@ -101,16 +107,11 @@ def get_data(filters: dict) -> list[dict]:
 
 		total_revenue = frappe.db.sql(
 			"""
-			SELECT COALESCE(SUM(
-				CASE WHEN r.payment_type = 'قبض' THEN r.amount
-				     WHEN r.payment_type = 'دفع' THEN -r.amount
-				     ELSE 0 END
-			), 0)
-			FROM `tabRevenue` r
-			JOIN `tabCar Booking` b ON r.booking_reference = b.name
-			WHERE b.car = %s AND r.date BETWEEN %s AND %s AND b.docstatus = 1
+			SELECT COALESCE(SUM(total_amount), 0)
+			FROM `tabCar Accrual Entry`
+			WHERE car = %s AND docstatus = 1 AND period BETWEEN %s AND %s
 			""",
-			(car.name, from_date, to_date),
+			(car.name, period_start, period_end),
 		)[0][0] or 0
 
 		oil_cost = frappe.db.sql(
@@ -119,7 +120,7 @@ def get_data(filters: dict) -> list[dict]:
 			FROM `tabPeriodic Maintenance`
 			WHERE car = %s AND `التاريخ` BETWEEN %s AND %s AND docstatus = 1
 			""",
-			(car.name, from_date, to_date),
+			(car.name, period_start, period_end),
 		)[0][0] or 0
 
 		expense_cost = frappe.db.sql(
@@ -128,18 +129,18 @@ def get_data(filters: dict) -> list[dict]:
 			FROM `tabCar Expense`
 			WHERE car = %s AND `التاريخ` BETWEEN %s AND %s AND docstatus = 1
 			""",
-			(car.name, from_date, to_date),
+			(car.name, period_start, period_end),
 		)[0][0] or 0
 
-		# Match the invoice tax to the rental start (pickup_date = booking start_date)
-		# so it lands in the same period as that rental's revenue.
+		# نفس صفوف Car Accrual Entry المستخدَمة أعلاه في total_revenue — الضريبة
+		# مضمّنة فيها أصلاً، تُستخرَج هنا فقط لعرضها في عمودها المخصص.
 		taxes = frappe.db.sql(
 			"""
 			SELECT COALESCE(SUM(COALESCE(spending_tax, 0) + COALESCE(local_tax, 0)), 0)
-			FROM `tabCar Receipt`
-			WHERE car = %s AND pickup_date BETWEEN %s AND %s AND docstatus = 1
+			FROM `tabCar Accrual Entry`
+			WHERE car = %s AND docstatus = 1 AND period BETWEEN %s AND %s
 			""",
-			(car.name, from_date, to_date),
+			(car.name, period_start, period_end),
 		)[0][0] or 0
 
 		# التكاليف = صيانة + مصاريف فقط (الضرائب لها عمودها المخصص)

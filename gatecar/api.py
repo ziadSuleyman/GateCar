@@ -3,7 +3,7 @@ from urllib.parse import quote
 
 import frappe
 from frappe import _
-from frappe.utils import format_date, flt, getdate
+from frappe.utils import format_date, flt, getdate, get_first_day, get_last_day
 
 
 @frappe.whitelist()
@@ -61,28 +61,29 @@ def get_car_activity_html(car: str, from_date: str, to_date: str) -> str:
 
 	car_image = getattr(car_doc, "صورة_السيارة", None) or ""
 
+	# استحقاقي من Car Accrual Entry — نفس مصدر car_activity_report.py، وليس
+	# الكاش الفعلي من Revenue. راجع gatecar/accrual.py لمنطق التوليد الكامل.
+	period_start = get_first_day(from_date)
+	period_end = get_last_day(to_date)
+
 	bookings = frappe.db.sql("""
 		SELECT
 			cb.name,
 			cb.customer_name_fetched AS customer_name,
 			cb.start_date,
 			cb.end_date,
-			cb.duration_days,
 			cb.rate_per_day,
-			COALESCE(SUM(
-				CASE WHEN r.payment_type = 'قبض' THEN r.amount
-				     WHEN r.payment_type = 'دفع' THEN -r.amount
-				     ELSE 0 END
-			), 0) AS total_cost
+			SUM(ae.days) AS duration_days,
+			SUM(ae.total_amount) AS total_cost
 		FROM `tabCar Booking` cb
-		LEFT JOIN `tabRevenue` r
-			ON r.booking_reference = cb.name
+		JOIN `tabCar Accrual Entry` ae
+			ON ae.booking = cb.name AND ae.docstatus = 1
+			AND ae.period BETWEEN %(period_start)s AND %(period_end)s
 		WHERE cb.car = %(car)s
-		  AND cb.start_date BETWEEN %(from_date)s AND %(to_date)s
 		  AND cb.docstatus = 1
 		GROUP BY cb.name
 		ORDER BY cb.start_date
-	""", {"car": car, "from_date": from_date, "to_date": to_date}, as_dict=True)
+	""", {"car": car, "period_start": period_start, "period_end": period_end}, as_dict=True)
 
 	maintenance_rows = []
 
@@ -90,9 +91,9 @@ def get_car_activity_html(car: str, from_date: str, to_date: str) -> str:
 		SELECT `التاريخ` AS date, oil_name AS description, cost, odometer_at_alert AS odometer
 		FROM `tabPeriodic Maintenance`
 		WHERE car = %(car)s AND docstatus = 1
-		  AND `التاريخ` BETWEEN %(from_date)s AND %(to_date)s
+		  AND `التاريخ` BETWEEN %(period_start)s AND %(period_end)s
 		ORDER BY `التاريخ`
-	""", {"car": car, "from_date": from_date, "to_date": to_date}, as_dict=True):
+	""", {"car": car, "period_start": period_start, "period_end": period_end}, as_dict=True):
 		maintenance_rows.append({
 			"type": "صيانة دورية", "date": m.date,
 			"odometer": m.odometer or "", "desc": m.description or "", "cost": flt(m.cost),
@@ -102,23 +103,24 @@ def get_car_activity_html(car: str, from_date: str, to_date: str) -> str:
 		SELECT `التاريخ` AS date, `التوصيف` AS description, `التكلفة` AS cost, 0 AS odometer
 		FROM `tabCar Expense`
 		WHERE car = %(car)s AND docstatus = 1
-		  AND `التاريخ` BETWEEN %(from_date)s AND %(to_date)s
+		  AND `التاريخ` BETWEEN %(period_start)s AND %(period_end)s
 		ORDER BY `التاريخ`
-	""", {"car": car, "from_date": from_date, "to_date": to_date}, as_dict=True):
+	""", {"car": car, "period_start": period_start, "period_end": period_end}, as_dict=True):
 		maintenance_rows.append({
 			"type": "مصروف", "date": m.date,
 			"odometer": "", "desc": m.description or "", "cost": flt(m.cost),
 		})
 
-	# Taxes from the Car Receipt invoices — matched to the rental start (pickup_date).
+	# Taxes from the same Car Accrual Entry rows behind `bookings` above — keeps
+	# them landing in whichever month they actually accrued/settled in.
 	for m in frappe.db.sql("""
-		SELECT pickup_date AS date, (COALESCE(spending_tax,0) + COALESCE(local_tax,0)) AS cost
-		FROM `tabCar Receipt`
-		WHERE car = %(car)s AND docstatus = 1
-		  AND pickup_date BETWEEN %(from_date)s AND %(to_date)s
-		  AND (COALESCE(spending_tax,0) + COALESCE(local_tax,0)) > 0
-		ORDER BY pickup_date
-	""", {"car": car, "from_date": from_date, "to_date": to_date}, as_dict=True):
+		SELECT ae.period AS date, (COALESCE(ae.spending_tax,0) + COALESCE(ae.local_tax,0)) AS cost
+		FROM `tabCar Accrual Entry` ae
+		WHERE ae.car = %(car)s AND ae.docstatus = 1
+		  AND ae.period BETWEEN %(period_start)s AND %(period_end)s
+		  AND (COALESCE(ae.spending_tax,0) + COALESCE(ae.local_tax,0)) != 0
+		ORDER BY ae.period
+	""", {"car": car, "period_start": period_start, "period_end": period_end}, as_dict=True):
 		maintenance_rows.append({
 			"type": "ضريبة", "date": m.date,
 			"odometer": "", "desc": "ضريبة إنفاق + محلية", "cost": flt(m.cost),
@@ -160,3 +162,53 @@ def get_car_activity_html(car: str, from_date: str, to_date: str) -> str:
 		template_str = f.read()
 
 	return frappe.render_template(template_str, context)
+
+
+@frappe.whitelist()
+def export_monthly_accrual_csv(period: str) -> None:
+	"""CSV export of every Car Accrual Entry for one calendar month across all
+	cars — the file handed manually to the external accounting system each
+	month. `period` is any date within the target month.
+	"""
+	import csv
+	import io
+
+	period_start = get_first_day(period)
+	period_end = get_last_day(period)
+
+	rows = frappe.db.sql(
+		"""
+		SELECT
+			ae.car, c.plate_no, c.brand, c.model, o.full_name AS owner_name,
+			ae.booking, ae.period, ae.entry_type, ae.days,
+			ae.base_amount, ae.spending_tax, ae.local_tax, ae.total_amount,
+			ae.source_car_receipt
+		FROM `tabCar Accrual Entry` ae
+		LEFT JOIN `tabCar` c ON c.name = ae.car
+		LEFT JOIN `tabOwners` o ON o.name = c.owner_car
+		WHERE ae.docstatus = 1 AND ae.period BETWEEN %(period_start)s AND %(period_end)s
+		ORDER BY ae.car, ae.booking, ae.creation
+		""",
+		{"period_start": period_start, "period_end": period_end},
+		as_dict=True,
+	)
+
+	buf = io.StringIO()
+	writer = csv.writer(buf)
+	writer.writerow([
+		"السيارة", "رقم اللوحة", "الماركة", "الموديل", "المالك",
+		"العقد", "الشهر", "نوع القيد", "الأيام",
+		"الإيجار قبل الضريبة", "ضريبة الإنفاق", "ضريبة المحلية", "الإجمالي",
+		"الفاتورة المصدر",
+	])
+	for r in rows:
+		writer.writerow([
+			r.car, r.plate_no, r.brand, r.model, r.owner_name or "",
+			r.booking, r.period, r.entry_type, r.days,
+			r.base_amount, r.spending_tax, r.local_tax, r.total_amount,
+			r.source_car_receipt or "",
+		])
+
+	frappe.response["type"] = "download"
+	frappe.response["filecontent"] = "﻿" + buf.getvalue()
+	frappe.response["filename"] = f"car-accrual-{period_start}.csv"

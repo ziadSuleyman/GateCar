@@ -5,6 +5,7 @@ import frappe
 from frappe.model.document import Document
 
 from gatecar.maintenance_status import guard_not_under_maintenance
+from gatecar.utils import compute_rental_tax
 
 
 class CarBooking(Document):
@@ -93,13 +94,7 @@ class CarBooking(Document):
 		sourcing taxes from Car Receipt to avoid double-counting.
 		"""
 		rental = self.cost or 0
-
-		settings = frappe.get_cached_doc("Gate Cars Settings")
-		spend_rate = settings.spending_tax_rate or 0
-		local_rate = settings.local_tax_rate or 0
-
-		self.spending_tax = round(rental * spend_rate / 100.0, 2)
-		self.local_tax = round(self.spending_tax * local_rate / 100.0, 2)
+		self.spending_tax, self.local_tax = compute_rental_tax(rental)
 		self.grand_total = round(rental + self.spending_tax + self.local_tax, 2)
 
 	def on_submit(self) -> None:
@@ -107,9 +102,20 @@ class CarBooking(Document):
 			self.set_car_status("مؤجر")
 		self.update_revenue_from_booking()
 
+		from gatecar.accrual import ensure_accrual_entries
+		ensure_accrual_entries(self.name)
+
 	def on_cancel(self) -> None:
 		if self.car:
 			self.set_car_status("متوفر")
+
+		from gatecar.accrual import reverse_booking_entries
+		reverse_booking_entries(self.name)
+
+		# Its accrual entries keep pointing at this booking even after
+		# cancellation — that back-reference is the audit trail, not a
+		# dangling link, so skip Frappe's generic back-link check for it.
+		self.flags.ignore_links = True
 
 	def update_revenue_from_booking(self) -> None:
 		revenues = frappe.get_all(

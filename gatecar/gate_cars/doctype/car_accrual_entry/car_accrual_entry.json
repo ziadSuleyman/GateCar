@@ -1,0 +1,179 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "CAE-.#####",
+ "creation": "2026-07-11 00:00:00",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "car",
+  "booking",
+  "period",
+  "entry_type",
+  "column_break_1",
+  "days",
+  "base_amount",
+  "spending_tax",
+  "local_tax",
+  "total_amount",
+  "section_break_1",
+  "source_car_receipt",
+  "reverses",
+  "amended_from",
+  "accrual_key"
+ ],
+ "fields": [
+  {
+   "fieldname": "car",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "السيارة",
+   "options": "Car",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "booking",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "عقد الحجز",
+   "options": "Car Booking",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "period",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "الشهر (أول يوم به)",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "entry_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "نوع القيد",
+   "options": "تقدير\nتسوية إغلاق\nعكسي",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "days",
+   "fieldtype": "Int",
+   "label": "عدد الأيام",
+   "read_only": 1
+  },
+  {
+   "fieldname": "base_amount",
+   "fieldtype": "Currency",
+   "label": "الإيجار (قبل الضريبة)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "spending_tax",
+   "fieldtype": "Currency",
+   "label": "ضريبة الإنفاق",
+   "read_only": 1
+  },
+  {
+   "fieldname": "local_tax",
+   "fieldtype": "Currency",
+   "label": "ضريبة المحلية",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "الإجمالي",
+   "bold": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_1",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "source_car_receipt",
+   "fieldtype": "Link",
+   "label": "الفاتورة النهائية المصدر",
+   "options": "Car Receipt",
+   "read_only": 1
+  },
+  {
+   "fieldname": "reverses",
+   "fieldtype": "Link",
+   "label": "يعكس القيد",
+   "options": "Car Accrual Entry",
+   "read_only": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Car Accrual Entry",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "accrual_key",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Accrual Key",
+   "read_only": 1,
+   "unique": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "module": "Gate Cars",
+ "name": "Car Accrual Entry",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "مدير فرع"
+  },
+  {
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "مشرف أسطول"
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

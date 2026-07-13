@@ -30,6 +30,7 @@ class CustomerCar(Document):
 		صورة_الهوية_او_جواز_السفر: DF.Attach | None
 		صورة_رخصة_القيادة: DF.Attach | None
 		مكان_الإصدار: DF.Data | None
+		ملاحظات: DF.Data | None
 	# end: auto-generated types
 
 	_DOCTYPE_NAME = "Customer Car"

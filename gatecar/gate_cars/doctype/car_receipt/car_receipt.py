@@ -3,6 +3,9 @@
 
 import frappe
 from frappe.model.document import Document
+from frappe.utils import cint, date_diff, flt
+
+from gatecar.utils import compute_rental_tax
 
 
 class CarReceipt(Document):
@@ -47,7 +50,75 @@ class CarReceipt(Document):
 			)
 
 	def validate(self) -> None:
+		self.calculate_mainly_cost()
+		self.calculate_distance_charges()
 		self.compute_totals()
+
+	def calculate_distance_charges(self) -> None:
+		"""Authoritative excess-mileage total_distance/extra_distance/extra_cost.
+
+		Previously computed only by browser client scripts (calc distance,
+		calc_extra_distance_real, calc_extra_cost_real) — a Car Receipt created
+		or submitted any other way (console, API, import) silently kept these
+		fields at zero even with real odometer readings entered, quietly
+		dropping excess-mileage charges. Mirrors the client scripts' formulas
+		exactly; those stay enabled for live preview while editing.
+
+		يعتمد على allowed_limit الذي حسبته calculate_mainly_cost بالفعل.
+		"""
+		self.total_distance = max(0, cint(self.current_odometer or 0) - cint(self.previous_odometer or 0))
+		self.extra_distance = max(0, self.total_distance - cint(self.allowed_limit or 0))
+		self.extra_cost = round(self.extra_distance * 0.20, 2)
+
+	def calculate_mainly_cost(self) -> None:
+		"""Authoritative real-days + tiered base rental.
+
+		Single source of truth: two client scripts (calc_extra_cost,
+		find_mainly_price) used to race to set mainly_cost differently on the
+		same fields, and a third (calc_real_days) computed real_days without
+		the +1 that Car Booking.duration_days uses — so an on-time return
+		invoiced one day short of the contract. Both are now disabled in
+		favor of this method.
+
+		عدد الأيام الفعلي شامل يوم الاستلام ويوم التسليم (+1)، مطابقاً لحساب
+		duration_days في العقد الأصلي. تمديد مدة الإيجار عند الإغلاق ينقل
+		السيارة تلقائياً إلى شريحة سعر أعلى (متوسطة/كبرى) من Car Category —
+		سلوك مقصود في نموذج العمل، وليس خطأ.
+		"""
+		self.real_days = 0
+		self.mainly_cost = 0
+		self.allowed_limit = 0
+
+		if not (self.pickup_date and self.receiving_date and self.booking):
+			return
+
+		real_days = date_diff(self.receiving_date, self.pickup_date) + 1
+		if real_days < 1:
+			return
+
+		if self.docstatus == 0 and real_days < 3:
+			frappe.throw(
+				"ممنوع تأجير السيارات لأقل من 3 أيام كحد أدنى."
+				f"<br>عدد الأيام الفعلي بالتواريخ الحالية هو: {real_days} أيام فقط."
+			)
+
+		self.real_days = real_days
+		self.allowed_limit = real_days * 200 if real_days < 30 else 4000
+
+		category = frappe.db.get_value("Car Booking", self.booking, "category_car")
+		if not category:
+			return
+
+		if real_days <= 7:
+			tier_field = "small_term"
+		elif real_days <= 20:
+			tier_field = "med_term"
+		else:
+			tier_field = "long_term"
+
+		package = frappe.db.get_value("Car Category", category, tier_field)
+		daily_rate = flt(package) if package else 0
+		self.mainly_cost = round(real_days * daily_rate)
 
 	def compute_totals(self) -> None:
 		"""Authoritative invoice totals (mirrors the client script).
@@ -59,13 +130,7 @@ class CarReceipt(Document):
 			الإجمالي النهائي = الإيجار + الأضرار + ضريبة الإنفاق + ضريبة المحلية
 		"""
 		rental = (self.mainly_cost or 0) + (self.extra_cost or 0)
-
-		settings = frappe.get_cached_doc("Gate Cars Settings")
-		spend_rate = settings.spending_tax_rate or 0
-		local_rate = settings.local_tax_rate or 0
-
-		self.spending_tax = round(rental * spend_rate / 100.0, 2)
-		self.local_tax = round(self.spending_tax * local_rate / 100.0, 2)
+		self.spending_tax, self.local_tax = compute_rental_tax(rental)
 		self.total_cost = round(rental + (self.damage or 0), 2)
 		self.grand_total = round(self.total_cost + self.spending_tax + self.local_tax, 2)
 
@@ -79,6 +144,18 @@ class CarReceipt(Document):
 			revenues = frappe.get_all("Revenue", filters={"booking_reference": self.booking}, pluck="name")
 			for rev in revenues:
 				frappe.db.set_value("Revenue", rev, "notes", self.notes)
+
+		from gatecar.accrual import create_closing_entry
+		create_closing_entry(self.name)
+
+	def on_cancel(self) -> None:
+		from gatecar.accrual import reverse_closing_entry
+		reverse_closing_entry(self.name)
+
+		# The settlement's Car Accrual Entry keeps pointing at this receipt even
+		# after cancellation — that back-reference is the audit trail, not a
+		# dangling link, so skip Frappe's generic back-link check for it.
+		self.flags.ignore_links = True
 
 	def check_oil_change(self) -> None:
 		from gatecar.maintenance_status import TYPE_KM, has_open_of_type

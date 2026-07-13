@@ -56,5 +56,17 @@ frappe.query_reports["Owner Car Report"] = {
 				to_date: to_date,
 			});
 		});
+
+		report.page.add_inner_button(__("تصدير للمحاسبة (CSV)"), function () {
+			const from_date = frappe.query_report.get_filter_value("from_date");
+			if (!from_date) {
+				frappe.msgprint(__("يرجى تحديد الشهر أولاً (من تاريخ)"));
+				return;
+			}
+			const url =
+				"/api/method/gatecar.api.export_monthly_accrual_csv?period=" +
+				encodeURIComponent(from_date);
+			window.open(url, "_blank");
+		});
 	},
 };

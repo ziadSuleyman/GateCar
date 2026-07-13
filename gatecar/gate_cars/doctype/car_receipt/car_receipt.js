@@ -32,6 +32,13 @@ frappe.ui.form.on("Car Receipt", {
 			);
 		}
 	},
+
+	// جدول "الإيصالات السابقة" يعرض "المتبقي" = grand_total الحالي ناقص المدفوع،
+	// فيجب إعادة رسمه في كل مرة يتغيّر فيها grand_total (وليس فقط عند فتح
+	// النموذج) — وإلا يبقى المتبقي محسوباً على قيمة فاتورة قديمة.
+	grand_total(frm) {
+		load_previous_payments(frm);
+	},
 });
 
 // Auto-fetch the odometer + date/time recorded in the "عند الاستلام" (return)

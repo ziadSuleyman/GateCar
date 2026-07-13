@@ -36,7 +36,7 @@
   "docstatus": 0,
   "doctype": "Client Script",
   "dt": "Car Receipt",
-  "enabled": 1,
+  "enabled": 0,
   "modified": "2026-06-22 11:33:22.332046",
   "module": "Gate Cars",
   "name": "calc_real_days",
@@ -51,14 +51,14 @@
   "modified": "2026-06-22 13:39:10.450829",
   "module": "Gate Cars",
   "name": "calc_extra_days",
-  "script": "frappe.ui.form.on('Car Receipt', {\r\n    refresh: function(frm) {\r\n        calculate_allowed_limit(frm);\r\n    },\r\n    receiving_date: function(frm) {\r\n        calculate_allowed_limit(frm);\r\n    },\r\n    pickup_date: function(frm) {\r\n        calculate_allowed_limit(frm);\r\n    },\r\n    booking: function(frm) {\r\n        setTimeout(() => {\r\n            calculate_allowed_limit(frm);\r\n        }, 600);\r\n    }\r\n});\r\n\r\nfunction calculate_allowed_limit(frm) {\r\n    let real_days = 0;\r\n\r\n    if (frm.doc.pickup_date && frm.doc.receiving_date) {\r\n        real_days = frappe.datetime.get_diff(frm.doc.receiving_date, frm.doc.pickup_date);\r\n        frm.set_value('real_days', real_days);\r\n    } else {\r\n        frm.set_value('real_days', 0);\r\n    }\r\n\r\n    let allowed_limit = 0;\r\n    if (real_days > 0) {\r\n        if (real_days < 30) {\r\n            allowed_limit = real_days * 200;\r\n        } else {\r\n            allowed_limit = 4000;\r\n        }\r\n    }\r\n\r\n    frm.set_value('allowed_limit', allowed_limit);\r\n}",
+  "script": "frappe.ui.form.on('Car Receipt', {\r\n    refresh: function(frm) {\r\n        calculate_allowed_limit(frm);\r\n    },\r\n    receiving_date: function(frm) {\r\n        calculate_allowed_limit(frm);\r\n    },\r\n    pickup_date: function(frm) {\r\n        calculate_allowed_limit(frm);\r\n    },\r\n    booking: function(frm) {\r\n        setTimeout(() => {\r\n            calculate_allowed_limit(frm);\r\n        }, 600);\r\n    }\r\n});\r\n\r\nfunction calculate_allowed_limit(frm) {\r\n    let real_days = 0;\r\n\r\n    if (frm.doc.pickup_date && frm.doc.receiving_date) {\r\n        real_days = frappe.datetime.get_diff(frm.doc.receiving_date, frm.doc.pickup_date) + 1; // مطابق لـ duration_days في العقد (+1 شامل الطرفين)\r\n        frm.set_value('real_days', real_days);\r\n    } else {\r\n        frm.set_value('real_days', 0);\r\n    }\r\n\r\n    let allowed_limit = 0;\r\n    if (real_days > 0) {\r\n        if (real_days < 30) {\r\n            allowed_limit = real_days * 200;\r\n        } else {\r\n            allowed_limit = 4000;\r\n        }\r\n    }\r\n\r\n    frm.set_value('allowed_limit', allowed_limit);\r\n}",
   "view": "Form"
  },
  {
   "docstatus": 0,
   "doctype": "Client Script",
   "dt": "Car Receipt",
-  "enabled": 1,
+  "enabled": 0,
   "modified": "2026-06-22 12:58:37.257952",
   "module": "Gate Cars",
   "name": "calc_extra_distance",
@@ -80,7 +80,7 @@
   "docstatus": 0,
   "doctype": "Client Script",
   "dt": "Car Receipt",
-  "enabled": 1,
+  "enabled": 0,
   "modified": "2026-06-22 15:36:50.830151",
   "module": "Gate Cars",
   "name": "calc_extra_cost",
@@ -168,7 +168,7 @@
   "docstatus": 0,
   "doctype": "Client Script",
   "dt": "Car Receipt",
-  "enabled": 1,
+  "enabled": 0,
   "modified": "2026-06-24 13:10:58.930896",
   "module": "Gate Cars",
   "name": "find_mainly_price",
@@ -239,6 +239,17 @@
   "module": null,
   "name": "Car Booking WhatsApp Send",
   "script": "frappe.ui.form.on(\"Car Booking\", {\n    refresh(frm) {\n        if (frm.is_new()) return;\n        const G = __(\"إرسال عبر واتساب\");\n        frm.add_custom_button(__(\"العقد\"), () =>\n            gc_send_one(frm, \"Car Booking\", frm.docname, \"عقد إيجار سيارة\", \"عقد الإيجار\"), G);\n        frm.add_custom_button(__(\"فحص التسليم\"), () =>\n            gc_send_inspection(frm, \"عند التسليم\", \"نموذج تسليم مركبة\", \"فحص التسليم\"), G);\n        frm.add_custom_button(__(\"فحص الاستلام\"), () =>\n            gc_send_inspection(frm, \"عند الاستلام\", \"نموذج استلام مركبة\", \"فحص الاستلام\"), G);\n        frm.add_custom_button(__(\"جميع الإيصالات\"), () =>\n            gc_send_all_receipts(frm), G);\n        frm.add_custom_button(__(\"الفاتورة النهائية\"), () =>\n            gc_send_final_invoice(frm), G);\n    },\n});\n\nfunction gc_booking_phone(frm) {\n    return frm.doc.international_phone || frm.doc[\"custom_رقم_الهاتف_المحمول\"] || frm.doc.phone_fetched || \"\";\n}\n\nfunction gc_wa_open(phoneStr, message) {\n    const p = (phoneStr || \"\").replace(/[^0-9]/g, \"\");\n    window.open(\"https://wa.me/\" + p + \"?text=\" + encodeURIComponent(message), \"_blank\");\n}\n\nfunction gc_send_one(frm, doctype, name, print_format, noun) {\n    frappe.call({\n        method: \"gatecar.api.get_share_url\",\n        args: { doctype: doctype, name: name, print_format: print_format, no_letterhead: 0 },\n        freeze: true,\n        freeze_message: __(\"جارٍ تجهيز الرابط العام...\"),\n        callback: (r) => {\n            if (!r.message) return;\n            const cust = frm.doc.customer_name_fetched || \"\";\n            gc_wa_open(gc_booking_phone(frm), `مرحباً ${cust}،\\nمرفق رابط ${noun} (${name}):\\n${r.message}`);\n        },\n    });\n}\n\nfunction gc_send_inspection(frm, inspection_type, print_format, noun) {\n    frappe.db.get_list(\"Car Inspection\", {\n        filters: { booking: frm.docname, inspection_type: inspection_type },\n        fields: [\"name\"], order_by: \"creation desc\", limit: 1,\n    }).then((rows) => {\n        if (!rows || !rows.length) { frappe.msgprint(__(\"لا يوجد {0} مرتبط بهذا العقد\", [noun])); return; }\n        gc_send_one(frm, \"Car Inspection\", rows[0].name, print_format, noun);\n    });\n}\n\nfunction gc_send_final_invoice(frm) {\n    frappe.db.get_list(\"Car Receipt\", {\n        filters: { booking: frm.docname },\n        fields: [\"name\"], order_by: \"creation desc\", limit: 1,\n    }).then((rows) => {\n        if (!rows || !rows.length) { frappe.msgprint(__(\"لا توجد فاتورة نهائية مرتبطة بهذا العقد\")); return; }\n        gc_send_one(frm, \"Car Receipt\", rows[0].name, \"فاتورة استلام سيارة\", \"الفاتورة النهائية\");\n    });\n}\n\nfunction gc_send_all_receipts(frm) {\n    frappe.db.get_list(\"Revenue\", {\n        filters: { booking_reference: frm.docname },\n        fields: [\"name\", \"payment_type\"], order_by: \"creation asc\", limit: 100,\n    }).then((rows) => {\n        if (!rows || !rows.length) { frappe.msgprint(__(\"لا توجد إيصالات مالية مرتبطة بهذا العقد\")); return; }\n        frappe.dom.freeze(__(\"جارٍ تجهيز روابط الإيصالات...\"));\n        const tasks = rows.map((rv) => {\n            const pf = rv.payment_type === \"دفع\" ? \"Payment Receipt\" : \"Revenue Receipt\";\n            const kind = rv.payment_type === \"دفع\" ? \"دفع\" : \"قبض\";\n            return frappe.xcall(\"gatecar.api.get_share_url\", {\n                doctype: \"Revenue\", name: rv.name, print_format: pf, no_letterhead: 0,\n            }).then((url) => `• (${kind}) ${rv.name}: ${url}`);\n        });\n        Promise.all(tasks).then((lines) => {\n            frappe.dom.unfreeze();\n            const cust = frm.doc.customer_name_fetched || \"\";\n            gc_wa_open(gc_booking_phone(frm), `مرحباً ${cust}،\\nمرفق روابط الإيصالات المالية للحجز ${frm.docname}:\\n${lines.join(\"\\n\")}`);\n        }).catch(() => frappe.dom.unfreeze());\n    });\n}\n",
+  "view": "Form"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Client Script",
+  "dt": "Customer Car",
+  "enabled": 1,
+  "modified": "2026-07-09 19:53:22.257745",
+  "module": "Gate Cars",
+  "name": "wa_icon",
+  "script": "frappe.ui.form.on('Customer Car', {\r\n    refresh: function(frm) {\r\n        // الانتظار قليلاً لضمان رندر مكوّن الهاتف بالكامل\r\n        setTimeout(() => {\r\n            let field = frm.get_field('international_phone');\r\n            if (field) {\r\n                // استهداف حقل الإدخال النصي الفعلي داخل مكوّن الهاتف المعقد\r\n                let $inputElement = $(field.wrapper).find('input.form-control');\r\n                \r\n                if ($inputElement.length) {\r\n                    $inputElement.css({\r\n                        // إضافة مسافة من اليسار لعدم تداخل النص مع الأيقونة\r\n                        'padding-left': '35px', \r\n                        'background-image': 'url(\"data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' viewBox=\\'0 0 448 512\\' width=\\'16\\' height=\\'16\\'%3E%3Cpath fill=\\'%2325D366\\' d=\\'M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z\\'%3E%3C/path%3E%3C/svg%3E\")',\r\n                        'background-repeat': 'no-repeat',\r\n                        // وضع الأيقونة في أقصى اليسار لئلا تتصادم مع سهم القائمة المنسدلة الأيمن\r\n                        'background-position': 'left 10px center' \r\n                    });\r\n                }\r\n            }\r\n        }, 600);\r\n    }\r\n});",
   "view": "Form"
  }
 ]
