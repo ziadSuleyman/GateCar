@@ -17,16 +17,6 @@ def set_branding():
 	frappe.db.set_value("Navbar Settings", "Navbar Settings", "app_logo", logo)
 
 
-BANNER_HTML = (
-	'<div style="background: linear-gradient(135deg, #1b5e20, #4caf50); border-radius: 12px; '
-	'padding: 20px 25px; display: flex; align-items: center; justify-content: space-between;">'
-	'<div><h3 style="margin: 0; color: #fff; font-weight: 700; font-size: 20px;">Gate Cars</h3>'
-	'<p style="margin: 5px 0 0; color: rgba(255,255,255,0.85); font-size: 13px;">'
-	"نظام إدارة تأجير السيارات</p></div>"
-	'<img src="/assets/gatecar/logo.png" alt="Gate Cars" style="height: 50px; border-radius: 8px; '
-	'background: rgba(255,255,255,0.15); padding: 5px;"></div>'
-)
-
 ROLE_WORKSPACES = {
 	"المبيعات": {
 		"icon": "file",
@@ -135,89 +125,82 @@ ROLE_WORKSPACES = {
 
 
 def create_role_workspaces():
-	import json
-
 	for title, config in ROLE_WORKSPACES.items():
 		if not frappe.db.exists("Workspace", title):
-			content = [{"id": "banner", "type": "header", "data": {"text": BANNER_HTML, "col": 12}}]
-			idx = 1
-			for s_label, s_link, s_type, _icon in config["shortcuts"]:
-				content.append(
-					{"id": f"sc{idx}", "type": "shortcut", "data": {"shortcut_name": s_label, "col": 3}}
-				)
-				idx += 1
-			content.append({"id": f"sp{idx}", "type": "spacer", "data": {"col": 12}})
-			idx += 1
-			for card_label, _links in config["cards"]:
-				content.append(
-					{"id": f"c{idx}", "type": "card", "data": {"card_name": card_label, "col": 4}}
-				)
-				idx += 1
-
-			ws = frappe.new_doc("Workspace")
-			ws.title = title
-			ws.label = title
-			ws.public = 1
-			ws.icon = config["icon"]
-			ws.content = json.dumps(content, ensure_ascii=False)
-
-			for s_label, s_link, s_type, s_icon in config["shortcuts"]:
-				ws.append(
-					"shortcuts",
-					{
-						"label": s_label,
-						"link_to": s_link,
-						"type": s_type,
-						"color": "Green",
-						"icon": s_icon,
-					},
-				)
-
-			for card_label, links in config["cards"]:
-				ws.append(
-					"links",
-					{"label": card_label, "type": "Card Break", "link_type": "DocType"},
-				)
-				for link_label, link_to, link_type in links:
-					ws.append(
-						"links",
-						{
-							"label": link_label,
-							"link_to": link_to,
-							"link_type": link_type,
-							"type": "Link",
-						},
-					)
-
-			ws.insert(ignore_permissions=True)
-			print(f"  Created Workspace: {title}")
-
+			create_workspace(title, config)
 		if not frappe.db.exists("Workspace Sidebar", title):
-			sidebar = frappe.new_doc("Workspace Sidebar")
-			sidebar.title = title
-			sidebar.header_icon = config["icon"]
-			for label, link_to, link_type, icon in config["sidebar_items"]:
-				sidebar.append(
-					"items",
-					{"label": label, "link_to": link_to, "link_type": link_type, "type": "Link", "icon": icon},
-				)
-			sidebar.insert(ignore_permissions=True)
-			frappe.db.set_value("Workspace Sidebar", sidebar.name, "for_user", None)
-			print(f"  Created Workspace Sidebar: {title}")
-
+			create_workspace_sidebar(title, config)
 		if not frappe.db.exists("Desktop Icon", {"label": title}):
-			icon = frappe.new_doc("Desktop Icon")
-			icon.label = title
-			icon.link_type = "Workspace Sidebar"
-			icon.link_to = title
-			icon.standard = 1
-			icon.icon_type = "Link"
-			icon.logo_url = "/assets/gatecar/logo.png"
-			icon.insert(ignore_permissions=True)
-			print(f"  Created Desktop Icon: {title}")
+			create_workspace_icon(title)
 
 	frappe.db.sql("DELETE FROM `tabDesktop Layout`")
 	frappe.cache.delete_key("bootinfo")
+
+
+def create_workspace(title, config):
+	import json
+
+	workspace = frappe.new_doc("Workspace")
+	workspace.update({"title": title, "label": title, "public": 1, "icon": config["icon"]})
+	workspace.content = json.dumps(build_workspace_content(config), ensure_ascii=False)
+	workspace.append("custom_blocks", {"custom_block_name": "gate-car-banner", "label": "gate-car-banner"})
+	append_workspace_links(workspace, config)
+	workspace.insert(ignore_permissions=True)
+	print(f"  Created Workspace: {title}")
+
+
+def build_workspace_content(config):
+	content = [{
+		"id": "banner",
+		"type": "custom_block",
+		"data": {"custom_block_name": "gate-car-banner", "col": 12},
+	}]
+	for index, (label, *_rest) in enumerate(config["shortcuts"], 1):
+		content.append({"id": f"sc{index}", "type": "shortcut", "data": {"shortcut_name": label, "col": 3}})
+	spacer_id = len(config["shortcuts"]) + 1
+	content.append({"id": f"sp{spacer_id}", "type": "spacer", "data": {"col": 12}})
+	for index, (label, _links) in enumerate(config["cards"], spacer_id + 1):
+		content.append({"id": f"c{index}", "type": "card", "data": {"card_name": label, "col": 4}})
+	return content
+
+
+def append_workspace_links(workspace, config):
+	for label, link_to, link_type, icon in config["shortcuts"]:
+		workspace.append("shortcuts", {
+			"label": label, "link_to": link_to, "type": link_type, "color": "Green", "icon": icon,
+		})
+	for label, links in config["cards"]:
+		workspace.append("links", {"label": label, "type": "Card Break", "link_type": "DocType"})
+		for link_label, link_to, link_type in links:
+			workspace.append("links", {
+				"label": link_label, "link_to": link_to, "link_type": link_type, "type": "Link",
+			})
+
+
+def create_workspace_sidebar(title, config):
+	sidebar = frappe.new_doc("Workspace Sidebar")
+	sidebar.update({"title": title, "header_icon": config["icon"]})
+	for label, link_to, link_type, icon in config["sidebar_items"]:
+		sidebar.append("items", {
+			"label": label, "link_to": link_to, "link_type": link_type, "type": "Link", "icon": icon,
+		})
+	sidebar.insert(ignore_permissions=True)
+	frappe.db.set_value("Workspace Sidebar", sidebar.name, "for_user", None)
+	print(f"  Created Workspace Sidebar: {title}")
+
+
+def create_workspace_icon(title):
+	icon = frappe.new_doc("Desktop Icon")
+	icon.update({
+		"label": title,
+		"link_type": "Workspace Sidebar",
+		"link_to": title,
+		"standard": 1,
+		"icon_type": "Link",
+		"logo_url": "/assets/gatecar/logo.png",
+	})
+	icon.insert(ignore_permissions=True)
+	print(f"  Created Desktop Icon: {title}")
 
 
 def create_server_scripts():

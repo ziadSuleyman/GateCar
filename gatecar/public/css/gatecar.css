@@ -17,6 +17,17 @@ body {
     overflow: visible;
 }
 
+/* Remove the sidebar minimize/maximize control, including its hover state. */
+.body-sidebar .sidebar-toggle-btn,
+.body-sidebar .collapse-sidebar-link,
+.body-sidebar:hover .sidebar-toggle-btn,
+.body-sidebar:hover .collapse-sidebar-link {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
 .active-sidebar
 {
     position: relative;
@@ -50,8 +61,80 @@ body {
     box-shadow: -10px 5px 0 4px #ffffff;
 }
 .body-sidebar .standard-sidebar-item:not(.active-sidebar):has(a:not(.section-break)):hover {
-    background-color: #cbffce;
+    background-color: transparent !important;
 }
+
+/* Dark mode keeps the original curved geometry, but removes the mint palette. */
+[data-theme-mode="dark"] .body-sidebar,
+[data-theme-mode="dark"] .body-sidebar .body-sidebar-top,
+[data-theme-mode="dark"] .body-sidebar .sidebar-header {
+    background-color: #123d29 !important;
+}
+
+[data-theme-mode="dark"] .body-sidebar .standard-sidebar-item,
+[data-theme-mode="dark"] .body-sidebar .standard-sidebar-item a,
+[data-theme-mode="dark"] .body-sidebar .standard-sidebar-item .sidebar-item-label,
+[data-theme-mode="dark"] .body-sidebar .standard-sidebar-item .sidebar-item-icon {
+    color: #d8e0da;
+}
+
+[data-theme-mode="dark"] .active-sidebar {
+    background-color: var(--bg-color) !important;
+    box-shadow: -20px 0 0 0 var(--bg-color);
+    color: #e7f0e9 !important;
+}
+
+[data-theme-mode="dark"] .active-sidebar a,
+[data-theme-mode="dark"] .active-sidebar .sidebar-item-label,
+[data-theme-mode="dark"] .active-sidebar .sidebar-item-icon,
+[data-theme-mode="dark"] .active-sidebar .text-ink-gray-7,
+[data-theme-mode="dark"] .active-sidebar svg {
+    color: #e7f0e9 !important;
+}
+
+[data-theme-mode="dark"] .active-sidebar::before,
+[data-theme-mode="dark"] .active-sidebar::after {
+    background: #123d29;
+}
+
+[data-theme-mode="dark"] .active-sidebar::before {
+    box-shadow: -10px 5px 0 4px var(--bg-color);
+}
+
+[data-theme-mode="dark"] .active-sidebar::after {
+    box-shadow: -4px -10px 0 4px var(--bg-color);
+}
+
+[data-theme-mode="dark"] .body-sidebar .standard-sidebar-item:not(.active-sidebar):has(a:not(.section-break)):hover {
+    background-color: transparent !important;
+}
+
+/* The workspace switcher header should not look like a selected navigation item. */
+.body-sidebar .sidebar-header.hover,
+.body-sidebar .sidebar-header.active-sidebar {
+    background: transparent !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    color: inherit !important;
+    margin: 0 !important;
+}
+
+.body-sidebar .sidebar-header.active-sidebar::before,
+.body-sidebar .sidebar-header.active-sidebar::after {
+    display: none !important;
+}
+
+.body-sidebar .sidebar-header.active-sidebar .sidebar-item-label,
+.body-sidebar .sidebar-header.active-sidebar .sidebar-item-icon,
+.body-sidebar .sidebar-header.active-sidebar svg {
+    color: inherit !important;
+}
+
+/* Remove the floating sidebar minimize/maximize pill. */
+.body-sidebar .collapse-sidebar-link {
+    display: none !important;
+}
+
 /* ══ Top bar (page-head) themed to match the green sidebar ══════════════════ */
 .page-head {
     background: linear-gradient(90deg, #cbffce 0%, #e6ffec 55%, #f2fff5 100%) !important;
@@ -60,7 +143,10 @@ body {
     backdrop-filter: none !important;
 }
 /* keep the head compact and vertically centered */
-.page-head .page-head-content { min-height: 50px; }
+.page-head .page-head-content {
+    min-height: 50px;
+    position: relative;
+}
 
 /* dark-green, readable text & icons on the light-green bar */
 .page-head .navbar-breadcrumbs a,
@@ -79,13 +165,31 @@ body {
 }
 .page-head .search-widget-button:hover { background: #ffffff !important; }
 
-/* Gate Cars logo injected into the top bar */
-.gatecar-navbar-logo {
-    height: 26px;
-    width: auto;
-    margin: 0 6px 0 12px;
-    vertical-align: middle;
-    flex-shrink: 0;
+[data-theme-mode="dark"] .page-head {
+    background: linear-gradient(to left, #0b2418 0%, #123d29 100%) !important;
+    border-bottom-color: #0b2418 !important;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35) !important;
+}
+
+[data-theme-mode="dark"] .page-head .navbar-breadcrumbs a,
+[data-theme-mode="dark"] .page-head .navbar-breadcrumbs .breadcrumb-item,
+[data-theme-mode="dark"] .page-head .navbar-breadcrumbs li,
+[data-theme-mode="dark"] .page-head .title-area,
+[data-theme-mode="dark"] .page-head .sidebar-toggle-btn,
+[data-theme-mode="dark"] .page-head .icon use,
+[data-theme-mode="dark"] .page-head .es-icon use {
+    color: #e7f0e9 !important;
+    stroke: #e7f0e9 !important;
+}
+
+[data-theme-mode="dark"] .page-head .search-widget-button {
+    background: rgba(21, 26, 23, 0.72) !important;
+    border-color: #285c40 !important;
+    color: #e7f0e9 !important;
+}
+
+[data-theme-mode="dark"] .page-head .search-widget-button:hover {
+    background: #1b5135 !important;
 }
 
 /* ── Phone numbers must always read left-to-right (RTL form reverses them) ── */
@@ -93,8 +197,26 @@ body {
 .frappe-control[data-fieldtype="Phone"] .control-value,
 .frappe-control[data-fieldtype="Phone"] .like-disabled-input,
 .frappe-control[data-fieldtype="Data"][data-fieldname*="phone"] input,
-.frappe-control[data-fieldtype="Data"][data-fieldname*="hone"] input {
+.frappe-control[data-fieldtype="Data"][data-fieldname*="phone"] .control-value,
+.frappe-control[data-fieldtype="Data"][data-fieldname*="hone"] input,
+.frappe-control[data-fieldtype="Data"][data-fieldname*="hone"] .control-value {
     direction: ltr !important;
     text-align: left !important;
-    unicode-bidi: plaintext;
+    unicode-bidi: isolate;
+}
+
+/* Read-only values and signature canvases must keep a readable dark surface. */
+[data-theme-mode="dark"] .form-control:disabled,
+[data-theme-mode="dark"] .like-disabled-input,
+[data-theme-mode="dark"] .frappe-control .control-value {
+    background-color: #1d2921 !important;
+    border-color: #385342 !important;
+    color: #e7f0e9 !important;
+}
+
+[data-theme-mode="dark"] .signature-control,
+[data-theme-mode="dark"] .signature-pad,
+[data-theme-mode="dark"] .frappe-control[data-fieldtype="Signature"] canvas {
+    background-color: #f7faf8 !important;
+    border-color: #385342 !important;
 }

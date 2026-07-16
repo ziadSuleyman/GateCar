@@ -3,25 +3,39 @@ from urllib.parse import quote
 
 import frappe
 from frappe import _
-from frappe.utils import format_date, flt, getdate, get_first_day, get_last_day
+from frappe.utils import (
+	add_days,
+	format_date,
+	flt,
+	getdate,
+	get_first_day,
+	get_last_day,
+	now_datetime,
+)
 
 
 @frappe.whitelist()
 def get_share_url(
-	doctype: str, name: str, print_format: str, no_letterhead: int = 0
+	doctype: str,
+	name: str,
+	print_format: str,
+	no_letterhead: int = 0,
+	valid_days: int = 30,
 ) -> str:
 	"""Return a PUBLIC (no-login) PDF link for ANY document + print format.
 
 	Uses Frappe's native Document Share Key: only THIS document becomes viewable
 	via an unguessable key — nothing else is exposed. Anyone with the link can open
 	the PDF without a session (download_pdf is allow_guest and honours the key).
+	The link expires after `valid_days` so a leaked or forwarded link does not stay valid forever.
 
 	Works for the contract, receipt invoice, inspection checklists, financial
 	receipts, etc. — the caller passes the target doctype/name/print_format.
 	"""
 	doc = frappe.get_doc(doctype, name)
 	doc.check_permission("read")  # the employee generating the link must have access
-	key = doc.get_document_share_key(no_expiry=True)
+	expires_on = add_days(now_datetime(), valid_days)
+	key = doc.get_document_share_key(expires_on=expires_on)
 
 	return frappe.utils.get_url(
 		"/api/method/frappe.utils.print_format.download_pdf"
@@ -35,10 +49,13 @@ def get_share_url(
 
 @frappe.whitelist()
 def get_booking_share_url(
-	name: str, print_format: str = "عقد إيجار سيارة", no_letterhead: int = 0
+	name: str,
+	print_format: str = "عقد إيجار سيارة",
+	no_letterhead: int = 0,
+	valid_days: int = 30,
 ) -> str:
 	"""Backward-compatible wrapper: PUBLIC PDF link for a Car Booking contract."""
-	return get_share_url("Car Booking", name, print_format, no_letterhead)
+	return get_share_url("Car Booking", name, print_format, no_letterhead, valid_days)
 
 
 @frappe.whitelist()
@@ -69,6 +86,7 @@ ARABIC_ORDINALS = {
 @frappe.whitelist()
 def get_car_activity_html(car: str, from_date: str, to_date: str) -> str:
 	car_doc = frappe.get_doc("Car", car)
+	car_doc.check_permission("read")
 
 	owner_name = ""
 	if car_doc.owner_car:

@@ -27,8 +27,8 @@ app_logo_url = "/assets/gatecar/images/logo.svg"
 # ------------------
 
 # include js, css files in header of desk.html
-app_include_css = "/assets/gatecar/css/gatecar.css"
-app_include_js = "/assets/gatecar/js/gatecar.js"
+app_include_css = "/assets/gatecar/css/gatecar.css?v=20260715.1"
+app_include_js = "/assets/gatecar/js/gatecar.js?v=20260716.6"
 
 # include js, css files in header of web template
 # web_include_css = "/assets/gatecar/css/gatecar.css"
@@ -59,12 +59,8 @@ app_include_js = "/assets/gatecar/js/gatecar.js"
 # ----------
 
 # application home page (will override Website Settings)
-# home_page = "login"
-
-# website user home page (by Role)
-# role_home_page = {
-# 	"Role": "home_page"
-# }
+home_page = "desk"
+website_path_resolver = "gatecar.role_redirect.resolve_website_path"
 
 # Generators
 # ----------

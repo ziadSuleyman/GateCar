@@ -351,13 +351,6 @@ frappe.ui.form.on("Car Booking", {
 	},
 
 	refresh(frm) {
-		// On load: populate fetched fields if missing
-		if (frm.doc.customer && !frm.doc.mother_name_fetched) {
-			fetch_customer_details(frm);
-		}
-		if (frm.doc.car && !frm.doc.year_fetched) {
-			fetch_car_details(frm);
-		}
 		// Contract terms: editable only by System Manager
 		const is_admin = frappe.user_roles.includes("System Manager");
 		frm.set_df_property("text_viwt", "read_only", is_admin ? 0 : 1);

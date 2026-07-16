@@ -78,11 +78,6 @@ frappe.listview_settings["Car"] = {
 	},
 
 	get_indicator(doc) {
-		const km_due =
-			doc.next_oil_change > 0 && doc.current_odometer >= doc.next_oil_change;
-		if (doc.status === "داخل الصيانة" || km_due) {
-			return [__("صيانة مطلوبة"), "red"];
-		}
 		return [__(doc.status), STATUS_COLOR[doc.status] || "gray"];
 	},
 

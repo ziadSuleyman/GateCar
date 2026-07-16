@@ -12,10 +12,6 @@ frappe.ui.form.on("Car Receipt", {
 
 	refresh(frm) {
 		load_previous_payments(frm);
-		// On a fresh receipt, pull return odometer + date if not entered yet.
-		if (frm.doc.booking && (!frm.doc.current_odometer || !frm.doc.receiving_date)) {
-			fetch_return_inspection(frm);
-		}
 	},
 
 	booking(frm) {
@@ -94,11 +90,15 @@ function load_previous_payments(frm) {
 			const emp_map = {};
 			(emps || []).forEach(e => { emp_map[e.name] = e.employee_name; });
 
-		const total = rows.reduce((s, r) => {
-			return s + ((r.payment_type === "دفع" ? -1 : 1) * (r.amount || 0));
-		}, 0);
-			const grand = frm.doc.grand_total || 0;
-			const remaining = grand - total;
+		const received = rows
+			.filter(r => r.payment_type !== "دفع")
+			.reduce((sum, r) => sum + (r.amount || 0), 0);
+		const paid_out = rows
+			.filter(r => r.payment_type === "دفع")
+			.reduce((sum, r) => sum + (r.amount || 0), 0);
+		const total = received - paid_out;
+		const grand = frm.doc.grand_total || 0;
+		const remaining = grand - received + paid_out;
 		const rows_html = rows.map((r, i) => {
 			const is_payment = r.payment_type === "دفع";
 			const color = is_payment ? "#c62828" : "#2e7d32";

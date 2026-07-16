@@ -53,3 +53,9 @@ jspm_packages/
 
 # Aider AI Chat
 .aider*
+
+# Local UI audit artifacts
+.playwright-mcp/
+audit-screenshots/
+audit-meta-prompt.json
+/*.png

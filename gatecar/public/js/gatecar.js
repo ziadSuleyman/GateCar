@@ -1,5 +1,32 @@
 // Gate Cars Global Styles
 
+const GATECAR_ROLE_HOME = {
+	Administrator: "/desk/gate-cars",
+	"مدير فرع": "/desk/إدارة-الفرع",
+	"مشرف أسطول": "/desk/الأسطول",
+	"موظف مبيعات": "/desk/المبيعات",
+};
+
+function redirect_to_root_login() {
+	window.location.href = "/login?redirect-to=%2F";
+}
+
+function use_root_login_redirect() {
+	if (frappe.app) frappe.app.redirect_to_login = redirect_to_root_login;
+}
+
+function redirect_default_desk_route() {
+	const currentPath = decodeURIComponent(window.location.pathname).replace(/\/$/, "");
+	const landingRoutes = ["/desk", ...Object.values(GATECAR_ROLE_HOME)];
+	if (!landingRoutes.includes(currentPath) && frappe.get_route_str() !== "desk") return;
+
+	const roles = frappe.user_roles || [];
+	const destination = roles.includes("Administrator")
+		? GATECAR_ROLE_HOME.Administrator
+		: roles.map((role) => GATECAR_ROLE_HOME[role]).find(Boolean);
+	if (destination && currentPath !== destination) window.location.replace(destination);
+}
+
 /* ══ Route Classes ════════════════════════════════════════════════════════ */
 
 function sync_route_classes() {
@@ -21,34 +48,82 @@ function sync_route_classes() {
 	}
 }
 
-/* ══ Top-bar logo ═════════════════════════════════════════════════════════ */
+/* ══ Top-bar cleanup ══════════════════════════════════════════════════════ */
 
-function inject_navbar_logo() {
-	document.querySelectorAll(".page-head .page-title").forEach((pt) => {
-		if (pt.querySelector(".gatecar-navbar-logo")) return;
-		const img = document.createElement("img");
-		img.src = "/assets/gatecar/images/logo.svg";
-		img.className = "gatecar-navbar-logo";
-		img.alt = "Gate Cars";
-		img.title = "Gate Cars";
-		const titleArea = pt.querySelector(".title-area");
-		if (titleArea) pt.insertBefore(img, titleArea);
-		else pt.appendChild(img);
+function remove_navbar_logo() {
+	document.querySelectorAll(".gatecar-navbar-logo").forEach((logo) => logo.remove());
+}
+
+function link_navbar_home() {
+	document
+		.querySelectorAll(".page-head .navbar-breadcrumbs li:first-child a")
+		.forEach((homeLink) => {
+			homeLink.href = "/";
+		});
+}
+
+function translate_sidebar_labels() {
+	const translations = { Search: "بحث", Notification: "إشعارات" };
+	document.querySelectorAll(".sidebar-item-label").forEach((label) => {
+		const translation = translations[label.textContent.trim()];
+		if (translation) label.textContent = translation;
 	});
+}
+
+function ensure_fleet_workspace_icon() {
+	if (frappe.get_route_str() || document.querySelector('[data-id="الأسطول"]')) return;
+	const source = document.querySelector('[data-id="إدارة الفرع"]');
+	const icons = source?.parentElement;
+	if (!source || !icons) return;
+
+	const fleet = source.cloneNode(true);
+	fleet.dataset.id = "الأسطول";
+	fleet.href = "/desk/الأسطول?sidebar=%D8%A7%D9%84%D8%A3%D8%B3%D8%B7%D9%88%D9%84";
+	fleet.querySelector(".icon-title").textContent = "الأسطول";
+	fleet.querySelector(".icon-title").dataset.originalTitle = "الأسطول";
+	icons.insertBefore(fleet, source.nextSibling);
+}
+
+function watch_sidebar_labels() {
+	if (document.body.dataset.gatecarTranslationObserver) return;
+	const observer = new MutationObserver(() => {
+		translate_sidebar_labels();
+		ensure_fleet_workspace_icon();
+	});
+	observer.observe(document.body, { childList: true, subtree: true });
+	document.body.dataset.gatecarTranslationObserver = "1";
+	translate_sidebar_labels();
+	ensure_fleet_workspace_icon();
 }
 
 // SPA navigation
 frappe.router.on("change", () => {
+	redirect_default_desk_route();
 	sync_route_classes();
-	inject_navbar_logo();
-	setTimeout(inject_navbar_logo, 300);
+	remove_navbar_logo();
+	link_navbar_home();
+	translate_sidebar_labels();
+	setTimeout(() => {
+		remove_navbar_logo();
+		link_navbar_home();
+		translate_sidebar_labels();
+	}, 300);
 });
 
 // Initial hard-reload
 $(document).ready(function () {
+	use_root_login_redirect();
+	redirect_default_desk_route();
+	watch_sidebar_labels();
 	setTimeout(sync_route_classes, 600);
-	setTimeout(inject_navbar_logo, 700);
-	setTimeout(inject_navbar_logo, 1400);
+	setTimeout(link_navbar_home, 600);
+	setTimeout(translate_sidebar_labels, 600);
+	setTimeout(remove_navbar_logo, 700);
+	setTimeout(link_navbar_home, 700);
+	setTimeout(translate_sidebar_labels, 700);
+	setTimeout(remove_navbar_logo, 1400);
+	setTimeout(link_navbar_home, 1400);
+	setTimeout(translate_sidebar_labels, 1400);
 });
 
 function hide_workspace_breadcrumb() {

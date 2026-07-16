@@ -17,9 +17,13 @@ function load_branch_dashboard(page) {
 		'<div class="text-center text-muted py-5"><i class="fa fa-spinner fa-spin fa-2x"></i></div>'
 	);
 
+	const is_admin = frappe.user.has_role("System Manager");
+	const stats_method = is_admin ? "dashboard_stats" : "branch_dashboard_stats";
+	const profitability_method = is_admin ? "car_profitability" : "branch_car_profitability";
+
 	Promise.all([
-		frappe.xcall("branch_dashboard_stats"),
-		frappe.xcall("branch_car_profitability"),
+		frappe.xcall(stats_method),
+		frappe.xcall(profitability_method),
 	]).then(([stats, profitability]) => {
 		if (stats.error) {
 			container.html(`<div class="text-center text-muted py-5">${stats.error}</div>`);

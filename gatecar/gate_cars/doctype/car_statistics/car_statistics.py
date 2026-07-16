@@ -1,36 +1,51 @@
-# Copyright (c) 2026, Ziad Suleyman and contributors
-# For license information, please see license.txt
-
-# import frappe
+import frappe
 from frappe.model.document import Document
+from frappe.utils import getdate, now_datetime
 
 
 class CarStatistics(Document):
-	# begin: auto-generated types
-	# This code is auto-generated. Do not modify anything in this block.
-
-	from typing import TYPE_CHECKING
-
-	if TYPE_CHECKING:
-		from frappe.types import DF
-
-		active_bookings: DF.Int
-		availability_rate: DF.Percent
-		available_cars: DF.Int
-		bookings_this_month: DF.Int
-		bookings_today: DF.Int
-		branch: DF.Link | None
-		frozen_cars: DF.Int
-		last_updated: DF.Datetime | None
-		maintenance_cars: DF.Int
-		overdue_returns: DF.Int
-		ready_cars: DF.Int
-		rented_cars: DF.Int
-		reserved_cars: DF.Int
-		revenue_this_month: DF.Currency
-		revenue_today: DF.Currency
-		total_cars: DF.Int
-		utilization_rate: DF.Percent
-	# end: auto-generated types
-
 	_DOCTYPE_NAME = "Car Statistics"
+
+
+@frappe.whitelist()
+def get_statistics(branch=None):
+	condition = "AND f.branch = %s" if branch else ""
+	params = [branch] if branch else []
+	rows = frappe.db.sql(
+		f"""SELECT c.status, COUNT(*) AS count
+		FROM `tabCar` c LEFT JOIN `tabVehicle Fleet` f ON f.name = c.fleet
+		WHERE 1=1 {condition} GROUP BY c.status""",
+		params,
+		as_dict=True,
+	)
+	counts = {row.status: row.count for row in rows}
+	today = getdate()
+	month_start = today.replace(day=1)
+	revenue = frappe.db.sql(
+		"""SELECT
+		COALESCE(SUM(CASE WHEN date = %s THEN CASE WHEN payment_type = 'دفع' THEN -amount ELSE amount END ELSE 0 END), 0) AS today_total,
+		COALESCE(SUM(CASE WHEN date >= %s THEN CASE WHEN payment_type = 'دفع' THEN -amount ELSE amount END ELSE 0 END), 0) AS month_total
+		FROM `tabRevenue`""",
+		(today, month_start),
+		as_dict=True,
+	)[0]
+	total = sum(counts.values())
+	rented = counts.get("مؤجر", 0)
+	return {
+		"total_cars": total,
+		"available_cars": counts.get("متوفر", 0),
+		"ready_cars": counts.get("جاهز للتسليم", 0),
+		"rented_cars": rented,
+		"reserved_cars": counts.get("محجوز", 0),
+		"maintenance_cars": counts.get("داخل الصيانة", 0),
+		"frozen_cars": counts.get("مجمدة", 0),
+		"utilization_rate": rented / total * 100 if total else 0,
+		"availability_rate": counts.get("متوفر", 0) / total * 100 if total else 0,
+		"active_bookings": frappe.db.count("Car Booking", {"docstatus": 1}),
+		"overdue_returns": frappe.db.count("Car Booking", {"docstatus": 1, "end_date": ["<", today]}),
+		"bookings_today": frappe.db.count("Car Booking", {"creation": [">=", today]}),
+		"bookings_this_month": frappe.db.count("Car Booking", {"creation": [">=", month_start]}),
+		"revenue_today": revenue.today_total or 0,
+		"revenue_this_month": revenue.month_total or 0,
+		"last_updated": now_datetime(),
+	}

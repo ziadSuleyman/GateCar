@@ -2,11 +2,11 @@
  {
   "app": "gate_cars",
   "charts": [],
-  "content": "[{\"id\":\"Ol7GaBustk\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"gatecar\",\"col\":12}}]",
+  "content": "[{\"id\":\"Ol7GaBustk\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"gate-car-banner\",\"col\":12}}]",
   "custom_blocks": [
    {
-    "custom_block_name": "gatecar",
-    "label": "gatecar"
+    "custom_block_name": "gate-car-banner",
+    "label": "gate-car-banner"
    }
   ],
   "docstatus": 0,
@@ -24,7 +24,36 @@
    {
     "dependencies": null,
     "description": null,
-    "doctype_layout": null,
+    "hidden": 0,
+    "icon": null,
+    "is_query_report": 0,
+    "label": "السيارات",
+    "link_count": 1,
+    "link_to": null,
+    "link_type": "DocType",
+    "onboard": 0,
+    "only_for": null,
+    "report_ref_doctype": null,
+    "type": "Card Break"
+   },
+   {
+    "dependencies": null,
+    "description": null,
+    "hidden": 0,
+    "icon": null,
+    "is_query_report": 0,
+    "label": "Car",
+    "link_count": 0,
+    "link_to": "Car",
+    "link_type": "DocType",
+    "onboard": 0,
+    "only_for": null,
+    "report_ref_doctype": null,
+    "type": "Link"
+   },
+   {
+    "dependencies": null,
+    "description": null,
     "hidden": 0,
     "icon": null,
     "is_query_report": 0,
@@ -40,7 +69,6 @@
    {
     "dependencies": null,
     "description": null,
-    "doctype_layout": null,
     "hidden": 0,
     "icon": null,
     "is_query_report": 0,
@@ -56,7 +84,6 @@
    {
     "dependencies": null,
     "description": null,
-    "doctype_layout": null,
     "hidden": 0,
     "icon": null,
     "is_query_report": 0,
@@ -72,7 +99,6 @@
    {
     "dependencies": null,
     "description": null,
-    "doctype_layout": null,
     "hidden": 0,
     "icon": null,
     "is_query_report": 0,
@@ -88,7 +114,6 @@
    {
     "dependencies": null,
     "description": null,
-    "doctype_layout": null,
     "hidden": 0,
     "icon": null,
     "is_query_report": 0,
@@ -102,7 +127,7 @@
     "type": "Link"
    }
   ],
-  "modified": "2026-07-13 12:39:18.245638",
+  "modified": "2026-07-12 15:50:48.607836",
   "module": "Gate Cars",
   "name": "Gate Cars",
   "number_cards": [],
@@ -119,8 +144,8 @@
  {
   "app": null,
   "charts": [],
-  "content": "[{\"id\": \"ca8ada80bf\", \"type\": \"header\", \"data\": {\"text\": \"<div style=\\\"background: linear-gradient(135deg, #1b5e20, #4caf50); border-radius: 12px; padding: 20px 25px; display: flex; align-items: center; justify-content: space-between;\\\"><div><h3 style=\\\"margin: 0; color: #fff; font-weight: 700; font-size: 22px;\\\">\\u0627\\u0644\\u0645\\u0628\\u064a\\u0639\\u0627\\u062a</h3><p style=\\\"margin: 5px 0 0; color: rgba(255,255,255,0.85); font-size: 13px;\\\">\\u0625\\u062f\\u0627\\u0631\\u0629 \\u0627\\u0644\\u062d\\u062c\\u0648\\u0632\\u0627\\u062a \\u0648\\u0627\\u0644\\u0627\\u0633\\u062a\\u0644\\u0627\\u0645\\u0627\\u062a \\u0648\\u0627\\u0644\\u0639\\u0645\\u0644\\u0627\\u0621</p></div><img src=\\\"/assets/gatecar/logo.png\\\" alt=\\\"Gate Cars\\\" style=\\\"height: 50px; border-radius: 8px; background: rgba(255,255,255,0.15); padding: 5px;\\\"></div>\", \"col\": 12}}, {\"id\": \"sc1\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"\\u062d\\u062c\\u0632 \\u062c\\u062f\\u064a\\u062f\", \"col\": 3}}, {\"id\": \"sc2\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"\\u0627\\u0633\\u062a\\u0644\\u0627\\u0645 \\u0633\\u064a\\u0627\\u0631\\u0629\", \"col\": 3}}, {\"id\": \"sc3\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"\\u0639\\u0645\\u064a\\u0644 \\u062c\\u062f\\u064a\\u062f\", \"col\": 3}}, {\"id\": \"sc4\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"\\u0627\\u0644\\u0633\\u064a\\u0627\\u0631\\u0627\\u062a\", \"col\": 3}}, {\"id\": \"sp1\", \"type\": \"spacer\", \"data\": {\"col\": 12}}, {\"id\": \"c1\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u0627\\u0644\\u062d\\u062c\\u0648\\u0632\\u0627\\u062a\", \"col\": 4}}, {\"id\": \"c2\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u0627\\u0633\\u062a\\u0644\\u0627\\u0645 \\u0627\\u0644\\u0633\\u064a\\u0627\\u0631\\u0627\\u062a\", \"col\": 4}}, {\"id\": \"c3\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u0627\\u0644\\u0639\\u0645\\u0644\\u0627\\u0621 \\u0648\\u0627\\u0644\\u0633\\u064a\\u0627\\u0631\\u0627\\u062a\", \"col\": 4}}]",
-  "custom_blocks": [],
+  "content": "[{\"id\": \"ca8ada80bf\", \"type\": \"custom_block\", \"data\": {\"custom_block_name\": \"gate-car-banner\", \"col\": 12}}, {\"id\": \"sc1\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"حجز جديد\", \"col\": 3}}, {\"id\": \"sc2\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"استلام سيارة\", \"col\": 3}}, {\"id\": \"sc3\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"عميل جديد\", \"col\": 3}}, {\"id\": \"sc4\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"السيارات\", \"col\": 3}}, {\"id\": \"sp1\", \"type\": \"spacer\", \"data\": {\"col\": 12}}, {\"id\": \"c1\", \"type\": \"card\", \"data\": {\"card_name\": \"الحجوزات\", \"col\": 4}}, {\"id\": \"c2\", \"type\": \"card\", \"data\": {\"card_name\": \"استلام السيارات\", \"col\": 4}}, {\"id\": \"c3\", \"type\": \"card\", \"data\": {\"card_name\": \"العملاء والسيارات\", \"col\": 4}}]",
+  "custom_blocks": [{"custom_block_name": "gate-car-banner", "label": "gate-car-banner"}],
   "docstatus": 0,
   "doctype": "Workspace",
   "external_link": null,
@@ -136,7 +161,6 @@
    {
     "dependencies": null,
     "description": null,
-    "doctype_layout": null,
     "hidden": 0,
     "icon": null,
     "is_query_report": 0,
@@ -152,7 +176,6 @@
    {
     "dependencies": null,
     "description": null,
-    "doctype_layout": null,
     "hidden": 0,
     "icon": null,
     "is_query_report": 0,
@@ -168,7 +191,6 @@
    {
     "dependencies": null,
     "description": null,
-    "doctype_layout": null,
     "hidden": 0,
     "icon": null,
     "is_query_report": 0,
@@ -184,7 +206,6 @@
    {
     "dependencies": null,
     "description": null,
-    "doctype_layout": null,
     "hidden": 0,
     "icon": null,
     "is_query_report": 0,
@@ -200,7 +221,6 @@
    {
     "dependencies": null,
     "description": null,
-    "doctype_layout": null,
     "hidden": 0,
     "icon": null,
     "is_query_report": 0,
@@ -216,7 +236,6 @@
    {
     "dependencies": null,
     "description": null,
-    "doctype_layout": null,
     "hidden": 0,
     "icon": null,
     "is_query_report": 0,
@@ -232,7 +251,6 @@
    {
     "dependencies": null,
     "description": null,
-    "doctype_layout": null,
     "hidden": 0,
     "icon": null,
     "is_query_report": 0,
@@ -248,7 +266,6 @@
    {
     "dependencies": null,
     "description": null,
-    "doctype_layout": null,
     "hidden": 0,
     "icon": null,
     "is_query_report": 0,
@@ -262,7 +279,7 @@
     "type": "Link"
    }
   ],
-  "modified": "2026-07-07 13:53:04.491864",
+  "modified": "2026-07-12 16:32:10.771537",
   "module": null,
   "name": "المبيعات",
   "number_cards": [],
@@ -343,8 +360,8 @@
  {
   "app": null,
   "charts": [],
-  "content": "[{\"id\": \"1f32eb0476\", \"type\": \"header\", \"data\": {\"text\": \"<div style=\\\"background: linear-gradient(135deg, #1b5e20, #4caf50); border-radius: 12px; padding: 20px 25px; display: flex; align-items: center; justify-content: space-between;\\\"><div><h3 style=\\\"margin: 0; color: #fff; font-weight: 700; font-size: 22px;\\\">\\u0627\\u0644\\u0623\\u0633\\u0637\\u0648\\u0644</h3><p style=\\\"margin: 5px 0 0; color: rgba(255,255,255,0.85); font-size: 13px;\\\">\\u0625\\u062f\\u0627\\u0631\\u0629 \\u0623\\u0633\\u0637\\u0648\\u0644 \\u0627\\u0644\\u0633\\u064a\\u0627\\u0631\\u0627\\u062a \\u0648\\u0627\\u0644\\u0635\\u064a\\u0627\\u0646\\u0629</p></div><img src=\\\"/assets/gatecar/logo.png\\\" alt=\\\"Gate Cars\\\" style=\\\"height: 50px; border-radius: 8px; background: rgba(255,255,255,0.15); padding: 5px;\\\"></div>\", \"col\": 12}}, {\"id\": \"sc1\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"\\u0627\\u0644\\u0633\\u064a\\u0627\\u0631\\u0627\\u062a\", \"col\": 4}}, {\"id\": \"sc2\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"\\u0635\\u064a\\u0627\\u0646\\u0629 \\u062c\\u062f\\u064a\\u062f\\u0629\", \"col\": 4}}, {\"id\": \"sc3\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"\\u0627\\u0644\\u0623\\u0633\\u0627\\u0637\\u064a\\u0644\", \"col\": 4}}, {\"id\": \"sp1\", \"type\": \"spacer\", \"data\": {\"col\": 12}}, {\"id\": \"c1\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u0627\\u0644\\u0633\\u064a\\u0627\\u0631\\u0627\\u062a\", \"col\": 4}}, {\"id\": \"c2\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u0627\\u0644\\u0635\\u064a\\u0627\\u0646\\u0629\", \"col\": 4}}, {\"id\": \"c3\", \"type\": \"card\", \"data\": {\"card_name\": \"\\u0627\\u0644\\u0623\\u0633\\u0627\\u0637\\u064a\\u0644 \\u0648\\u0627\\u0644\\u0641\\u0631\\u0648\\u0639\", \"col\": 4}}]",
-  "custom_blocks": [],
+  "content": "[{\"id\": \"1f32eb0476\", \"type\": \"custom_block\", \"data\": {\"custom_block_name\": \"gate-car-banner\", \"col\": 12}}, {\"id\": \"sc1\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"السيارات\", \"col\": 4}}, {\"id\": \"sc2\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"صيانة جديدة\", \"col\": 4}}, {\"id\": \"sc3\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"الأساطيل\", \"col\": 4}}, {\"id\": \"sp1\", \"type\": \"spacer\", \"data\": {\"col\": 12}}, {\"id\": \"c1\", \"type\": \"card\", \"data\": {\"card_name\": \"السيارات\", \"col\": 4}}, {\"id\": \"c2\", \"type\": \"card\", \"data\": {\"card_name\": \"الصيانة\", \"col\": 4}}, {\"id\": \"c3\", \"type\": \"card\", \"data\": {\"card_name\": \"الأساطيل والفروع\", \"col\": 4}}]",
+  "custom_blocks": [{"custom_block_name": "gate-car-banner", "label": "gate-car-banner"}],
   "docstatus": 0,
   "doctype": "Workspace",
   "external_link": null,
@@ -360,7 +377,6 @@
    {
     "dependencies": null,
     "description": null,
-    "doctype_layout": null,
     "hidden": 0,
     "icon": null,
     "is_query_report": 0,
@@ -376,7 +392,6 @@
    {
     "dependencies": null,
     "description": null,
-    "doctype_layout": null,
     "hidden": 0,
     "icon": null,
     "is_query_report": 0,
@@ -392,7 +407,6 @@
    {
     "dependencies": null,
     "description": null,
-    "doctype_layout": null,
     "hidden": 0,
     "icon": null,
     "is_query_report": 0,
@@ -408,7 +422,6 @@
    {
     "dependencies": null,
     "description": null,
-    "doctype_layout": null,
     "hidden": 0,
     "icon": null,
     "is_query_report": 0,
@@ -424,7 +437,6 @@
    {
     "dependencies": null,
     "description": null,
-    "doctype_layout": null,
     "hidden": 0,
     "icon": null,
     "is_query_report": 0,
@@ -440,7 +452,6 @@
    {
     "dependencies": null,
     "description": null,
-    "doctype_layout": null,
     "hidden": 0,
     "icon": null,
     "is_query_report": 0,
@@ -456,7 +467,6 @@
    {
     "dependencies": null,
     "description": null,
-    "doctype_layout": null,
     "hidden": 0,
     "icon": null,
     "is_query_report": 0,
@@ -470,7 +480,7 @@
     "type": "Link"
    }
   ],
-  "modified": "2026-07-07 13:53:04.489296",
+  "modified": "2026-07-12 16:32:10.771187",
   "module": null,
   "name": "الأسطول",
   "number_cards": [],
@@ -523,8 +533,8 @@
  {
   "app": null,
   "charts": [],
-  "content": "[{\"id\": \"banner_475ce5\", \"type\": \"header\", \"data\": {\"text\": \"<div style=\\\"background: linear-gradient(135deg, #1b5e20, #4caf50); border-radius: 12px; padding: 20px 25px; display: flex; align-items: center; justify-content: space-between;\\\"><div><h3 style=\\\"margin: 0; color: #fff; font-weight: 700; font-size: 20px;\\\">Gate Cars</h3><p style=\\\"margin: 5px 0 0; color: rgba(255,255,255,0.85); font-size: 13px;\\\">نظام إدارة تأجير السيارات</p></div><img src=\\\"/files/gatecar_logo.png\\\" alt=\\\"Gate Cars\\\" style=\\\"height: 50px; border-radius: 8px; background: rgba(255,255,255,0.15); padding: 5px;\\\"></div>\", \"col\": 12}}, {\"id\": \"sc_dash_a1ab\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"لوحة تحكم الفرع\", \"col\": 3}}, {\"id\": \"sc2\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"الحجوزات\", \"col\": 3}}, {\"id\": \"sc3\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"الفروع\", \"col\": 3}}, {\"id\": \"sc4\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"الأساطيل\", \"col\": 3}}, {\"id\": \"sp1\", \"type\": \"spacer\", \"data\": {\"col\": 12}}, {\"id\": \"c1\", \"type\": \"card\", \"data\": {\"card_name\": \"العمليات\", \"col\": 4}}, {\"id\": \"c2\", \"type\": \"card\", \"data\": {\"card_name\": \"السيارات\", \"col\": 4}}, {\"id\": \"c3\", \"type\": \"card\", \"data\": {\"card_name\": \"الهيكل التنظيمي\", \"col\": 4}}]",
-  "custom_blocks": [],
+  "content": "[{\"id\": \"banner_475ce5\", \"type\": \"custom_block\", \"data\": {\"custom_block_name\": \"gate-car-banner\", \"col\": 12}}, {\"id\": \"sc_dash_a1ab\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"لوحة تحكم الفرع\", \"col\": 3}}, {\"id\": \"sc2\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"الحجوزات\", \"col\": 3}}, {\"id\": \"sc3\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"الفروع\", \"col\": 3}}, {\"id\": \"sc4\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"الأساطيل\", \"col\": 3}}, {\"id\": \"sp1\", \"type\": \"spacer\", \"data\": {\"col\": 12}}, {\"id\": \"c1\", \"type\": \"card\", \"data\": {\"card_name\": \"العمليات\", \"col\": 4}}, {\"id\": \"c2\", \"type\": \"card\", \"data\": {\"card_name\": \"السيارات\", \"col\": 4}}, {\"id\": \"c3\", \"type\": \"card\", \"data\": {\"card_name\": \"الهيكل التنظيمي\", \"col\": 4}}]",
+  "custom_blocks": [{"custom_block_name": "gate-car-banner", "label": "gate-car-banner"}],
   "docstatus": 0,
   "doctype": "Workspace",
   "external_link": null,
@@ -540,7 +550,6 @@
    {
     "dependencies": null,
     "description": null,
-    "doctype_layout": null,
     "hidden": 0,
     "icon": null,
     "is_query_report": 0,
@@ -556,7 +565,6 @@
    {
     "dependencies": null,
     "description": null,
-    "doctype_layout": null,
     "hidden": 0,
     "icon": null,
     "is_query_report": 0,
@@ -572,7 +580,6 @@
    {
     "dependencies": null,
     "description": null,
-    "doctype_layout": null,
     "hidden": 0,
     "icon": null,
     "is_query_report": 0,
@@ -588,7 +595,6 @@
    {
     "dependencies": null,
     "description": null,
-    "doctype_layout": null,
     "hidden": 0,
     "icon": null,
     "is_query_report": 0,
@@ -604,7 +610,6 @@
    {
     "dependencies": null,
     "description": null,
-    "doctype_layout": null,
     "hidden": 0,
     "icon": null,
     "is_query_report": 0,
@@ -620,7 +625,6 @@
    {
     "dependencies": null,
     "description": null,
-    "doctype_layout": null,
     "hidden": 0,
     "icon": null,
     "is_query_report": 0,
@@ -636,7 +640,6 @@
    {
     "dependencies": null,
     "description": null,
-    "doctype_layout": null,
     "hidden": 0,
     "icon": null,
     "is_query_report": 0,
@@ -652,7 +655,6 @@
    {
     "dependencies": null,
     "description": null,
-    "doctype_layout": null,
     "hidden": 0,
     "icon": null,
     "is_query_report": 0,
@@ -668,7 +670,6 @@
    {
     "dependencies": null,
     "description": null,
-    "doctype_layout": null,
     "hidden": 0,
     "icon": null,
     "is_query_report": 0,
@@ -684,7 +685,6 @@
    {
     "dependencies": null,
     "description": null,
-    "doctype_layout": null,
     "hidden": 0,
     "icon": null,
     "is_query_report": 0,
@@ -700,7 +700,6 @@
    {
     "dependencies": null,
     "description": null,
-    "doctype_layout": null,
     "hidden": 0,
     "icon": null,
     "is_query_report": 0,
@@ -716,7 +715,6 @@
    {
     "dependencies": null,
     "description": null,
-    "doctype_layout": null,
     "hidden": 0,
     "icon": null,
     "is_query_report": 0,
@@ -730,7 +728,7 @@
     "type": "Link"
    }
   ],
-  "modified": "2026-07-07 13:53:04.493797",
+  "modified": "2026-07-12 16:32:10.770618",
   "module": null,
   "name": "إدارة الفرع",
   "number_cards": [],
