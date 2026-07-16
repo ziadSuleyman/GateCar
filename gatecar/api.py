@@ -41,6 +41,24 @@ def get_booking_share_url(
 	return get_share_url("Car Booking", name, print_format, no_letterhead)
 
 
+@frappe.whitelist()
+def get_price_tier_rate(category: str, days: int) -> float:
+	"""Daily rate for a Car Category's price tier that covers `days`.
+
+	Thin wrapper around gatecar.utils.get_tier_rate — the Car Booking form
+	(find_price Client Script) calls this instead of querying the "Car
+	Category Price Tier" child table directly: child tables aren't meant to
+	be listed standalone, and doing so trips Frappe's field-permission check
+	even on the built-in `parent` column (no amount of read/select
+	permission on the child doctype satisfies it). Routing through one
+	server-side function also keeps the tier-matching rule in a single place
+	instead of a second, driftable copy in JS.
+	"""
+	from gatecar.utils import get_tier_rate
+
+	return get_tier_rate(category, int(days))
+
+
 ARABIC_ORDINALS = {
 	1: "الأول", 2: "الثاني", 3: "الثالث", 4: "الرابع",
 	5: "الخامس", 6: "السادس", 7: "السابع", 8: "الثامن",

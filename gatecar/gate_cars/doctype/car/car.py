@@ -17,6 +17,7 @@ class Car(Document):
 		brand: DF.Data
 		categorize: DF.Link
 		chassis_no: DF.Data | None
+		color: DF.Data | None
 		current_odometer: DF.Int
 		custom_id: DF.Data | None
 		finish_date: DF.Date | None
@@ -30,6 +31,7 @@ class Car(Document):
 		تاريخ_التأمين_الشامل: DF.Date | None
 		سنة_الصنع: DF.Data | None
 		صورة_السيارة: DF.Attach | None
+		ملاحظات: DF.SmallText | None
 	# end: auto-generated types
 
 	_DOCTYPE_NAME = "Car"

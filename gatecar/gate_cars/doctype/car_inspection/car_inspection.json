@@ -61,6 +61,8 @@
   "fuel_col_break",
   "fuel_type",
   "documents_present",
+  "car_sanitized",
+  "water_bottles_present",
   "damage_section",
   "pre_existing_damage",
   "signatures_section",
@@ -412,6 +414,16 @@
    "fieldname": "documents_present",
    "fieldtype": "Check",
    "label": "وجود المستندات داخل المركبة (رخصة - تأمين)"
+  },
+  {
+   "fieldname": "car_sanitized",
+   "fieldtype": "Check",
+   "label": "تعقيم السيارة"
+  },
+  {
+   "fieldname": "water_bottles_present",
+   "fieldtype": "Check",
+   "label": "وجود عبوتي مياه"
   },
   {
    "fieldname": "damage_section",

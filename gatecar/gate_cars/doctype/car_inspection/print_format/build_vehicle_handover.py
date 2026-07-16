@@ -3,7 +3,8 @@
 Generator for the "نموذج تسليم مركبة" (Vehicle Handover) print format.
 
 Builds a fully table-based HTML layout (wkhtmltopdf-safe: NO flexbox / grid),
-with all images embedded as base64 and a CSS-drawn checkbox system that is
+with all icons embedded as inline, theme-colored SVG (from
+public/images/SVG/Gc icons-NN.svg) and a CSS-drawn checkbox system that is
 filled from the document data.
 
 Run from the bench root with the bench python:
@@ -20,6 +21,7 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 IMG_DIR = os.path.abspath(os.path.join(HERE, "..", "..", "..", "..", "public", "images", "Car Inspection"))
+SVG_DIR = os.path.abspath(os.path.join(HERE, "..", "..", "..", "..", "public", "images", "SVG"))
 
 DOCTYPE = "Car Inspection"
 
@@ -27,139 +29,186 @@ DOCTYPE = "Car Inspection"
 #   - Handover (تسليم): green accent
 #   - Receipt  (استلام): navy accent
 THEMES = [
-    {
-        "name":       "نموذج تسليم مركبة",
-        "title":      "نموذج تسليم مركبة",
-        "file":       "vehicle_handover.html",
-        "accent":     "#2e7d32",   # green
-        "accent_lt":  "#cfe0cf",   # light green (borders)
-        "accent_bg":  "#eef2ee",   # very light green (header tint)
-    },
-    {
-        "name":       "نموذج استلام مركبة",
-        "title":      "نموذج استلام مركبة",
-        "file":       "vehicle_receipt.html",
-        "accent":     "#1e3a5f",   # navy
-        "accent_lt":  "#c5d0e0",   # light navy (borders)
-        "accent_bg":  "#eef1f6",   # very light navy (header tint)
-    },
+	{
+		"name": "نموذج تسليم مركبة",
+		"title": "نموذج تسليم مركبة",
+		"file": "vehicle_handover.html",
+		"accent": "#2e7d32",  # green
+		"accent_lt": "#cfe0cf",  # light green (borders)
+		"accent_bg": "#eef2ee",  # very light green (header tint)
+	},
+	{
+		"name": "نموذج استلام مركبة",
+		"title": "نموذج استلام مركبة",
+		"file": "vehicle_receipt.html",
+		"accent": "#1e3a5f",  # navy
+		"accent_lt": "#c5d0e0",  # light navy (borders)
+		"accent_bg": "#eef1f6",  # very light navy (header tint)
+	},
 ]
 
 
 def b64(path: str) -> str:
-    with open(path, "rb") as f:
-        return base64.b64encode(f.read()).decode()
+	with open(path, "rb") as f:
+		return base64.b64encode(f.read()).decode()
 
 
-LOGO_HD  = b64(os.path.join(IMG_DIR, "logo_hd.png"))
-EXTERIOR = b64(os.path.join(IMG_DIR, "صورة الخارج.png"))
-INTERIOR = b64(os.path.join(IMG_DIR, "صورة الداخل.png"))
-FUEL     = b64(os.path.join(IMG_DIR, "عداد الوقود.png"))
-SAFETY   = b64(os.path.join(IMG_DIR, "عناصر السلامة.png"))
+LOGO_HD = b64(os.path.join(IMG_DIR, "logo_hd.png"))
 
 FONT_DIR = os.path.join(HERE, "fonts")
-FONT_REG  = b64(os.path.join(FONT_DIR, "Almarai-Regular.ttf"))
+FONT_REG = b64(os.path.join(FONT_DIR, "Almarai-Regular.ttf"))
 FONT_BOLD = b64(os.path.join(FONT_DIR, "Almarai-Bold.ttf"))
 
 FONT_FACE = (
-    "@font-face { font-family: 'Almarai'; font-weight: 400; font-style: normal; "
-    "src: url(data:font/truetype;charset=utf-8;base64," + FONT_REG + ") format('truetype'); }\n"
-    "@font-face { font-family: 'Almarai'; font-weight: 700; font-style: normal; "
-    "src: url(data:font/truetype;charset=utf-8;base64," + FONT_BOLD + ") format('truetype'); }\n"
-    "@font-face { font-family: 'Almarai'; font-weight: 800; font-style: normal; "
-    "src: url(data:font/truetype;charset=utf-8;base64," + FONT_BOLD + ") format('truetype'); }\n"
+	"@font-face { font-family: 'Almarai'; font-weight: 400; font-style: normal; "
+	"src: url(data:font/truetype;charset=utf-8;base64," + FONT_REG + ") format('truetype'); }\n"
+	"@font-face { font-family: 'Almarai'; font-weight: 700; font-style: normal; "
+	"src: url(data:font/truetype;charset=utf-8;base64," + FONT_BOLD + ") format('truetype'); }\n"
+	"@font-face { font-family: 'Almarai'; font-weight: 800; font-style: normal; "
+	"src: url(data:font/truetype;charset=utf-8;base64," + FONT_BOLD + ") format('truetype'); }\n"
 )
 
-# ── Professional line icons (Lucide / Feather). Stroke uses __ACCENT__ placeholder. ──
-_SVG = ('<svg viewBox="0 0 24 24" fill="none" stroke="__ACCENT__" stroke-width="2" '
-        'stroke-linecap="round" stroke-linejoin="round">')
-ICON_USER  = _SVG + '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>'
-ICON_CAL   = _SVG + '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>'
+
+# ── GateCar brand icon set (public/images/SVG/Gc icons-NN.svg) ──────────────
+# Pre-rasterized to PNG (via cairosvg) and embedded as base64 <img>, exactly
+# like the print format's other illustrations always were. Inline <svg> was
+# tried first, but wkhtmltopdf's bundled WebKit renders it unreliably below
+# ~25px — paths become near-invisible in a small checklist-row cell — so
+# rasterizing avoids that failure mode entirely regardless of display size.
+# The reference design already uses plain black line art for these
+# illustrations (not theme-tinted), so no per-theme colour variant is needed.
+def load_icon(num: int, px: int = 256) -> str:
+	import cairosvg
+
+	path = os.path.join(SVG_DIR, f"Gc icons-{num:02d}.svg")
+	png_bytes = cairosvg.svg2png(url=path, output_width=px, output_height=px)
+	return f'<img src="data:image/png;base64,{base64.b64encode(png_bytes).decode()}" class="ic-img">'
+
+
+ICON_FLEET = load_icon(1)  # multi-car illustration → exterior section
+ICON_DASHBOARD = load_icon(2)  # dashboard illustration → interior section + dashboard row
+ICON_FUEL = load_icon(3)  # fuel gauge → fuel box
+ICON_PEN = load_icon(4)  # pen signing → signature labels
+ICON_CAR_BODY = load_icon(5)  # car silhouette → generic body-panel rows
+ICON_PHONE = load_icon(6)  # phone handset → meta "رقم الهاتف"
+ICON_EV_PLUG = load_icon(7)  # EV charging plug → "وصلة شحن السيارة"
+ICON_JACK = load_icon(8)  # car jack/lift → "رافعة السيارة"
+ICON_TRIANGLE = load_icon(9)  # warning triangle → "مثلث الأمان"
+ICON_HEADLIGHT = load_icon(10)  # headlight beam → lights/signals rows
+ICON_ENGINE = load_icon(11)  # engine → engine warning/oil rows
+ICON_WHEEL = load_icon(12)  # wheel/tire → tire rows
+ICON_WIPER = load_icon(13)  # windshield wipers → glass/window rows
+ICON_FIRSTAID = load_icon(14)  # first aid kit → "حقيبة الإسعافات الأولية"
+ICON_PLATE = load_icon(15)  # license plate → plate rows/meta
+ICON_CAL_CLOCK = load_icon(16)  # calendar + clock → meta "التاريخ والوقت"
+ICON_CAL = load_icon(17)  # plain calendar → meta "رقم الحجز"
+ICON_PERSON = load_icon(18)  # person → meta "اسم العميل"
+
+# Kept from the previous hand-drawn Lucide set: no brand icon fits a plain
+# speed/odometer gauge (icon 03 above is specifically a *fuel* gauge).
+_SVG = (
+	'<svg viewBox="0 0 24 24" fill="none" stroke="__ACCENT__" stroke-width="2" '
+	'stroke-linecap="round" stroke-linejoin="round">'
+)
 ICON_GAUGE = _SVG + '<path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></svg>'
-ICON_HASH  = _SVG + '<path d="M4 9h16M4 15h16M10 3 8 21M16 3l-2 18"/></svg>'
-ICON_PHONE = _SVG + ('<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 '
-                     '19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 '
-                     '2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 '
-                     '2.81.7A2 2 0 0 1 22 16.92z"/></svg>')
-ICON_PEN   = ('<svg viewBox="0 0 24 24" fill="none" stroke="__ACCENT__" stroke-width="2" stroke-linecap="round" '
-              'stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>')
 
 
 # ── Checkbox helpers ──
 def box(field: str, val: str) -> str:
-    """CSS checkbox filled when doc.<field> == val."""
-    return ('{% if doc.' + field + ' == "' + val + '" %}'
-            '<span class="bx on">&#10003;</span>'
-            '{% else %}<span class="bx"></span>{% endif %}')
+	"""CSS checkbox filled when doc.<field> == val."""
+	return (
+		"{% if doc." + field + ' == "' + val + '" %}'
+		'<span class="bx on">&#10003;</span>'
+		'{% else %}<span class="bx"></span>{% endif %}'
+	)
 
 
 def chkbox(cond: str) -> str:
-    return ('{% if ' + cond + ' %}<span class="bx on">&#10003;</span>'
-            '{% else %}<span class="bx"></span>{% endif %}')
+	return (
+		"{% if " + cond + ' %}<span class="bx on">&#10003;</span>'
+		'{% else %}<span class="bx"></span>{% endif %}'
+	)
 
 
-def row(field: str, label: str) -> str:
-    return ('<tr>'
-            f'<td class="nm">{label}</td>'
-            f'<td class="cb">{box(field, "سليم")}</td>'
-            f'<td class="cb">{box(field, "متضرر")}</td>'
-            f'<td class="cb">{box(field, "غير متاح")}</td>'
-            '</tr>')
+def row(field: str, label: str, icon: str = "") -> str:
+	icon_cell = f'<span class="ric">{icon}</span>' if icon else ""
+	return (
+		"<tr>"
+		f'<td class="ic">{icon_cell}</td>'
+		f'<td class="nm">{label}</td>'
+		f'<td class="cb">{box(field, "سليم")}</td>'
+		f'<td class="cb">{box(field, "متضرر")}</td>'
+		f'<td class="cb">{box(field, "غير متاح")}</td>'
+		"</tr>"
+	)
 
 
 def field(icon: str, label: str, value_expr: str) -> str:
-    return ('<table class="fld"><tr>'
-            f'<td class="f-ico">{icon}</td>'
-            f'<td class="f-lbl">{label}</td>'
-            f'<td class="f-val">{value_expr}</td>'
-            '</tr></table>')
+	return (
+		'<table class="fld"><tr>'
+		f'<td class="f-ico">{icon}</td>'
+		f'<td class="f-lbl">{label}</td>'
+		f'<td class="f-val">{value_expr}</td>'
+		"</tr></table>"
+	)
 
 
-THEAD = ('<tr>'
-         '<th class="th-nm">البند</th>'
-         '<th class="th-ok">سليم</th>'
-         '<th class="th-dmg">متضرر</th>'
-         '<th class="th-na">غير&nbsp;متاح</th>'
-         '</tr>')
+THEAD = (
+	"<tr>"
+	'<th class="th-ic"></th>'
+	'<th class="th-nm">البند</th>'
+	'<th class="th-ok">سليم</th>'
+	'<th class="th-dmg">متضرر</th>'
+	'<th class="th-na">غير&nbsp;متاح</th>'
+	"</tr>"
+)
 
-# ── Exact labels from the reference design ──
-EXT_ROWS = "".join([
-    row("front_bumper",       "الصدام الأمامي"),
-    row("rear_bumper",        "الصدام الخلفي"),
-    row("left_side",          "الجانب الأيسر"),
-    row("right_side",         "الجانب الأيمن"),
-    row("roof",               "السقف"),
-    row("front_glass",        "الزجاج الأمامي"),
-    row("windows_mirrors",    "النوافذ والمرايا"),
-    row("lights",             "الأضواء (الأمامية والخلفية)"),
-    row("signals",            "المصابيح والإشارات"),
-    row("license_plate_check","لوحة المركبة"),
-])
+# ── Exact labels from the reference design, each paired with the brand icon
+# that best matches it. Rows with no clear match get no icon rather than a
+# forced/confusing one. ──
+EXT_ROWS = "".join(
+	[
+		row("front_bumper", "الصدام الأمامي", ICON_CAR_BODY),
+		row("rear_bumper", "الصدام الخلفي", ICON_CAR_BODY),
+		row("left_side", "الجانب الأيسر", ICON_CAR_BODY),
+		row("right_side", "الجانب الأيمن", ICON_CAR_BODY),
+		row("roof", "السقف", ICON_CAR_BODY),
+		row("front_glass", "الزجاج الأمامي", ICON_WIPER),
+		row("windows_mirrors", "النوافذ والمرايا", ICON_WIPER),
+		row("lights", "الأضواء (الأمامية والخلفية)", ICON_HEADLIGHT),
+		row("signals", "المصابيح والإشارات", ICON_HEADLIGHT),
+		row("license_plate_check", "لوحة المركبة", ICON_PLATE),
+	]
+)
 
-INT_ROWS = "".join([
-    row("seats",             "المقاعد (نظيفة وخالية من التمزقات)"),
-    row("dashboard_check",   "لوحة القيادة"),
-    row("doors_locks",       "الأبواب والأقفال الداخلية"),
-    row("floor_carpet",      "الأرضية والسجاد"),
-    row("front_glass",       "الزجاج الأمامي"),
-    row("ac_heating",        "نظام التكييف والتدفئة"),
-    row("audio_system",      "النظام الصوتي والوسائط"),
-    row("electric_windows",  "عمل النوافذ الكهربائية"),
-    row("interior_lighting", "الإضاءة الداخلية"),
-    row("no_odors",          "خلو المركبة من الروائح غير المرغوبة"),
-    row("no_smoking",        "حرق سجائر"),
-])
+INT_ROWS = "".join(
+	[
+		row("seats", "المقاعد (نظيفة وخالية من التمزقات)"),
+		row("dashboard_check", "لوحة القيادة"),
+		row("doors_locks", "الأبواب والأقفال الداخلية"),
+		row("floor_carpet", "الأرضية والسجاد"),
+		row("front_glass", "الزجاج الأمامي", ICON_WIPER),
+		row("ac_heating", "نظام التكييف والتدفئة"),
+		row("audio_system", "النظام الصوتي والوسائط"),
+		row("electric_windows", "عمل النوافذ الكهربائية", ICON_WIPER),
+		row("interior_lighting", "الإضاءة الداخلية"),
+		row("no_odors", "خلو المركبة من الروائح غير المرغوبة"),
+		row("no_smoking", "حرق سجائر"),
+	]
+)
 
-MECH_ROWS = "".join([
-    row("engine_warning",   "مؤشر أعطال المحرك"),
-    row("engine_oil",       "زيت المحرك"),
-    row("tires",            "مستوى الإطارات"),
-    row("spare_tire_tools", "البطاريات الاحتياطية وأدواته"),
-    row("first_aid_kit",    "حقيبة الإسعافات الأولية"),
-    row("car_jack",         "رافعة السيارة"),
-    row("charger_cable",    "وصلة شحن السيارة"),
-    row("safety_triangle",  "مثلث الأمان"),
-])
+MECH_ROWS = "".join(
+	[
+		row("engine_warning", "مؤشر أعطال المحرك", ICON_ENGINE),
+		row("engine_oil", "زيت المحرك", ICON_ENGINE),
+		row("tires", "مستوى الإطارات", ICON_WHEEL),
+		row("spare_tire_tools", "البطاريات الاحتياطية وأدواته", ICON_WHEEL),
+		row("first_aid_kit", "حقيبة الإسعافات الأولية", ICON_FIRSTAID),
+		row("car_jack", "رافعة السيارة", ICON_JACK),
+		row("charger_cable", "وصلة شحن السيارة", ICON_EV_PLUG),
+		row("safety_triangle", "مثلث الأمان", ICON_TRIANGLE),
+	]
+)
 
 DOTS2 = '<div class="dots"></div><div class="dots"></div>'
 
@@ -175,7 +224,7 @@ def notes_block(field: str) -> str:
 
 
 def build_html(theme: dict) -> str:
-    css = """<style>
+	css = """<style>
 __FONT_FACE__
 @page { size: A4 portrait; margin: 6mm 7mm; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -203,7 +252,7 @@ table { border-collapse: collapse; }
 .fld { width: 100%; }
 .fld td { vertical-align: middle; padding: 0 !important; height: 13px; }
 .fld .f-ico { width: 16px; padding-left: 5px !important; }
-.fld .f-ico svg { width: 11px; height: 11px; display: block; }
+.fld .f-ico svg, .fld .f-ico img { width: 11px; height: 11px; display: block; }
 .fld .f-lbl { white-space: nowrap; font-weight: 700; color: #333; font-size: 8.5px; padding-left: 5px !important; }
 .fld .f-val { width: 100%; border-bottom: 1px dotted #bbb; font-size: 8.5px; color: #111; text-align: center; }
 
@@ -214,18 +263,22 @@ table { border-collapse: collapse; }
 .layout { width: 100%; }
 .layout > tbody > tr > td { vertical-align: top; }
 
-/* Images */
+/* Images (section illustrations, from the GateCar brand icon set) */
 .img-cell { text-align: center; padding: 1px; }
-.img-cell img { max-width: 100%; max-height: 112px; height: auto; }
+.img-cell img { max-width: 100%; width: auto; height: 108px; }
 
 /* Checklist */
 .chk { width: 100%; }
 .chk th { border: 1px solid #cfcfcf; padding: 1px 2px !important; font-size: 7px; font-weight: 700; text-align: center; line-height: 1.05 !important; }
+.chk th.th-ic  { background: __ACCENT_BG__; width: 15px; }
 .chk th.th-nm { background: __ACCENT_BG__; text-align: right; padding: 1px 5px 1px 2px !important; color: #333; }
 .chk th.th-ok  { background: __ACCENT__; color: #fff; width: 28px; }
 .chk th.th-dmg { background: #c62828; color: #fff; width: 28px; }
 .chk th.th-na  { background: #6d6d6d; color: #fff; width: 32px; }
-.chk td { border: 1px solid #e2e2e2; padding: 0px 5px !important; height: 11px; line-height: 1 !important; }
+.chk td { border: 1px solid #e2e2e2; padding: 0px 5px !important; height: 13px; line-height: 1 !important; }
+.chk td.ic { text-align: center; padding: 0 !important; }
+.chk td.ic .ric { display: inline-block; width: 10px; height: 10px; vertical-align: middle; }
+.chk td.ic .ric img { width: 10px; height: 10px; display: block; }
 .chk td.nm { font-size: 7px; }
 .chk td.cb { text-align: center; }
 
@@ -241,17 +294,13 @@ table { border-collapse: collapse; }
 .fuel { border: 1px solid __ACCENT_LT__; border-radius: 4px; padding: 3px 6px; height: 100%; }
 .fuel-hd { font-weight: 800; color: __ACCENT__; font-size: 8px; margin-bottom: 2px; }
 .fuel-gauge { text-align: center; margin-bottom: 2px; }
-.fuel-gauge img { height: 34px; }
+.fuel-gauge img { height: 34px; width: auto; }
 .fuel-line { font-size: 7.5px; margin: 1.5px 0; }
 .fuel-line .bx { vertical-align: middle; margin-left: 3px; }
 .fuel-opts { margin-top: 1px; }
 .fuel-opts span.opt { margin-left: 12px; font-size: 7.5px; white-space: nowrap; }
 .fuel-sep { border-top: 1px dotted #ccc; margin: 2px 0; }
 .fuel-val { font-weight: 700; color: __ACCENT__; }
-
-/* Safety icons */
-.safety-cell { width: 50px; text-align: center; vertical-align: top; padding-top: 1px; }
-.safety-cell img { width: 100%; max-width: 46px; }
 
 /* Damage */
 .dmg-bd { padding: 3px 6px; }
@@ -261,7 +310,7 @@ table { border-collapse: collapse; }
 .sigs { width: 100%; margin-top: 4px; }
 .sigs td { width: 50%; text-align: center; padding: 0 12px; }
 .sig-lbl { font-size: 9px; font-weight: 700; color: __ACCENT__; margin-bottom: 3px; }
-.sig-lbl svg { width: 11px; height: 11px; vertical-align: middle; margin-left: 3px; }
+.sig-lbl svg, .sig-lbl img { width: 11px; height: 11px; vertical-align: middle; margin-left: 3px; }
 .sig-area { border-bottom: 1px solid #222; height: 40px; text-align: center; }
 .sig-area img { max-height: 38px; max-width: 140px; }
 .sig-name { font-size: 7px; color: #999; margin-top: 2px; }
@@ -272,7 +321,7 @@ table { border-collapse: collapse; }
 .foot .msg b { color: __ACCENT__; display: block; font-size: 10px; }
 </style>""".replace("__FONT_FACE__", FONT_FACE)
 
-    body = f"""
+	body = f"""
 <div class="ci-wrap">
 
 <!-- HEADER -->
@@ -291,16 +340,16 @@ table { border-collapse: collapse; }
 <!-- META -->
 <table class="meta"><tbody>
 <tr>
-  <td>{field(ICON_USER,  "اسم العميل:",           "{{ doc.customer_name or '' }}")}</td>
-  <td>{field(ICON_CAL,   "رقم الحجز:",            "{{ doc.booking or '' }}")}</td>
+  <td>{field(ICON_PERSON, "اسم العميل:", "{{ doc.customer_name or '' }}")}</td>
+  <td>{field(ICON_CAL, "رقم الحجز:", "{{ doc.booking or '' }}")}</td>
 </tr>
 <tr>
-  <td>{field(ICON_CAL,   "التاريخ والوقت:",       "{{ doc.inspection_date or '' }}")}</td>
-  <td>{field(ICON_HASH,  "رقم المركبة / اللوحة:", "{{ doc.car or '' }} / {{ doc.plate_no or '' }}")}</td>
+  <td>{field(ICON_CAL_CLOCK, "التاريخ والوقت:", "{{ doc.inspection_date or '' }}")}</td>
+  <td>{field(ICON_PLATE, "رقم المركبة / اللوحة:", "{{ doc.car or '' }} / {{ doc.plate_no or '' }}")}</td>
 </tr>
 <tr>
   <td>{field(ICON_GAUGE, "عداد الكيلومترات (كم):", "{{ doc.odometer or '' }}")}</td>
-  <td>{field(ICON_PHONE, "رقم الهاتف:",           "{{ doc.phone or '' }}")}</td>
+  <td>{field(ICON_PHONE, "رقم الهاتف:", "{{ doc.phone or '' }}")}</td>
 </tr>
 </tbody></table>
 
@@ -311,10 +360,10 @@ table { border-collapse: collapse; }
   <table class="layout"><tbody><tr>
     <td style="width:57%; padding-left:6px;">
       <table class="chk"><thead>{THEAD}</thead><tbody>{EXT_ROWS}</tbody></table>
-      {notes_block('external_notes')}
+      {notes_block("external_notes")}
     </td>
     <td class="img-cell" style="width:43%">
-      <img src="data:image/png;base64,{EXTERIOR}" alt="">
+      {ICON_FLEET}
     </td>
   </tr></tbody></table>
 </td></tr>
@@ -327,10 +376,10 @@ table { border-collapse: collapse; }
   <table class="layout"><tbody><tr>
     <td style="width:57%; padding-left:6px;">
       <table class="chk"><thead>{THEAD}</thead><tbody>{INT_ROWS}</tbody></table>
-      {notes_block('internal_notes')}
+      {notes_block("internal_notes")}
     </td>
     <td class="img-cell" style="width:43%">
-      <img src="data:image/png;base64,{INTERIOR}" alt="">
+      {ICON_DASHBOARD}
     </td>
   </tr></tbody></table>
 </td></tr>
@@ -342,20 +391,13 @@ table { border-collapse: collapse; }
 <tr><td class="sec-bd">
   <table class="layout"><tbody><tr>
     <td style="width:62%; padding-left:6px;">
-      <table class="layout"><tbody><tr>
-        <td>
-          <table class="chk"><thead>{THEAD}</thead><tbody>{MECH_ROWS}</tbody></table>
-          {notes_block('mechanical_notes')}
-        </td>
-        <td class="safety-cell">
-          <img src="data:image/png;base64,{SAFETY}" alt="">
-        </td>
-      </tr></tbody></table>
+      <table class="chk"><thead>{THEAD}</thead><tbody>{MECH_ROWS}</tbody></table>
+      {notes_block("mechanical_notes")}
     </td>
     <td style="width:38%">
       <div class="fuel">
         <div class="fuel-hd">4. الوقود والمستندات</div>
-        <div class="fuel-gauge"><img src="data:image/png;base64,{FUEL}" alt="fuel"></div>
+        <div class="fuel-gauge">{ICON_FUEL}</div>
         <div class="fuel-line">{chkbox("doc.fuel_level_agreed")} مستوى الوقود المتفق عليه</div>
         <div class="fuel-line">مستوى الوقود: <span class="fuel-val">{{{{ doc.fuel_level or '—' }}}}</span></div>
         <div class="fuel-sep"></div>
@@ -367,6 +409,9 @@ table { border-collapse: collapse; }
         <div class="fuel-sep"></div>
         <div class="fuel-line">{chkbox("doc.documents_present")} وجود المستندات داخل المركبة
           <br><span style="color:#777; padding-right:16px;">(رخصة المركبة – التأمين)</span></div>
+        <div class="fuel-sep"></div>
+        <div class="fuel-line">{chkbox("doc.car_sanitized")} تعقيم السيارة</div>
+        <div class="fuel-line">{chkbox("doc.water_bottles_present")} وجود عبوتي مياه</div>
       </div>
     </td>
   </tr></tbody></table>
@@ -402,46 +447,58 @@ table { border-collapse: collapse; }
 </div>
 
 </div>"""
-    html = css + body
-    return (html
-            .replace("__TITLE__", theme["title"])
-            .replace("__ACCENT_LT__", theme["accent_lt"])
-            .replace("__ACCENT_BG__", theme["accent_bg"])
-            .replace("__ACCENT__", theme["accent"]))
+	html = css + body
+	return (
+		html.replace("__TITLE__", theme["title"])
+		.replace("__ACCENT_LT__", theme["accent_lt"])
+		.replace("__ACCENT_BG__", theme["accent_bg"])
+		.replace("__ACCENT__", theme["accent"])
+	)
 
 
 def save_to_db(name: str, html: str):
-    import json
-    import pymysql
+	import json
+	import pymysql
 
-    bench_root = os.path.abspath(os.path.join(HERE, "..", "..", "..", "..", "..", "..", ".."))
-    cfg = json.load(open(os.path.join(bench_root, "sites", "carrent", "site_config.json")))
-    db = pymysql.connect(host="mariadb", user=cfg["db_name"], password=cfg["db_password"],
-                         database=cfg["db_name"], charset="utf8mb4")
-    cur = db.cursor()
-    cur.execute("SELECT name FROM `tabPrint Format` WHERE name=%s", (name,))
-    exists = cur.fetchone()
-    if exists:
-        cur.execute("""UPDATE `tabPrint Format`
+	bench_root = os.path.abspath(os.path.join(HERE, "..", "..", "..", "..", "..", "..", ".."))
+	cfg = json.load(open(os.path.join(bench_root, "sites", "carrent", "site_config.json")))
+	db = pymysql.connect(
+		host="mariadb",
+		user=cfg["db_name"],
+		password=cfg["db_password"],
+		database=cfg["db_name"],
+		charset="utf8mb4",
+	)
+	cur = db.cursor()
+	cur.execute("SELECT name FROM `tabPrint Format` WHERE name=%s", (name,))
+	exists = cur.fetchone()
+	if exists:
+		cur.execute(
+			"""UPDATE `tabPrint Format`
             SET html=%s, custom_format=1, print_format_type='Jinja', disabled=0, modified=NOW()
-            WHERE name=%s""", (html, name))
-    else:
-        cur.execute("""INSERT INTO `tabPrint Format`
+            WHERE name=%s""",
+			(html, name),
+		)
+	else:
+		cur.execute(
+			"""INSERT INTO `tabPrint Format`
             (name, creation, modified, owner, modified_by, doc_type, module,
              print_format_type, custom_format, standard, disabled, html, print_format_builder)
             VALUES (%s, NOW(), NOW(), 'Administrator', 'Administrator', %s, 'Gate Cars',
-             'Jinja', 1, 'No', 0, %s, 0)""", (name, DOCTYPE, html))
-    db.commit()
-    db.close()
-    print(f"Saved '{name}' ({'updated' if exists else 'inserted'}) — {len(html)} chars")
+             'Jinja', 1, 'No', 0, %s, 0)""",
+			(name, DOCTYPE, html),
+		)
+	db.commit()
+	db.close()
+	print(f"Saved '{name}' ({'updated' if exists else 'inserted'}) — {len(html)} chars")
 
 
 if __name__ == "__main__":
-    for theme in THEMES:
-        html = build_html(theme)
-        out = os.path.join(HERE, theme["file"])
-        with open(out, "w", encoding="utf-8") as f:
-            f.write(html)
-        print(f"Wrote {out} ({len(html)} chars)")
-        if "--save" in sys.argv:
-            save_to_db(theme["name"], html)
+	for theme in THEMES:
+		html = build_html(theme)
+		out = os.path.join(HERE, theme["file"])
+		with open(out, "w", encoding="utf-8") as f:
+			f.write(html)
+		print(f"Wrote {out} ({len(html)} chars)")
+		if "--save" in sys.argv:
+			save_to_db(theme["name"], html)

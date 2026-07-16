@@ -13,6 +13,9 @@ body {
   background: #eef3ef;
   padding: 20px;
   direction: rtl;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  color-adjust: exact;
 }
 
 .sheet {
@@ -252,6 +255,11 @@ body {
 
 /* ══ PRINT ════════════════════════════════════════════════════════ */
 @media print {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
   body { padding: 0; background: #fff; }
   .sheet { box-shadow: none; border: none; border-radius: 0; max-width: 100%; padding: 0; }
   @page { size: A4 portrait; margin: 8mm 10mm; }
@@ -292,7 +300,11 @@ body {
         <td class="val">{{ car.سنة_الصنع or "—" }}</td>
       </tr>
       <tr>
-        <td class="lbl">الرقم</td>
+        <td class="lbl">اللون</td>
+        <td class="val">{{ car.color or "—" }}</td>
+      </tr>
+      <tr>
+        <td class="lbl">رقم اللوحة</td>
         <td class="val">{{ car.plate_no or "—" }}</td>
       </tr>
       <tr>

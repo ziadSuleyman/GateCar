@@ -21,6 +21,7 @@ class CarInspection(Document):
 		booking: DF.Link
 		car: DF.Data | None
 		car_jack: DF.Literal["سليم", "متضرر", "غير متاح"]
+		car_sanitized: DF.Check
 		charger_cable: DF.Literal["سليم", "متضرر", "غير متاح"]
 		customer_name: DF.Data | None
 		customer_signature: DF.Signature | None
@@ -61,6 +62,7 @@ class CarInspection(Document):
 		signals: DF.Literal["سليم", "متضرر", "غير متاح"]
 		spare_tire_tools: DF.Literal["سليم", "متضرر", "غير متاح"]
 		tires: DF.Literal["سليم", "متضرر", "غير متاح"]
+		water_bottles_present: DF.Check
 		windows_mirrors: DF.Literal["سليم", "متضرر", "غير متاح"]
 	# end: auto-generated types
 

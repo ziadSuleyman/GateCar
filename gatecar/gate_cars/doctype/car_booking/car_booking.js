@@ -40,8 +40,24 @@ function fetch_customer_details(frm) {
 			frm.set_value("license_issue_date_fetched",  c["تاريخ_الاصدار"] || "");
 			frm.set_value("license_expiry_date_fetched", c["تاريخ_الانتهاء"] || "");
 			frm.set_value("address_fetched",             c["العنوان"] || "");
+
+			show_customer_classification_flag(c["التصنيف"], c["سبب_الحظر"]);
 		}
 	});
+}
+
+// تنبيه فقط (لا يمنع المتابعة) — يظهر عند اختيار عميل VIP أو محظور.
+function show_customer_classification_flag(classification, blacklist_reason) {
+	if (classification === "محظور") {
+		frappe.msgprint({
+			title: __("تنبيه: عميل محظور"),
+			message: __("هذا العميل مُصنَّف كـ [محظور].") +
+				(blacklist_reason ? `<br><b>${__("السبب")}:</b> ${frappe.utils.escape_html(blacklist_reason)}` : ""),
+			indicator: "red",
+		});
+	} else if (classification === "VIP") {
+		frappe.show_alert({ message: __("⭐ عميل VIP"), indicator: "yellow" }, 7);
+	}
 }
 
 // ── Inspection checklist viewer ───────────────────────────────────────────

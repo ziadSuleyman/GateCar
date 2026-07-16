@@ -26,6 +26,7 @@ def execute(filters=None):
 	data.append(_section_header("معلومات السيارة"))
 	data.append(_info_row("السيارة", f"{car.brand} {car.model}"))
 	data.append(_info_row("سنة الصنع", getattr(car, "سنة_الصنع", "") or ""))
+	data.append(_info_row("اللون", car.color or "—"))
 	data.append(_info_row("رقم اللوحة", car.plate_no or ""))
 	data.append(_info_row("رقم الشاسيه", car.chassis_no or ""))
 	data.append(_info_row("المالك", owner_name))

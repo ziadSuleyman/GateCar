@@ -1,6 +1,7 @@
 import re
 
 import frappe
+from frappe.utils import flt
 
 
 def compute_rental_tax(rental_amount: float) -> tuple[float, float]:
@@ -20,6 +21,28 @@ def compute_rental_tax(rental_amount: float) -> tuple[float, float]:
 	spending_tax = round((rental_amount or 0) * spend_rate / 100.0, 2)
 	local_tax = round(spending_tax * local_rate / 100.0, 2)
 	return spending_tax, local_tax
+
+
+def get_tier_rate(category: str, days: int) -> float:
+	"""Daily rate for a Car Category's price tier that covers `days`.
+
+	Tiers are a free-form list (Car Category Price Tier child table) —
+	each with from_day/to_day/rate_per_day, sorted by from_day; the last
+	tier may leave to_day blank to mean "and above". Mirrors the same
+	lookup done client-side in the "find_price" Client Script on Car
+	Booking (JS can't share this function, so keep both in sync if the
+	tier-matching rule ever changes).
+	"""
+	tiers = frappe.get_all(
+		"Car Category Price Tier",
+		filters={"parent": category, "parenttype": "Car Category"},
+		fields=["from_day", "to_day", "rate_per_day"],
+		order_by="from_day asc",
+	)
+	for tier in tiers:
+		if days >= tier.from_day and (not tier.to_day or days <= tier.to_day):
+			return flt(tier.rate_per_day)
+	return 0
 
 
 def number_ordered_lists(html: str) -> str:

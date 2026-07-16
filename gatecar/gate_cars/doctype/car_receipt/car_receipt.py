@@ -3,9 +3,9 @@
 
 import frappe
 from frappe.model.document import Document
-from frappe.utils import cint, date_diff, flt
+from frappe.utils import cint, date_diff
 
-from gatecar.utils import compute_rental_tax
+from gatecar.utils import compute_rental_tax, get_tier_rate
 
 
 class CarReceipt(Document):
@@ -75,15 +75,13 @@ class CarReceipt(Document):
 
 		Single source of truth: two client scripts (calc_extra_cost,
 		find_mainly_price) used to race to set mainly_cost differently on the
-		same fields, and a third (calc_real_days) computed real_days without
-		the +1 that Car Booking.duration_days uses — so an on-time return
-		invoiced one day short of the contract. Both are now disabled in
-		favor of this method.
+		same fields. Both are now disabled in favor of this method.
 
-		عدد الأيام الفعلي شامل يوم الاستلام ويوم التسليم (+1)، مطابقاً لحساب
-		duration_days في العقد الأصلي. تمديد مدة الإيجار عند الإغلاق ينقل
-		السيارة تلقائياً إلى شريحة سعر أعلى (متوسطة/كبرى) من Car Category —
-		سلوك مقصود في نموذج العمل، وليس خطأ.
+		عدد الأيام الفعلي يبدأ العد من اليوم التالي لتاريخ الاستلام (pickup_date) —
+		يوم الاستلام نفسه يوم تسليم مجاني وليس يوم إيجار مدفوع، مطابقاً لحساب
+		duration_days في العقد الأصلي وحساب الاستحقاق الشهري. تمديد مدة الإيجار
+		عند الإغلاق قد ينقل السيارة تلقائياً إلى باقة سعرية أخرى من باقات
+		Car Category الديناميكية (price_tiers) — سلوك مقصود في نموذج العمل.
 		"""
 		self.real_days = 0
 		self.mainly_cost = 0
@@ -92,7 +90,7 @@ class CarReceipt(Document):
 		if not (self.pickup_date and self.receiving_date and self.booking):
 			return
 
-		real_days = date_diff(self.receiving_date, self.pickup_date) + 1
+		real_days = date_diff(self.receiving_date, self.pickup_date)
 		if real_days < 1:
 			return
 
@@ -109,15 +107,7 @@ class CarReceipt(Document):
 		if not category:
 			return
 
-		if real_days <= 7:
-			tier_field = "small_term"
-		elif real_days <= 20:
-			tier_field = "med_term"
-		else:
-			tier_field = "long_term"
-
-		package = frappe.db.get_value("Car Category", category, tier_field)
-		daily_rate = flt(package) if package else 0
+		daily_rate = get_tier_rate(category, real_days)
 		self.mainly_cost = round(real_days * daily_rate)
 
 	def compute_totals(self) -> None:

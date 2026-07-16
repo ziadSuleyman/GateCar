@@ -18,7 +18,7 @@ number has been read out, it must stay stable.
 """
 
 import frappe
-from frappe.utils import add_months, cint, date_diff, flt, get_first_day, get_last_day, getdate, today
+from frappe.utils import add_days, add_months, cint, date_diff, flt, get_first_day, get_last_day, getdate, today
 
 from gatecar.utils import compute_rental_tax
 
@@ -41,7 +41,9 @@ def ensure_accrual_entries(booking_name: str) -> None:
 	if frappe.db.exists("Car Receipt", {"booking": booking_name, "docstatus": 1}):
 		return
 
-	start = getdate(booking.start_date)
+	# Billing starts the day AFTER pickup — start_date itself is a free handover
+	# day, not a rental day (matches duration_days/real_days everywhere else).
+	start = add_days(getdate(booking.start_date), 1)
 	contract_end = getdate(booking.end_date)
 	horizon = min(contract_end, getdate(today()))
 	if horizon < start:

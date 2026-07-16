@@ -9,9 +9,7 @@
  "field_order": [
   "name_category",
   "description",
-  "small_term",
-  "med_term",
-  "long_term"
+  "price_tiers"
  ],
  "fields": [
   {
@@ -26,26 +24,10 @@
    "label": "وصف التصنيف"
   },
   {
-   "fieldname": "small_term",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "الباقة الصغرى(3-7)",
-   "options": "Price Package",
-   "reqd": 1
-  },
-  {
-   "fieldname": "med_term",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "الباقة الوسطى (من 7-20)",
-   "options": "Price_pacage_monthly",
-   "reqd": 1
-  },
-  {
-   "fieldname": "long_term",
-   "fieldtype": "Link",
-   "label": "الباقة الكبرى (اكبر من 20)",
-   "options": "Price_Package_Over"
+   "fieldname": "price_tiers",
+   "fieldtype": "Table",
+   "label": "باقات الأسعار",
+   "options": "Car Category Price Tier"
   }
  ],
  "grid_page_length": 50,
