@@ -1,21 +1,18 @@
 frappe.pages["branch-dashboard"].on_page_load = function (wrapper) {
 	const page = frappe.ui.make_app_page({
 		parent: wrapper,
-		title: "لوحة تحكم الفرع",
+		title: __("لوحة تحكم الفرع"),
 		single_column: true,
 	});
 
 	page.main.html('<div class="branch-dashboard-container"></div>');
 	page.set_secondary_action(__("تحديث"), () => load_branch_dashboard(page), "refresh");
-
 	load_branch_dashboard(page);
 };
 
 function load_branch_dashboard(page) {
 	const container = page.main.find(".branch-dashboard-container");
-	container.html(
-		'<div class="text-center text-muted py-5"><i class="fa fa-spinner fa-spin fa-2x"></i></div>'
-	);
+	container.html('<div class="ad-loading"><i class="fa fa-spinner fa-spin fa-2x"></i><p>جارٍ التحميل…</p></div>');
 
 	const is_admin = frappe.user.has_role("System Manager");
 	const stats_method = is_admin ? "dashboard_stats" : "branch_dashboard_stats";
@@ -26,7 +23,7 @@ function load_branch_dashboard(page) {
 		frappe.xcall(profitability_method),
 	]).then(([stats, profitability]) => {
 		if (stats.error) {
-			container.html(`<div class="text-center text-muted py-5">${stats.error}</div>`);
+			container.html(`<div class="ad-loading">${stats.error}</div>`);
 			return;
 		}
 		render_branch_dashboard(container, stats, profitability);
@@ -34,165 +31,116 @@ function load_branch_dashboard(page) {
 }
 
 function render_branch_dashboard(container, data, profitability) {
-	const available = data.status_map["متوفر"] || 0;
-	const rented = data.status_map["مؤجر"] || 0;
-	const reserved = data.status_map["محجوز"] || 0;
-	const in_maintenance = data.status_map["داخل الصيانة"] || 0;
-	const ready = data.status_map["جاهز للتسليم"] || 0;
-
 	container.html(`
-		<div style="padding: 15px;">
-
-			<!-- البانر -->
-			<div style="background: linear-gradient(135deg, #1b5e20, #4caf50); border-radius: 12px; padding: 20px 25px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;">
-				<div>
-					<h3 style="margin: 0; color: #fff; font-weight: 700; font-size: 22px;">لوحة تحكم الفرع</h3>
-					<p style="margin: 5px 0 0; color: rgba(255,255,255,0.85); font-size: 13px;">مرحباً، ${frappe.session.user_fullname} — ${frappe.datetime.str_to_user(frappe.datetime.get_today())}</p>
-				</div>
-				<img src="/assets/gatecar/logo.png" alt="Gate Cars" style="height: 55px; border-radius: 8px; background: rgba(255,255,255,0.15); padding: 5px;">
+		<div class="ad-wrap">
+			<div class="ad-banner ad-gatecar-banner">
+				<img src="/assets/gatecar/images/logo.svg" alt="Gate Cars" class="ad-banner-logo">
 			</div>
-
-			<!-- الإجمالي العام -->
-			<div class="frappe-card" style="margin-bottom: 20px; padding: 15px;">
-				${bcollapsible_header("fa-car", "#1565c0", "إجمالي عدد السيارات")}
-				<div class="collapsible-body" style="display: none; margin-top: 12px;">
-					<div class="row" style="display: flex; flex-wrap: wrap;">
-						${bstat("إجمالي", data.total_cars, "blue", "fa-car")}
-						${bstat("متوفرة", available, "green", "fa-check-circle")}
-						${bstat("محجوزة", reserved, "yellow", "fa-calendar")}
-						${bstat("مؤجرة", rented, "orange", "fa-key")}
-						${bstat("صيانة", in_maintenance, "red", "fa-wrench")}
-						${bstat("جاهز للتسليم", ready, "purple", "fa-thumbs-up")}
-						${bstat("مجمدة", data.frozen_cars, "grey", "fa-ban")}
-					</div>
-				</div>
-			</div>
-
-			<!-- جدول الأساطيل -->
-			<div class="frappe-card" style="margin-bottom: 20px; padding: 15px;">
-				${bcollapsible_header("fa-layer-group", "var(--text-color)", "الأساطيل")}
-				<div class="collapsible-body" style="display: none; margin-top: 12px;">
-					<div class="table-responsive">
-						<table class="table table-bordered table-hover" style="margin-bottom: 0;">
-							<thead style="background: var(--subtle-accent);">
-								<tr>
-									<th>الأسطول</th>
-									<th>الفرع</th>
-									<th>إجمالي عدد السيارات</th>
-									<th>متوفرة</th>
-									<th>مؤجرة</th>
-								</tr>
-							</thead>
-							<tbody>
-								${data.fleets.map((f) => `
-									<tr>
-										<td><strong>${f.fleet_name}</strong></td>
-										<td>${f.branch}</td>
-										<td>${f.car_count}</td>
-										<td><span class="indicator-pill green">${f.available}</span></td>
-										<td><span class="indicator-pill orange">${f.rented}</span></td>
-									</tr>
-								`).join("")}
-							</tbody>
-						</table>
-					</div>
-				</div>
-			</div>
-
-			<!-- جدول السيارات مع الصيانة -->
-			<div class="frappe-card" style="margin-bottom: 20px; padding: 15px;">
-				${bcollapsible_header("fa-chart-line", "var(--text-color)", "حالة السيارات والتكاليف")}
-				<div class="collapsible-body" style="display: none; margin-top: 12px;">
-					<div class="table-responsive">
-						<table class="table table-bordered table-hover" style="margin-bottom: 0;">
-							<thead style="background: var(--subtle-accent);">
-								<tr>
-									<th>السيارة</th>
-									<th>النوع</th>
-									<th>الموديل</th>
-									<th>الحالة</th>
-									<th>تكاليف الصيانة الدورية</th>
-									<th>مصاريف السيارة</th>
-								</tr>
-							</thead>
-							<tbody>
-								${profitability.map((car) => `
-									<tr>
-										<td><a href="/app/car/${car.name}"><strong>${car.name}</strong></a></td>
-										<td>${car.brand}</td>
-										<td>${car.model}</td>
-										<td>${car.status}</td>
-										<td style="color: #e65100;">${bcurrency(car.total_periodic || 0)}</td>
-										<td style="color: #c62828;">${bcurrency(car.total_expense || 0)}</td>
-									</tr>
-								`).join("")}
-							</tbody>
-						</table>
-					</div>
-				</div>
-			</div>
-
-			<!-- بطاقات الفروع - قابلة للطي -->
-			${data.branches.map((b) => `
-			<div class="frappe-card" style="margin-bottom: 20px; padding: 15px;">
-				${bcollapsible_header("fa-building", "#2e7d32", `${b.branch_name} <span style="font-size: 12px; color: var(--text-muted); font-weight: 400; margin-right: 8px;">${b.city || ""}</span>`)}
-				<div class="collapsible-body" style="display: none; margin-top: 12px;">
-					<div class="row" style="display: flex; flex-wrap: wrap;">
-						${bstat("إجمالي", b.car_count, "blue", "fa-car")}
-						${bstat("متوفرة", b.available, "green", "fa-check-circle")}
-						${bstat("محجوزة", b.reserved, "yellow", "fa-calendar")}
-						${bstat("مؤجرة", b.rented, "orange", "fa-key")}
-						${bstat("صيانة", b.in_maintenance, "red", "fa-wrench")}
-						${bstat("جاهز للتسليم", b.ready, "purple", "fa-thumbs-up")}
-						${bstat("مجمدة", b.frozen, "grey", "fa-ban")}
-					</div>
-				</div>
-			</div>
-			`).join("")}
-
+			${render_overview(data)}
+			${render_fleets(data.fleets)}
+			${render_cars(profitability)}
+			${data.branches.map(render_branch).join("")}
 		</div>
 	`);
 
 	container.find(".collapsible-toggle").on("click", function () {
-		$(this).find(".toggle-icon").toggleClass("fa-chevron-down fa-chevron-up");
-		$(this).closest(".frappe-card").find(".collapsible-body").toggle();
+		const card = $(this).closest(".ad-card");
+		card.find(".ad-body").first().toggleClass("open");
+		$(this).find(".ad-toggle-icon").toggleClass("open");
 	});
 }
 
-function bcollapsible_header(icon, color, title) {
+function render_overview(data) {
+	const statuses = data.status_map;
 	return `
-		<div style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;" class="collapsible-toggle">
-			<h5 style="margin: 0; font-weight: 600;">
-				<i class="fa ${icon}" style="margin-left: 5px; color: ${color};"></i>
-				${title}
-			</h5>
-			<i class="fa fa-chevron-down toggle-icon" style="color: var(--text-muted);"></i>
-		</div>
-	`;
-}
-
-function bstat(label, value, color, icon) {
-	const colors = {
-		blue: { bg: "#e8f4fd", text: "#1565c0", border: "#90caf9" },
-		green: { bg: "#e8f5e9", text: "#2e7d32", border: "#a5d6a7" },
-		orange: { bg: "#fff3e0", text: "#e65100", border: "#ffcc80" },
-		yellow: { bg: "#fffde7", text: "#f57f17", border: "#fff59d" },
-		red: { bg: "#fbe9e7", text: "#c62828", border: "#ef9a9a" },
-		grey: { bg: "#f5f5f5", text: "#616161", border: "#e0e0e0" },
-		purple: { bg: "#f3e5f5", text: "#6a1b9a", border: "#ce93d8" },
-	};
-	const c = colors[color] || colors.blue;
-	return `
-		<div class="col-sm-4 col-md-3" style="margin-bottom: 8px; flex: 1 1 0; max-width: 14.28%; min-width: 100px;">
-			<div style="background: ${c.bg}; border: 1px solid ${c.border}; border-radius: 8px; padding: 10px 5px; text-align: center; height: 100%;">
-				<i class="fa ${icon}" style="font-size: 16px; color: ${c.text}; margin-bottom: 4px;"></i>
-				<div style="font-size: 18px; font-weight: 700; color: ${c.text};">${value}</div>
-				<div style="font-size: 11px; color: ${c.text}; margin-top: 2px;">${label}</div>
+		<div class="ad-card ad-overview-card">
+			<div class="ad-section-head">
+				<div><span class="ad-eyebrow">الحالة الحالية</span><h5 class="ad-section-title"><i class="fa fa-car"></i> نظرة الأسطول</h5></div>
+				<span class="ad-overview-total">${data.total_cars} سيارة</span>
 			</div>
-		</div>
-	`;
+			<div class="ad-body open">
+				<div class="ad-overview-layout">
+					<div class="ad-total-block"><span>إجمالي الأسطول</span><strong>${data.total_cars}</strong><small>سيارة مسجلة</small></div>
+					<div class="ad-status-list">
+						${status_item("متوفرة", statuses["متوفر"] || 0, "green", data.total_cars)}
+						${status_item("مؤجرة", statuses["مؤجر"] || 0, "orange", data.total_cars)}
+						${status_item("محجوزة", statuses["محجوز"] || 0, "yellow", data.total_cars)}
+						${status_item("داخل الصيانة", statuses["داخل الصيانة"] || 0, "red", data.total_cars)}
+						${status_item("جاهز للتسليم", statuses["جاهز للتسليم"] || 0, "purple", data.total_cars)}
+						${status_item("مجمدة", data.frozen_cars, "grey", data.total_cars)}
+					</div>
+				</div>
+			</div>
+		</div>`;
 }
 
-function bcurrency(val) {
-	return frappe.format(val, { fieldtype: "Currency" });
+function render_fleets(fleets) {
+	const rows = fleets.map(fleet => `
+		<tr><td><strong>${fleet.fleet_name}</strong></td><td>${fleet.branch}</td><td>${fleet.car_count}</td>
+		<td>${pill(fleet.available, "green")}</td><td>${pill(fleet.rented, "orange")}</td></tr>`).join("");
+	return render_table_card("fa-layer-group", "الأساطيل", ["الأسطول", "الفرع", "إجمالي عدد السيارات", "متوفرة", "مؤجرة"], rows);
+}
+
+function render_cars(cars) {
+	const rows = cars.map(car => `
+		<tr><td><a href="/app/car/${car.name}"><strong>${car.name}</strong></a></td><td>${car.brand}</td><td>${car.model}</td>
+		<td>${status_pill(car.status)}</td><td class="ad-val-orange">${currency(car.total_periodic)}</td><td class="ad-val-red">${currency(car.total_expense)}</td></tr>`).join("");
+	return render_table_card("fa-chart-line", "حالة السيارات والتكاليف", ["السيارة", "النوع", "الموديل", "الحالة", "تكاليف الصيانة الدورية", "مصاريف السيارة"], rows);
+}
+
+function render_table_card(icon, title, headings, rows) {
+	return `
+		<div class="ad-card ad-table-card">
+			${collapsible_head(icon, title)}
+			<div class="ad-body"><div class="ad-table-wrap"><table class="ad-table">
+				<thead><tr>${headings.map(heading => `<th>${heading}</th>`).join("")}</tr></thead><tbody>${rows}</tbody>
+			</table></div></div>
+		</div>`;
+}
+
+function render_branch(branch) {
+	return `
+		<div class="ad-card ad-branch-card">
+			${collapsible_head("fa-building", branch.branch_name, branch.city)}
+			<div class="ad-body"><div class="ad-kpi-row">${branch_kpis(branch)}</div></div>
+		</div>`;
+}
+
+function collapsible_head(icon, title, subtitle = "") {
+	return `
+		<div class="ad-section-head collapsible-toggle">
+			<div><span class="ad-eyebrow">${subtitle}</span><h5 class="ad-section-title"><i class="fa ${icon}"></i>${title}</h5></div>
+			<i class="fa fa-chevron-down ad-toggle-icon"></i>
+		</div>`;
+}
+
+function status_item(label, value, color, total) {
+	const percent = total ? Math.min(100, Math.round((value / total) * 100)) : 0;
+	return `<div class="ad-status-item"><div class="ad-status-meta"><span>${label}</span><strong>${value}</strong></div><div class="ad-status-track"><span class="ad-status-fill ad-status-${color}" style="width:${percent}%"></span></div></div>`;
+}
+
+function branch_kpis(branch) {
+	return [
+		["إجمالي", branch.car_count, "blue", "fa-car"], ["متوفرة", branch.available, "green", "fa-check-circle"],
+		["محجوزة", branch.reserved, "yellow", "fa-calendar"], ["مؤجرة", branch.rented, "orange", "fa-key"],
+		["صيانة", branch.in_maintenance, "red", "fa-wrench"], ["جاهز للتسليم", branch.ready, "purple", "fa-thumbs-up"],
+		["مجمدة", branch.frozen, "grey", "fa-ban"],
+	].map(([label, value, color, icon]) => kpi(label, value, color, icon)).join("");
+}
+
+function kpi(label, value, color, icon) {
+	return `<div class="ad-kpi ad-kpi-${color}"><i class="fa ${icon} ad-kpi-icon"></i><div class="ad-kpi-value">${value}</div><div class="ad-kpi-label">${label}</div></div>`;
+}
+
+function pill(value, color) {
+	return `<span class="ad-pill ad-pill-${color}">${value}</span>`;
+}
+
+function status_pill(status) {
+	const colors = { "متوفر": "green", "مؤجر": "orange", "محجوز": "yellow", "داخل الصيانة": "red", "جاهز للتسليم": "purple" };
+	return pill(status, colors[status] || "grey");
+}
+
+function currency(value) {
+	return frappe.format(value || 0, { fieldtype: "Currency" });
 }
